@@ -18,11 +18,12 @@
     border-radius: 10px;
     padding: 12px;
     margin-bottom: 12px;
-    transition: border-color 0.15s, background-color 0.15s;
+    transition: border-color 0.12s, background-color 0.12s;
   }
   .container.over {
     border-color: #3b82f6;
     background: #eff6ff;
+    border-style: solid;
   }
   .container.row .header { color: #0369a1; }
   .container.bank .header { color: #6b21a8; }
@@ -31,6 +32,7 @@
     font-size: 14px;
     margin-bottom: 10px;
     letter-spacing: 0.02em;
+    user-select: none;
   }
   .body {
     display: flex;
@@ -38,6 +40,7 @@
     gap: 10px;
     min-height: 130px;
     align-items: flex-start;
+    position: relative;
   }
   .body.empty::after {
     content: "Drop images here";
@@ -46,6 +49,7 @@
     font-size: 13px;
     align-self: center;
     margin: 0 auto;
+    pointer-events: none;
   }
   .card {
     position: relative;
@@ -59,16 +63,15 @@
     background-size: contain;
     background-position: center;
     background-repeat: no-repeat;
-    transition: transform 0.1s, box-shadow 0.1s;
     box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    transition: box-shadow 0.12s, transform 0.12s;
   }
   .card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.18);
+    transform: translateY(-1px);
   }
   .card.dragging {
     opacity: 0.35;
-    cursor: grabbing;
   }
   .card .label {
     position: absolute;
@@ -82,8 +85,48 @@
     border-radius: 4px;
     pointer-events: none;
   }
-  .card.review-correct { border-color: #16a34a; box-shadow: 0 0 0 2px #16a34a; }
-  .card.review-wrong { border-color: #dc2626; box-shadow: 0 0 0 2px #dc2626; }
+  .drop-indicator {
+    width: 4px;
+    height: 130px;
+    background: #3b82f6;
+    border-radius: 2px;
+    flex-shrink: 0;
+    pointer-events: none;
+  }
+  .toolbar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    margin-top: 6px;
+    background: #f8fafc;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+  }
+  .submit-btn {
+    background: #3b82f6;
+    color: #fff;
+    border: none;
+    padding: 10px 22px;
+    border-radius: 6px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.12s, transform 0.05s;
+  }
+  .submit-btn:hover:not(:disabled) { background: #2563eb; }
+  .submit-btn:active:not(:disabled) { transform: translateY(1px); }
+  .submit-btn:disabled {
+    background: #cbd5e1;
+    color: #64748b;
+    cursor: not-allowed;
+  }
+  .status {
+    font-size: 13px;
+    color: #475569;
+  }
+  .status.warn { color: #b45309; font-weight: 600; }
+  .status.ok { color: #16a34a; font-weight: 600; }
 </style>
 </head>
 <body>
@@ -97,28 +140,98 @@
       "*"
     );
   }
-  function ready() {
-    sendToStreamlit("streamlit:componentReady", { apiVersion: 1 });
-  }
-  function setHeight(h) {
-    sendToStreamlit("streamlit:setFrameHeight", { height: h });
-  }
+  function ready() { sendToStreamlit("streamlit:componentReady", { apiVersion: 1 }); }
+  function setHeight(h) { sendToStreamlit("streamlit:setFrameHeight", { height: h }); }
   function sendValue(value) {
     sendToStreamlit("streamlit:setComponentValue", { value: value, dataType: "json" });
   }
 
-  // ---- State ----
-  let state = null;       // { bank: [letters], rows: [[letters], ...] }
-  let imgMap = {};        // letter -> data URI
+  // ---- State (entirely local in the iframe; only posted to Python on submit) ----
+  let state = null;        // { bank: [letters], rows: [[letters], ...] }
+  let imgMap = {};         // letter -> data URI
   let numRows = 0;
   let allLetters = [];
+  let lastResetToken = null;
   let draggedLetter = null;
+  let lastSubmitToken = null;
 
   function defaultState() {
     return { bank: [...allLetters], rows: Array.from({ length: numRows }, () => []) };
   }
 
-  function render() {
+  function totalPlaced() {
+    return state.rows.reduce((s, r) => s + r.length, 0);
+  }
+
+  function buildContainerEl(c) {
+    const wrap = document.createElement("div");
+    wrap.className = "container " + c.cls;
+    wrap.dataset.key = c.key;
+
+    const header = document.createElement("div");
+    header.className = "header";
+    const items = c.key === "bank" ? state.bank : state.rows[parseInt(c.key.split("_")[1])];
+    header.textContent = c.header + " (" + items.length + ")";
+
+    const body = document.createElement("div");
+    body.className = "body" + (items.length === 0 ? " empty" : "");
+    body.dataset.key = c.key;
+
+    items.forEach(letter => body.appendChild(buildCardEl(letter)));
+
+    wrap.appendChild(header);
+    wrap.appendChild(body);
+    return wrap;
+  }
+
+  function buildCardEl(letter) {
+    const card = document.createElement("div");
+    card.className = "card";
+    card.draggable = true;
+    card.dataset.letter = letter;
+    if (imgMap[letter]) card.style.backgroundImage = "url('" + imgMap[letter] + "')";
+    const label = document.createElement("div");
+    label.className = "label";
+    label.textContent = letter;
+    card.appendChild(label);
+    attachCardDnd(card);
+    return card;
+  }
+
+  function buildToolbarEl() {
+    const wrap = document.createElement("div");
+    wrap.className = "toolbar";
+    const btn = document.createElement("button");
+    btn.className = "submit-btn";
+    btn.textContent = "✅ Check My Arrangement";
+    btn.id = "submit-btn";
+    btn.addEventListener("click", onSubmit);
+    const status = document.createElement("span");
+    status.className = "status";
+    status.id = "status";
+    wrap.appendChild(btn);
+    wrap.appendChild(status);
+    return wrap;
+  }
+
+  function refreshToolbar() {
+    const btn = document.getElementById("submit-btn");
+    const status = document.getElementById("status");
+    if (!btn || !status) return;
+    const placed = totalPlaced();
+    const total = allLetters.length;
+    if (placed === total) {
+      btn.disabled = false;
+      status.className = "status ok";
+      status.textContent = "All " + total + " images placed. Ready to submit.";
+    } else {
+      btn.disabled = true;
+      status.className = "status warn";
+      status.textContent = (total - placed) + " image(s) still in Unplaced.";
+    }
+  }
+
+  function fullRender() {
     const app = document.getElementById("app");
     app.innerHTML = "";
 
@@ -126,98 +239,109 @@
     for (let i = 0; i < numRows; i++) {
       containers.push({ key: "row_" + i, header: "Row " + (i + 1), cls: "row" });
     }
+    containers.forEach(c => app.appendChild(buildContainerEl(c)));
+    app.appendChild(buildToolbarEl());
 
-    containers.forEach(c => {
-      const wrap = document.createElement("div");
-      wrap.className = "container " + c.cls;
-      wrap.dataset.key = c.key;
-
-      const header = document.createElement("div");
-      header.className = "header";
-      const items = c.key === "bank" ? state.bank : state.rows[parseInt(c.key.split("_")[1])];
-      header.textContent = c.header + " (" + items.length + ")";
-
-      const body = document.createElement("div");
-      body.className = "body" + (items.length === 0 ? " empty" : "");
-      body.dataset.key = c.key;
-
-      items.forEach(letter => {
-        const card = document.createElement("div");
-        card.className = "card";
-        card.draggable = true;
-        card.dataset.letter = letter;
-        if (imgMap[letter]) {
-          card.style.backgroundImage = "url('" + imgMap[letter] + "')";
-        }
-        const label = document.createElement("div");
-        label.className = "label";
-        label.textContent = letter;
-        card.appendChild(label);
-        body.appendChild(card);
-      });
-
-      wrap.appendChild(header);
-      wrap.appendChild(body);
-      app.appendChild(wrap);
-    });
-
-    attachDnD();
+    refreshToolbar();
     setHeight(document.body.scrollHeight + 30);
   }
 
-  function attachDnD() {
-    document.querySelectorAll(".card").forEach(card => {
-      card.addEventListener("dragstart", e => {
-        draggedLetter = card.dataset.letter;
-        card.classList.add("dragging");
-        try { e.dataTransfer.setData("text/plain", draggedLetter); } catch (_) {}
-        e.dataTransfer.effectAllowed = "move";
-      });
-      card.addEventListener("dragend", () => {
-        card.classList.remove("dragging");
-        document.querySelectorAll(".container.over").forEach(c => c.classList.remove("over"));
-      });
+  // After a drop, update DOM in-place (no full re-render, no flicker)
+  function moveCardInDom(letter, targetKey, insertBeforeLetter) {
+    // Remove the existing card from wherever it is
+    const existing = document.querySelector('.card[data-letter="' + letter + '"]');
+    if (existing) existing.remove();
+
+    const targetBody = document.querySelector('.body[data-key="' + targetKey + '"]');
+    if (!targetBody) return;
+
+    const newCard = buildCardEl(letter);
+    if (insertBeforeLetter == null) {
+      targetBody.appendChild(newCard);
+    } else {
+      const ref = targetBody.querySelector('.card[data-letter="' + insertBeforeLetter + '"]');
+      if (ref) targetBody.insertBefore(newCard, ref);
+      else targetBody.appendChild(newCard);
+    }
+
+    // Update headers + empty class for affected containers
+    document.querySelectorAll('.container').forEach(c => {
+      const key = c.dataset.key;
+      const body = c.querySelector('.body');
+      const header = c.querySelector('.header');
+      const items = key === "bank" ? state.bank : state.rows[parseInt(key.split("_")[1])];
+      const baseHeader = key === "bank" ? "🗂️ Unplaced" : ("Row " + (parseInt(key.split("_")[1]) + 1));
+      header.textContent = baseHeader + " (" + items.length + ")";
+      body.classList.toggle("empty", items.length === 0);
     });
 
-    document.querySelectorAll(".body").forEach(body => {
-      const wrap = body.parentElement;
-      body.addEventListener("dragover", e => {
-        e.preventDefault();
-        e.dataTransfer.dropEffect = "move";
-        wrap.classList.add("over");
-      });
-      body.addEventListener("dragleave", e => {
-        if (!body.contains(e.relatedTarget)) wrap.classList.remove("over");
-      });
-      body.addEventListener("drop", e => {
-        e.preventDefault();
-        wrap.classList.remove("over");
-        if (!draggedLetter) return;
-        const targetKey = body.dataset.key;
+    refreshToolbar();
+    setHeight(document.body.scrollHeight + 30);
+  }
 
-        // Remove from current location
-        state.bank = state.bank.filter(l => l !== draggedLetter);
-        for (let i = 0; i < state.rows.length; i++) {
-          state.rows[i] = state.rows[i].filter(l => l !== draggedLetter);
-        }
-
-        // Find drop position based on x-coordinate
-        const cards = [...body.querySelectorAll(".card")].filter(c => c.dataset.letter !== draggedLetter);
-        let insertBefore = null;
-        for (const c of cards) {
-          const rect = c.getBoundingClientRect();
-          if (e.clientX < rect.left + rect.width / 2) { insertBefore = c.dataset.letter; break; }
-        }
-
-        const arr = targetKey === "bank" ? state.bank : state.rows[parseInt(targetKey.split("_")[1])];
-        if (insertBefore == null) arr.push(draggedLetter);
-        else arr.splice(arr.indexOf(insertBefore), 0, draggedLetter);
-
-        draggedLetter = null;
-        render();
-        sendValue(state);
-      });
+  function attachCardDnd(card) {
+    card.addEventListener("dragstart", e => {
+      draggedLetter = card.dataset.letter;
+      // Defer the dragging class so the drag-image is the original (not transparent)
+      requestAnimationFrame(() => card.classList.add("dragging"));
+      try { e.dataTransfer.setData("text/plain", draggedLetter); } catch (_) {}
+      e.dataTransfer.effectAllowed = "move";
     });
+    card.addEventListener("dragend", () => {
+      card.classList.remove("dragging");
+      document.querySelectorAll(".container.over").forEach(c => c.classList.remove("over"));
+    });
+  }
+
+  function attachContainerDnd(body) {
+    const wrap = body.parentElement;
+    body.addEventListener("dragover", e => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = "move";
+      wrap.classList.add("over");
+    });
+    body.addEventListener("dragleave", e => {
+      if (!body.contains(e.relatedTarget)) wrap.classList.remove("over");
+    });
+    body.addEventListener("drop", e => {
+      e.preventDefault();
+      wrap.classList.remove("over");
+      if (!draggedLetter) return;
+      const targetKey = body.dataset.key;
+
+      // Find drop position based on x-coordinate
+      const cards = [...body.querySelectorAll(".card")].filter(c => c.dataset.letter !== draggedLetter);
+      let insertBefore = null;
+      for (const c of cards) {
+        const rect = c.getBoundingClientRect();
+        if (e.clientX < rect.left + rect.width / 2) { insertBefore = c.dataset.letter; break; }
+      }
+
+      // Update state
+      state.bank = state.bank.filter(l => l !== draggedLetter);
+      for (let i = 0; i < state.rows.length; i++) {
+        state.rows[i] = state.rows[i].filter(l => l !== draggedLetter);
+      }
+      const arr = targetKey === "bank" ? state.bank : state.rows[parseInt(targetKey.split("_")[1])];
+      if (insertBefore == null) arr.push(draggedLetter);
+      else arr.splice(arr.indexOf(insertBefore), 0, draggedLetter);
+
+      // Move card in DOM (no full re-render → no flicker, no Streamlit rerun)
+      moveCardInDom(draggedLetter, targetKey, insertBefore);
+
+      draggedLetter = null;
+    });
+  }
+
+  function attachAllContainerDnd() {
+    document.querySelectorAll(".body").forEach(attachContainerDnd);
+  }
+
+  function onSubmit() {
+    if (totalPlaced() !== allLetters.length) return;
+    // Use a unique submit token so Python knows this is a fresh submit
+    lastSubmitToken = Math.random().toString(36).slice(2) + Date.now().toString(36);
+    sendValue({ action: "submit", token: lastSubmitToken, state: JSON.parse(JSON.stringify(state)) });
   }
 
   // ---- Streamlit render lifecycle ----
@@ -225,19 +349,25 @@
     if (!event.data || event.data.type !== "streamlit:render") return;
     const args = event.data.args || {};
     const images = args.images || [];
+    const newLetters = images.map(im => im.letter);
     numRows = args.num_rows || 3;
-    allLetters = images.map(im => im.letter);
     imgMap = Object.fromEntries(images.map(im => [im.letter, im.data_uri]));
 
-    if (args.initial_state && Array.isArray(args.initial_state.rows)) {
-      state = JSON.parse(JSON.stringify(args.initial_state));
-      // Backfill any new letters into bank if state is stale
-      const placed = new Set([...state.bank, ...state.rows.flat()]);
-      allLetters.forEach(l => { if (!placed.has(l)) state.bank.push(l); });
-    } else if (!state) {
+    const resetToken = args.reset_token || "";
+    const lettersChanged = JSON.stringify(newLetters) !== JSON.stringify(allLetters);
+
+    if (state == null || lettersChanged || resetToken !== lastResetToken) {
+      // First render OR reset triggered from Python OR new image set
+      allLetters = newLetters;
       state = defaultState();
+      lastResetToken = resetToken;
+      fullRender();
+      // Attach container handlers (on bodies)
+      attachAllContainerDnd();
+    } else {
+      // Subsequent render with same data — do nothing (preserve in-flight state)
+      setHeight(document.body.scrollHeight + 30);
     }
-    render();
   });
 
   ready();

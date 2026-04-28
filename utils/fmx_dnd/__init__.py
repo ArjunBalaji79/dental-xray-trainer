@@ -1,12 +1,16 @@
 """Custom Streamlit component: drag-and-drop FMX image arranger.
 
-The Python wrapper passes a list of (letter, base64 PNG) image cards plus the
-number of rows. The frontend renders the images as draggable cards across an
-"Unplaced" pool and N row containers. Each drop posts the new arrangement
-({"bank": [...], "rows": [[...], ...]}) back to Python.
+State lives entirely in the iframe to avoid Streamlit-rerun flicker on every
+drop. Python only receives a payload when the user clicks the in-iframe
+"Check My Arrangement" button:
+
+    {"action": "submit", "token": <unique>, "state": {"bank": [...], "rows": [[...], ...]}}
+
+Pass a new ``reset_token`` to force the iframe to reinitialise (e.g. on shuffle).
 """
 
 from pathlib import Path
+from typing import Optional
 
 import streamlit.components.v1 as components
 
@@ -18,26 +22,27 @@ _component_func = components.declare_component(
 )
 
 
-def fmx_dnd(images, num_rows: int, key: str | None = None,
-            initial_state: dict | None = None, height: int = 700):
+def fmx_dnd(images, num_rows: int, reset_token: str = "",
+            key: Optional[str] = None, height: int = 700):
     """Render the drag-and-drop arranger.
 
     Parameters
     ----------
     images : list of {"letter": str, "data_uri": str}
-    num_rows : int — number of FMX rows
+    num_rows : number of FMX rows
+    reset_token : opaque string; change to force a re-init (e.g. on shuffle)
     key : Streamlit widget key
-    initial_state : optional dict {"bank": [...], "rows": [[...], ...]}
-    height : iframe height in px
+    height : iframe height hint in px (the iframe also auto-resizes)
 
     Returns
     -------
-    dict {"bank": [...], "rows": [[...], ...]} or None on first render.
+    None until the user submits. On submit, returns
+    ``{"action": "submit", "token": ..., "state": {"bank": [...], "rows": [...]}}``.
     """
     return _component_func(
         images=images,
         num_rows=num_rows,
-        initial_state=initial_state,
+        reset_token=reset_token,
         key=key,
         default=None,
         height=height,

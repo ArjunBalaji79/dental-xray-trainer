@@ -138,7 +138,7 @@ with col_reset:
             if k.startswith(exercise_key) or k.startswith(f"coach_{exercise_key}") \
                     or k.startswith(f"fmx_label_chat_{exercise_key}"):
                 st.session_state.pop(k, None)
-        st.rerun()
+        st.rerun()  # next run will create a fresh shuffle + reset_token
 
 if exercise_key not in st.session_state:
     order = list(range(n))
@@ -163,53 +163,50 @@ def _to_data_uri(pil_img: Image.Image, max_px: int = 240) -> str:
 
 # Build image cards once (cached on shuffle)
 cards_key = f"{exercise_key}_cards"
+reset_token_key = f"{exercise_key}_reset_token"
 if cards_key not in st.session_state:
     st.session_state[cards_key] = [
         {"letter": _letter(i), "data_uri": _to_data_uri(shuffled_images[i]["image"])}
         for i in range(n)
     ]
+    st.session_state[reset_token_key] = str(random.random())
 cards = st.session_state[cards_key]
-
-# Initial state for the DnD widget
-dnd_state_key = f"{exercise_key}_dnd_state"
-initial_state = st.session_state.get(dnd_state_key, None)
+reset_token = st.session_state.get(reset_token_key, "init")
 
 st.subheader("Arrange the radiographs")
+st.caption("Drag each image into the correct row. The submit button appears below the rows when every image is placed.")
+
 arrangement = fmx_dnd(
     images=cards,
     num_rows=num_rows,
-    initial_state=initial_state,
+    reset_token=reset_token,
     key=f"{exercise_key}_widget",
     height=200 + num_rows * 180,
 )
 
-# Persist whatever the widget last reported (so reruns / shuffle keep their state)
-if arrangement is not None:
-    st.session_state[dnd_state_key] = arrangement
+# Persist last successful submission so a Streamlit rerun (e.g. AI Coach interaction)
+# doesn't lose the results panel.
+last_submit_key = f"{exercise_key}_last_submit"
+last_token_key = f"{exercise_key}_last_submit_token"
 
-# Compute current state for status + scoring (widget value, fallback to stored)
-current = arrangement or initial_state or {
-    "bank": [c["letter"] for c in cards],
-    "rows": [[] for _ in range(num_rows)],
-}
-bank_count = len(current.get("bank", []))
+is_submission = (
+    arrangement is not None
+    and isinstance(arrangement, dict)
+    and arrangement.get("action") == "submit"
+    and arrangement.get("token") != st.session_state.get(last_token_key)
+)
+if is_submission:
+    st.session_state[last_submit_key] = arrangement.get("state")
+    st.session_state[last_token_key] = arrangement.get("token")
 
-col_submit, col_status = st.columns([1, 4])
-with col_submit:
-    submitted = st.button("✅ Check My Arrangement", type="primary",
-                          key=f"{exercise_key}_submit", disabled=(bank_count > 0))
-with col_status:
-    if bank_count > 0:
-        st.caption(f"⚠️ {bank_count} image(s) still in **Unplaced**.")
-    else:
-        st.caption("All images placed. Ready to submit.")
+submitted_state = st.session_state.get(last_submit_key)
 
-if submitted:
+if submitted_state:
     st.divider()
 
     # Build placement: letter -> (student_row, student_col)
     placement = {}
-    for row_i, row_letters in enumerate(current["rows"]):
+    for row_i, row_letters in enumerate(submitted_state["rows"]):
         for col_i, letter in enumerate(row_letters):
             placement[letter] = (row_i, col_i)
 
@@ -246,7 +243,10 @@ if submitted:
     # Per-row breakdown
     st.subheader("Your arrangement")
     for row_i in range(num_rows):
-        row_letters = current["rows"][row_i] if row_i < len(current["rows"]) else []
+        row_letters = (
+            submitted_state["rows"][row_i]
+            if row_i < len(submitted_state["rows"]) else []
+        )
         st.markdown(f"**Row {row_i + 1}**")
         if not row_letters:
             st.caption("_(empty)_")
