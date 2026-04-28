@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>FMX DnD</title>
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: transparent;
+    color: #1f2937;
+  }
+  #app { padding: 12px; }
+  .container {
+    background: #ffffff;
+    border: 2px dashed #cbd5e1;
+    border-radius: 10px;
+    padding: 12px;
+    margin-bottom: 12px;
+    transition: border-color 0.15s, background-color 0.15s;
+  }
+  .container.over {
+    border-color: #3b82f6;
+    background: #eff6ff;
+  }
+  .container.row .header { color: #0369a1; }
+  .container.bank .header { color: #6b21a8; }
+  .header {
+    font-weight: 700;
+    font-size: 14px;
+    margin-bottom: 10px;
+    letter-spacing: 0.02em;
+  }
+  .body {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    min-height: 130px;
+    align-items: flex-start;
+  }
+  .body.empty::after {
+    content: "Drop images here";
+    color: #94a3b8;
+    font-style: italic;
+    font-size: 13px;
+    align-self: center;
+    margin: 0 auto;
+  }
+  .card {
+    position: relative;
+    width: 130px;
+    height: 130px;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    cursor: grab;
+    user-select: none;
+    background: #000;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    transition: transform 0.1s, box-shadow 0.1s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+  .card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  }
+  .card.dragging {
+    opacity: 0.35;
+    cursor: grabbing;
+  }
+  .card .label {
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    background: rgba(59, 130, 246, 0.95);
+    color: #fff;
+    font-weight: 700;
+    font-size: 13px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    pointer-events: none;
+  }
+  .card.review-correct { border-color: #16a34a; box-shadow: 0 0 0 2px #16a34a; }
+  .card.review-wrong { border-color: #dc2626; box-shadow: 0 0 0 2px #dc2626; }
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+  // ---- Streamlit comms ----
+  function sendToStreamlit(type, data) {
+    window.parent.postMessage(
+      Object.assign({ isStreamlitMessage: true, type: type }, data || {}),
+      "*"
+    );
+  }
+  function ready() {
+    sendToStreamlit("streamlit:componentReady", { apiVersion: 1 });
+  }
+  function setHeight(h) {
+    sendToStreamlit("streamlit:setFrameHeight", { height: h });
+  }
+  function sendValue(value) {
+    sendToStreamlit("streamlit:setComponentValue", { value: value, dataType: "json" });
+  }
+
+  // ---- State ----
+  let state = null;       // { bank: [letters], rows: [[letters], ...] }
+  let imgMap = {};        // letter -> data URI
+  let numRows = 0;
+  let allLetters = [];
+  let draggedLetter = null;
+
+  function defaultState() {
+    return { bank: [...allLetters], rows: Array.from({ length: numRows }, () => []) };
+  }
+
+  function render() {
+    const app = document.getElementById("app");
+    app.innerHTML = "";
+
+    const containers = [{ key: "bank", header: "🗂️ Unplaced", cls: "bank" }];
+    for (let i = 0; i < numRows; i++) {
+      containers.push({ key: "row_" + i, header: "Row " + (i + 1), cls: "row" });
+    }
+
+    containers.forEach(c => {
+      const wrap = document.createElement("div");
+      wrap.className = "container " + c.cls;
+      wrap.dataset.key = c.key;
+
+      const header = document.createElement("div");
+      header.className = "header";
+      const items = c.key === "bank" ? state.bank : state.rows[parseInt(c.key.split("_")[1])];
+      header.textContent = c.header + " (" + items.length + ")";
+
+      const body = document.createElement("div");
+      body.className = "body" + (items.length === 0 ? " empty" : "");
+      body.dataset.key = c.key;
+
+      items.forEach(letter => {
+        const card = document.createElement("div");
+        card.className = "card";
+        card.draggable = true;
+        card.dataset.letter = letter;
+        if (imgMap[letter]) {
+          card.style.backgroundImage = "url('" + imgMap[letter] + "')";
+        }
+        const label = document.createElement("div");
+        label.className = "label";
+        label.textContent = letter;
+        card.appendChild(label);
+        body.appendChild(card);
+      });
+
+      wrap.appendChild(header);
+      wrap.appendChild(body);
+      app.appendChild(wrap);
+    });
+
+    attachDnD();
+    setHeight(document.body.scrollHeight + 30);
+  }
+
+  function attachDnD() {
+    document.querySelectorAll(".card").forEach(card => {
+      card.addEventListener("dragstart", e => {
+        draggedLetter = card.dataset.letter;
+        card.classList.add("dragging");
+        try { e.dataTransfer.setData("text/plain", draggedLetter); } catch (_) {}
+        e.dataTransfer.effectAllowed = "move";
+      });
+      card.addEventListener("dragend", () => {
+        card.classList.remove("dragging");
+        document.querySelectorAll(".container.over").forEach(c => c.classList.remove("over"));
+      });
+    });
+
+    document.querySelectorAll(".body").forEach(body => {
+      const wrap = body.parentElement;
+      body.addEventListener("dragover", e => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = "move";
+        wrap.classList.add("over");
+      });
+      body.addEventListener("dragleave", e => {
+        if (!body.contains(e.relatedTarget)) wrap.classList.remove("over");
+      });
+      body.addEventListener("drop", e => {
+        e.preventDefault();
+        wrap.classList.remove("over");
+        if (!draggedLetter) return;
+        const targetKey = body.dataset.key;
+
+        // Remove from current location
+        state.bank = state.bank.filter(l => l !== draggedLetter);
+        for (let i = 0; i < state.rows.length; i++) {
+          state.rows[i] = state.rows[i].filter(l => l !== draggedLetter);
+        }
+
+        // Find drop position based on x-coordinate
+        const cards = [...body.querySelectorAll(".card")].filter(c => c.dataset.letter !== draggedLetter);
+        let insertBefore = null;
+        for (const c of cards) {
+          const rect = c.getBoundingClientRect();
+          if (e.clientX < rect.left + rect.width / 2) { insertBefore = c.dataset.letter; break; }
+        }
+
+        const arr = targetKey === "bank" ? state.bank : state.rows[parseInt(targetKey.split("_")[1])];
+        if (insertBefore == null) arr.push(draggedLetter);
+        else arr.splice(arr.indexOf(insertBefore), 0, draggedLetter);
+
+        draggedLetter = null;
+        render();
+        sendValue(state);
+      });
+    });
+  }
+
+  // ---- Streamlit render lifecycle ----
+  window.addEventListener("message", event => {
+    if (!event.data || event.data.type !== "streamlit:render") return;
+    const args = event.data.args || {};
+    const images = args.images || [];
+    numRows = args.num_rows || 3;
+    allLetters = images.map(im => im.letter);
+    imgMap = Object.fromEntries(images.map(im => [im.letter, im.data_uri]));
+
+    if (args.initial_state && Array.isArray(args.initial_state.rows)) {
+      state = JSON.parse(JSON.stringify(args.initial_state));
+      // Backfill any new letters into bank if state is stale
+      const placed = new Set([...state.bank, ...state.rows.flat()]);
+      allLetters.forEach(l => { if (!placed.has(l)) state.bank.push(l); });
+    } else if (!state) {
+      state = defaultState();
+    }
+    render();
+  });
+
+  ready();
+</script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+.env
+__pycache__/
+*.pyc
+.streamlit/secrets.toml
+uploaded_dicoms/
+.DS_Store
+pages_archive/FMX18/
+datasets/dentex/validation_data.zip
+
