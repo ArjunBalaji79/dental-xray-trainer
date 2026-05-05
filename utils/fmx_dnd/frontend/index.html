@@ -12,6 +12,7 @@
     color: #1f2937;
   }
   #app { padding: 12px; }
+
   .container {
     background: #ffffff;
     border: 2px dashed #cbd5e1;
@@ -27,6 +28,8 @@
   }
   .container.row .header { color: #0369a1; }
   .container.bank .header { color: #6b21a8; }
+  .container.row.bitewing .header { color: #b45309; }
+
   .header {
     font-weight: 700;
     font-size: 14px;
@@ -34,7 +37,9 @@
     letter-spacing: 0.02em;
     user-select: none;
   }
-  .body {
+
+  /* Bank: flex-wrap (handles arbitrary count) */
+  .body.bank-body {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
@@ -42,15 +47,71 @@
     align-items: flex-start;
     position: relative;
   }
-  .body.empty::after {
+
+  /* PA row (top, bottom) in FMX-standard mode: 7-column grid */
+  .body.pa-row {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+    min-height: 130px;
+    align-items: stretch;
+    position: relative;
+  }
+
+  /* Bitewing row: left-half | center blocker | right-half */
+  .body.bw-row {
+    display: grid;
+    grid-template-columns: 2fr 3fr 2fr;
+    gap: 8px;
+    min-height: 130px;
+    align-items: stretch;
+  }
+  .bw-half {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    min-height: 130px;
+    border-radius: 6px;
+    padding: 4px;
+    background: rgba(15, 23, 42, 0.04);
+    transition: background-color 0.12s, outline 0.12s;
+    outline: 2px dashed transparent;
+    position: relative;
+  }
+  .bw-half.over {
+    background: #eff6ff;
+    outline-color: #3b82f6;
+  }
+  .bw-blocker {
+    background: #0b0f17;
+    border-radius: 6px;
+    min-height: 130px;
+  }
+
+  /* Default row when not in FMX-standard mode (legacy flex-wrap) */
+  .body.default-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    min-height: 130px;
+    align-items: flex-start;
+    position: relative;
+  }
+
+  .body.empty::after,
+  .bw-half.empty::after {
     content: "Drop images here";
     color: #94a3b8;
     font-style: italic;
     font-size: 13px;
+    grid-column: 1 / -1;
     align-self: center;
+    text-align: center;
     margin: 0 auto;
     pointer-events: none;
   }
+
+  /* Card */
   .card {
     position: relative;
     width: 130px;
@@ -66,13 +127,18 @@
     box-shadow: 0 1px 3px rgba(0,0,0,0.08);
     transition: box-shadow 0.12s, transform 0.12s;
   }
+  /* In grid layouts, cards fill their cell */
+  .body.pa-row > .card,
+  .bw-half > .card {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1 / 1;
+  }
   .card:hover {
     box-shadow: 0 4px 10px rgba(0,0,0,0.18);
     transform: translateY(-1px);
   }
-  .card.dragging {
-    opacity: 0.35;
-  }
+  .card.dragging { opacity: 0.35; }
   .card .label {
     position: absolute;
     top: 6px;
@@ -85,14 +151,7 @@
     border-radius: 4px;
     pointer-events: none;
   }
-  .drop-indicator {
-    width: 4px;
-    height: 130px;
-    background: #3b82f6;
-    border-radius: 2px;
-    flex-shrink: 0;
-    pointer-events: none;
-  }
+
   .toolbar {
     display: flex;
     align-items: center;
@@ -121,10 +180,7 @@
     color: #64748b;
     cursor: not-allowed;
   }
-  .status {
-    font-size: 13px;
-    color: #475569;
-  }
+  .status { font-size: 13px; color: #475569; }
   .status.warn { color: #b45309; font-weight: 600; }
   .status.ok { color: #16a34a; font-weight: 600; }
 </style>
@@ -146,38 +202,127 @@
     sendToStreamlit("streamlit:setComponentValue", { value: value, dataType: "json" });
   }
 
-  // ---- State (entirely local in the iframe; only posted to Python on submit) ----
-  let state = null;        // { bank: [letters], rows: [[letters], ...] }
-  let imgMap = {};         // letter -> data URI
+  // ---- State ----
+  // Default mode:    state.rows[i] is a letter[]
+  // FMX-standard:    state.rows[1] is { left: letter[], right: letter[] }
+  //                  (rows 0 and 2 stay as letter[]; max 7 per row)
+  let state = null;
+  let imgMap = {};
   let numRows = 0;
   let allLetters = [];
   let lastResetToken = null;
   let draggedLetter = null;
   let lastSubmitToken = null;
+  let layoutMode = "default";
+  let rowLabels = [];
+
+  function isFmxStandard() {
+    return layoutMode === "fmx_standard" && numRows === 3;
+  }
+
+  function rowLabel(i) {
+    return rowLabels[i] || ("Row " + (i + 1));
+  }
 
   function defaultState() {
+    if (isFmxStandard()) {
+      return { bank: [...allLetters], rows: [[], { left: [], right: [] }, []] };
+    }
     return { bank: [...allLetters], rows: Array.from({ length: numRows }, () => []) };
   }
 
-  function totalPlaced() {
-    return state.rows.reduce((s, r) => s + r.length, 0);
+  function rowItems(i) {
+    const r = state.rows[i];
+    return Array.isArray(r) ? r : [...r.left, ...r.right];
   }
 
-  function buildContainerEl(c) {
+  function rowCapacity(i) {
+    if (!isFmxStandard()) return Infinity;
+    return i === 1 ? 4 : 7;
+  }
+
+  function totalPlaced() {
+    let t = 0;
+    for (let i = 0; i < state.rows.length; i++) t += rowItems(i).length;
+    return t;
+  }
+
+  // ---- Builders ----
+  function buildBankEl() {
     const wrap = document.createElement("div");
-    wrap.className = "container " + c.cls;
-    wrap.dataset.key = c.key;
+    wrap.className = "container bank";
+    wrap.dataset.key = "bank";
 
     const header = document.createElement("div");
     header.className = "header";
-    const items = c.key === "bank" ? state.bank : state.rows[parseInt(c.key.split("_")[1])];
-    header.textContent = c.header + " (" + items.length + ")";
+    header.textContent = "🗂️ Unplaced (" + state.bank.length + ")";
 
     const body = document.createElement("div");
-    body.className = "body" + (items.length === 0 ? " empty" : "");
-    body.dataset.key = c.key;
+    body.className = "body bank-body" + (state.bank.length === 0 ? " empty" : "");
+    body.dataset.key = "bank";
+    state.bank.forEach(l => body.appendChild(buildCardEl(l)));
 
-    items.forEach(letter => body.appendChild(buildCardEl(letter)));
+    wrap.appendChild(header);
+    wrap.appendChild(body);
+    return wrap;
+  }
+
+  function buildPaRowEl(i) {
+    const wrap = document.createElement("div");
+    wrap.className = "container row";
+    wrap.dataset.key = "row_" + i;
+
+    const items = rowItems(i);
+    const cap = rowCapacity(i);
+    const capStr = cap === Infinity ? "" : "/" + cap;
+
+    const header = document.createElement("div");
+    header.className = "header";
+    header.textContent = rowLabel(i) + " (" + items.length + capStr + ")";
+
+    const cls = isFmxStandard() ? "pa-row" : "default-row";
+    const body = document.createElement("div");
+    body.className = "body " + cls + (items.length === 0 ? " empty" : "");
+    body.dataset.key = "row_" + i;
+    items.forEach(l => body.appendChild(buildCardEl(l)));
+
+    wrap.appendChild(header);
+    wrap.appendChild(body);
+    return wrap;
+  }
+
+  function buildBitewingRowEl(i) {
+    const wrap = document.createElement("div");
+    wrap.className = "container row bitewing";
+    wrap.dataset.key = "row_" + i;
+
+    const r = state.rows[i];
+    const total = r.left.length + r.right.length;
+
+    const header = document.createElement("div");
+    header.className = "header";
+    header.textContent = rowLabel(i) + " (" + total + "/4)";
+
+    const body = document.createElement("div");
+    body.className = "body bw-row";
+
+    const left = document.createElement("div");
+    left.className = "bw-half" + (r.left.length === 0 ? " empty" : "");
+    left.dataset.key = "row_" + i + "_left";
+    r.left.forEach(l => left.appendChild(buildCardEl(l)));
+
+    const blocker = document.createElement("div");
+    blocker.className = "bw-blocker";
+    blocker.setAttribute("aria-hidden", "true");
+
+    const right = document.createElement("div");
+    right.className = "bw-half" + (r.right.length === 0 ? " empty" : "");
+    right.dataset.key = "row_" + i + "_right";
+    r.right.forEach(l => right.appendChild(buildCardEl(l)));
+
+    body.appendChild(left);
+    body.appendChild(blocker);
+    body.appendChild(right);
 
     wrap.appendChild(header);
     wrap.appendChild(body);
@@ -234,62 +379,63 @@
   function fullRender() {
     const app = document.getElementById("app");
     app.innerHTML = "";
-
-    const containers = [{ key: "bank", header: "🗂️ Unplaced", cls: "bank" }];
     for (let i = 0; i < numRows; i++) {
-      containers.push({ key: "row_" + i, header: "Row " + (i + 1), cls: "row" });
+      if (isFmxStandard() && i === 1) {
+        app.appendChild(buildBitewingRowEl(i));
+      } else {
+        app.appendChild(buildPaRowEl(i));
+      }
     }
-    containers.forEach(c => app.appendChild(buildContainerEl(c)));
+    app.appendChild(buildBankEl());
     app.appendChild(buildToolbarEl());
-
+    attachAllContainerDnd();
     refreshToolbar();
     setHeight(document.body.scrollHeight + 30);
   }
 
-  // After a drop, update DOM in-place (no full re-render, no flicker)
-  function moveCardInDom(letter, targetKey, insertBeforeLetter) {
-    // Remove the existing card from wherever it is
-    const existing = document.querySelector('.card[data-letter="' + letter + '"]');
-    if (existing) existing.remove();
+  // ---- Drop targets and helpers ----
+  function getArrayByKey(key) {
+    if (key === "bank") return state.bank;
+    const m = key.match(/^row_(\d+)(?:_(left|right))?$/);
+    if (!m) return null;
+    const i = parseInt(m[1]);
+    const half = m[2];
+    if (half) return state.rows[i][half];
+    return state.rows[i];
+  }
 
-    const targetBody = document.querySelector('.body[data-key="' + targetKey + '"]');
-    if (!targetBody) return;
+  function targetCapacity(key) {
+    if (key === "bank") return Infinity;
+    if (!isFmxStandard()) return Infinity;
+    if (/_(left|right)$/.test(key)) return 2;
+    if (/^row_(0|2)$/.test(key)) return 7;
+    return Infinity;
+  }
 
-    const newCard = buildCardEl(letter);
-    if (insertBeforeLetter == null) {
-      targetBody.appendChild(newCard);
-    } else {
-      const ref = targetBody.querySelector('.card[data-letter="' + insertBeforeLetter + '"]');
-      if (ref) targetBody.insertBefore(newCard, ref);
-      else targetBody.appendChild(newCard);
+  function removeLetterFromAll(letter) {
+    state.bank = state.bank.filter(l => l !== letter);
+    for (let i = 0; i < state.rows.length; i++) {
+      const r = state.rows[i];
+      if (Array.isArray(r)) {
+        state.rows[i] = r.filter(l => l !== letter);
+      } else {
+        r.left = r.left.filter(l => l !== letter);
+        r.right = r.right.filter(l => l !== letter);
+      }
     }
-
-    // Update headers + empty class for affected containers
-    document.querySelectorAll('.container').forEach(c => {
-      const key = c.dataset.key;
-      const body = c.querySelector('.body');
-      const header = c.querySelector('.header');
-      const items = key === "bank" ? state.bank : state.rows[parseInt(key.split("_")[1])];
-      const baseHeader = key === "bank" ? "🗂️ Unplaced" : ("Row " + (parseInt(key.split("_")[1]) + 1));
-      header.textContent = baseHeader + " (" + items.length + ")";
-      body.classList.toggle("empty", items.length === 0);
-    });
-
-    refreshToolbar();
-    setHeight(document.body.scrollHeight + 30);
   }
 
   function attachCardDnd(card) {
     card.addEventListener("dragstart", e => {
       draggedLetter = card.dataset.letter;
-      // Defer the dragging class so the drag-image is the original (not transparent)
       requestAnimationFrame(() => card.classList.add("dragging"));
       try { e.dataTransfer.setData("text/plain", draggedLetter); } catch (_) {}
       e.dataTransfer.effectAllowed = "move";
     });
     card.addEventListener("dragend", () => {
       card.classList.remove("dragging");
-      document.querySelectorAll(".container.over").forEach(c => c.classList.remove("over"));
+      document.querySelectorAll(".container.over, .bw-half.over")
+        .forEach(c => c.classList.remove("over"));
     });
   }
 
@@ -298,50 +444,74 @@
     body.addEventListener("dragover", e => {
       e.preventDefault();
       e.dataTransfer.dropEffect = "move";
-      wrap.classList.add("over");
+      if (body.classList.contains("bw-half")) body.classList.add("over");
+      else if (wrap) wrap.classList.add("over");
     });
     body.addEventListener("dragleave", e => {
-      if (!body.contains(e.relatedTarget)) wrap.classList.remove("over");
+      if (!body.contains(e.relatedTarget)) {
+        body.classList.remove("over");
+        if (wrap) wrap.classList.remove("over");
+      }
     });
     body.addEventListener("drop", e => {
       e.preventDefault();
-      wrap.classList.remove("over");
+      body.classList.remove("over");
+      if (wrap) wrap.classList.remove("over");
       if (!draggedLetter) return;
-      const targetKey = body.dataset.key;
 
-      // Find drop position based on x-coordinate
-      const cards = [...body.querySelectorAll(".card")].filter(c => c.dataset.letter !== draggedLetter);
+      const targetKey = body.dataset.key;
+      const targetArr = getArrayByKey(targetKey);
+      if (!targetArr) { draggedLetter = null; return; }
+
+      // Capacity check (skip if the dragged card is already in this container — it's a reorder)
+      const cap = targetCapacity(targetKey);
+      if (!targetArr.includes(draggedLetter) && targetArr.length >= cap) {
+        // Refuse drop; keep card where it was
+        draggedLetter = null;
+        return;
+      }
+
+      // Compute insert position based on x
+      const cards = [...body.querySelectorAll(".card")]
+        .filter(c => c.dataset.letter !== draggedLetter);
       let insertBefore = null;
       for (const c of cards) {
         const rect = c.getBoundingClientRect();
-        if (e.clientX < rect.left + rect.width / 2) { insertBefore = c.dataset.letter; break; }
+        if (e.clientX < rect.left + rect.width / 2) {
+          insertBefore = c.dataset.letter;
+          break;
+        }
       }
 
-      // Update state
-      state.bank = state.bank.filter(l => l !== draggedLetter);
-      for (let i = 0; i < state.rows.length; i++) {
-        state.rows[i] = state.rows[i].filter(l => l !== draggedLetter);
-      }
-      const arr = targetKey === "bank" ? state.bank : state.rows[parseInt(targetKey.split("_")[1])];
+      // Update state: remove from old, add to new
+      removeLetterFromAll(draggedLetter);
+      const arr = getArrayByKey(targetKey);
       if (insertBefore == null) arr.push(draggedLetter);
       else arr.splice(arr.indexOf(insertBefore), 0, draggedLetter);
 
-      // Move card in DOM (no full re-render → no flicker, no Streamlit rerun)
-      moveCardInDom(draggedLetter, targetKey, insertBefore);
-
+      fullRender();
       draggedLetter = null;
     });
   }
 
   function attachAllContainerDnd() {
-    document.querySelectorAll(".body").forEach(attachContainerDnd);
+    document
+      .querySelectorAll(".body.bank-body, .body.default-row, .body.pa-row, .bw-half")
+      .forEach(attachContainerDnd);
   }
 
   function onSubmit() {
     if (totalPlaced() !== allLetters.length) return;
-    // Use a unique submit token so Python knows this is a fresh submit
     lastSubmitToken = Math.random().toString(36).slice(2) + Date.now().toString(36);
-    sendValue({ action: "submit", token: lastSubmitToken, state: JSON.parse(JSON.stringify(state)) });
+    // Flatten state for Python: row 1 in FMX-standard mode -> [...left, ...right]
+    const flatRows = state.rows.map(r =>
+      Array.isArray(r) ? [...r] : [...r.left, ...r.right]
+    );
+    sendValue({
+      action: "submit",
+      token: lastSubmitToken,
+      state: { bank: [...state.bank], rows: flatRows },
+    });
   }
 
   // ---- Streamlit render lifecycle ----
@@ -352,20 +522,18 @@
     const newLetters = images.map(im => im.letter);
     numRows = args.num_rows || 3;
     imgMap = Object.fromEntries(images.map(im => [im.letter, im.data_uri]));
+    layoutMode = args.layout_mode || "default";
+    rowLabels = args.row_labels || [];
 
     const resetToken = args.reset_token || "";
     const lettersChanged = JSON.stringify(newLetters) !== JSON.stringify(allLetters);
 
     if (state == null || lettersChanged || resetToken !== lastResetToken) {
-      // First render OR reset triggered from Python OR new image set
       allLetters = newLetters;
       state = defaultState();
       lastResetToken = resetToken;
       fullRender();
-      // Attach container handlers (on bodies)
-      attachAllContainerDnd();
     } else {
-      // Subsequent render with same data — do nothing (preserve in-flight state)
       setHeight(document.body.scrollHeight + 30);
     }
   });

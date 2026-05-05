@@ -124,9 +124,32 @@ if not images:
 n = len(images)
 num_rows = max(img["row"] for img in images) + 1
 
+
+def _row_counts(imgs):
+    counts = {}
+    for im in imgs:
+        counts[im["row"]] = counts.get(im["row"], 0) + 1
+    return [counts.get(i, 0) for i in range(max(counts) + 1)]
+
+
+_FMX_STANDARD_LABELS = [
+    "Maxillary Periapicals",
+    "Bitewings",
+    "Mandibular Periapicals",
+]
+_is_fmx_standard = num_rows == 3 and _row_counts(images) == [7, 4, 7]
+_layout_mode = "fmx_standard" if _is_fmx_standard else "default"
+_row_labels = _FMX_STANDARD_LABELS if _is_fmx_standard else []
+
 if slide_title:
     st.subheader(slide_title)
-st.caption(f"**{n} radiographs** detected · **{num_rows} rows** in this layout")
+if _is_fmx_standard:
+    st.caption(
+        f"**{n} radiographs** detected · standard FMX layout "
+        "(7 maxillary PAs · 4 bitewings · 7 mandibular PAs)"
+    )
+else:
+    st.caption(f"**{n} radiographs** detected · **{num_rows} rows** in this layout")
 
 # Stable shuffle, persisted per (n, slide_title)
 exercise_key = f"fmx_exercise_{n}_{slide_title}"
@@ -180,6 +203,8 @@ arrangement = fmx_dnd(
     images=cards,
     num_rows=num_rows,
     reset_token=reset_token,
+    layout_mode=_layout_mode,
+    row_labels=_row_labels,
     key=f"{exercise_key}_widget",
     height=200 + num_rows * 180,
 )
@@ -247,7 +272,11 @@ if submitted_state:
             submitted_state["rows"][row_i]
             if row_i < len(submitted_state["rows"]) else []
         )
-        st.markdown(f"**Row {row_i + 1}**")
+        row_heading = (
+            _row_labels[row_i] if _is_fmx_standard and row_i < len(_row_labels)
+            else f"Row {row_i + 1}"
+        )
+        st.markdown(f"**{row_heading}**")
         if not row_letters:
             st.caption("_(empty)_")
             continue
@@ -275,11 +304,36 @@ if submitted_state:
         row_imgs.sort(key=lambda x: x["col"])
         if not row_imgs:
             continue
-        cols = st.columns(len(row_imgs))
-        for col, img_data in zip(cols, row_imgs):
-            with col:
-                st.image(img_data["image"], use_container_width=True,
-                         caption=f"#{img_data['number']}")
+        if _is_fmx_standard:
+            row_heading = _row_labels[row_idx]
+            st.markdown(f"_{row_heading}_")
+            if row_idx == 1:
+                # 2 BW · gap · 2 BW
+                slots = st.columns([1, 1, 3, 1, 1], gap="small")
+                left_imgs = row_imgs[:2]
+                right_imgs = row_imgs[2:4]
+                for col, img_data in zip([slots[0], slots[1]], left_imgs):
+                    with col:
+                        st.image(img_data["image"], use_container_width=True,
+                                 caption=f"#{img_data['number']}")
+                with slots[2]:
+                    st.empty()
+                for col, img_data in zip([slots[3], slots[4]], right_imgs):
+                    with col:
+                        st.image(img_data["image"], use_container_width=True,
+                                 caption=f"#{img_data['number']}")
+            else:
+                slots = st.columns(7, gap="small")
+                for col, img_data in zip(slots, row_imgs):
+                    with col:
+                        st.image(img_data["image"], use_container_width=True,
+                                 caption=f"#{img_data['number']}")
+        else:
+            cols = st.columns(len(row_imgs))
+            for col, img_data in zip(cols, row_imgs):
+                with col:
+                    st.image(img_data["image"], use_container_width=True,
+                             caption=f"#{img_data['number']}")
 
     # Socratic reflection on mistakes
     label_chat_key = f"fmx_label_chat_{exercise_key}"
