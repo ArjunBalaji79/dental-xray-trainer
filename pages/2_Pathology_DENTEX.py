@@ -21,14 +21,14 @@ st.markdown(
 # Sidebar
 with st.sidebar:
     st.header("Settings")
-    api_key = st.text_input("Cerebras API Key", type="password", key="cerebras_api_key_dentex")
+    api_key = st.text_input("Gemini API Key (Google AI Studio)", type="password", key="gemini_api_key_dentex")
     if api_key:
-        st.session_state["cerebras_api_key"] = api_key
-    elif not st.session_state.get("cerebras_api_key"):
+        st.session_state["gemini_api_key"] = api_key
+    elif not st.session_state.get("gemini_api_key"):
         try:
-            key = st.secrets.get("CEREBRAS_API_KEY", "")
+            key = st.secrets.get("GEMINI_API_KEY", "")
             if key:
-                st.session_state["cerebras_api_key"] = key
+                st.session_state["gemini_api_key"] = key
         except Exception:
             pass
 
@@ -126,8 +126,8 @@ with col_form:
         dentex_m1_chat_key = f"dentex_chat_m1_{case['image_id']}"
 
         if submitted and teeth_answer.strip():
-            if not st.session_state.get("cerebras_api_key"):
-                st.warning("Please set your Cerebras API key.")
+            if not st.session_state.get("gemini_api_key"):
+                st.warning("Please set your Gemini API key.")
             else:
                 correct_teeth = ", ".join(case["teeth_present"])
                 correct_quads = ", ".join(sorted(set(
@@ -175,8 +175,8 @@ with col_form:
         dentex_m4_chat_key = f"dentex_chat_m4_{case['image_id']}"
 
         if submitted and (findings_answer.strip() or impression.strip()):
-            if not st.session_state.get("cerebras_api_key"):
-                st.warning("Please set your Cerebras API key.")
+            if not st.session_state.get("gemini_api_key"):
+                st.warning("Please set your Gemini API key.")
             else:
                 findings_detail = "\n".join(
                     f"  - Tooth {a['fdi_number']} ({a['quadrant']}): {a['diagnosis']}"

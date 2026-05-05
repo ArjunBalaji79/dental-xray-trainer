@@ -37,14 +37,14 @@ st.markdown(
 # Sidebar
 with st.sidebar:
     st.header("Settings")
-    api_key = st.text_input("Cerebras API Key", type="password", key="cerebras_api_key_label")
+    api_key = st.text_input("Gemini API Key (Google AI Studio)", type="password", key="gemini_api_key_label")
     if api_key:
-        st.session_state["cerebras_api_key"] = api_key
-    elif not st.session_state.get("cerebras_api_key"):
+        st.session_state["gemini_api_key"] = api_key
+    elif not st.session_state.get("gemini_api_key"):
         try:
-            key = st.secrets.get("CEREBRAS_API_KEY", "")
+            key = st.secrets.get("GEMINI_API_KEY", "")
             if key:
-                st.session_state["cerebras_api_key"] = key
+                st.session_state["gemini_api_key"] = key
         except Exception:
             pass
 
@@ -337,7 +337,7 @@ if submitted_state:
 
     # Socratic reflection on mistakes
     label_chat_key = f"fmx_label_chat_{exercise_key}"
-    if st.session_state.get("cerebras_api_key"):
+    if st.session_state.get("gemini_api_key"):
         wrong = [r for r in results if not r["is_correct"]]
         if wrong and label_chat_key not in st.session_state:
             mistakes_desc = "\n".join(
@@ -366,7 +366,7 @@ if submitted_state:
     render_socratic(label_chat_key)
 
 # ---- AI Coach (mid-exercise, no-reveal) ----
-if st.session_state.get("cerebras_api_key"):
+if st.session_state.get("gemini_api_key"):
     st.divider()
     with st.expander("🤖 AI Coach — ask for hints while you arrange", expanded=False):
         st.caption("Pick an image, describe what you see, and the AI will ask Socratic "
@@ -414,4 +414,4 @@ if st.session_state.get("cerebras_api_key"):
             with show_col2:
                 render_coaching(coach_key, label=f"Coach for Image {chosen_letter}")
 else:
-    st.info("💡 Add a Cerebras API key in the sidebar to enable AI Coach + post-submit Socratic feedback.")
+    st.info("💡 Add a Gemini API key in the sidebar to enable AI Coach + post-submit Socratic feedback.")

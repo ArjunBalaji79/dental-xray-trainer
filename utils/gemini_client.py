@@ -1,28 +1,37 @@
-"""Cerebras API client using OpenAI-compatible interface."""
+"""Gemini API client via Google's OpenAI-compatible endpoint.
+
+Uses the standard `openai` SDK with Google's compatibility shim:
+    https://generativelanguage.googleapis.com/v1beta/openai/
+
+This keeps call sites unchanged from the previous Cerebras client — only the
+base URL, key source, and default model differ.
+"""
 
 import streamlit as st
 from openai import OpenAI
 
+GEMINI_BASE_URL = "https://generativelanguage.googleapis.com/v1beta/openai/"
+DEFAULT_MODEL = "gemini-2.5-flash"
+
 
 def get_client() -> OpenAI:
-    """Get a Cerebras API client."""
-    api_key = st.session_state.get("cerebras_api_key", "")
+    """Get an OpenAI-compatible client pointed at Gemini."""
+    api_key = st.session_state.get("gemini_api_key", "")
     if not api_key:
-        # Try loading from Streamlit secrets
-        api_key = st.secrets.get("CEREBRAS_API_KEY", "")
+        try:
+            api_key = st.secrets.get("GEMINI_API_KEY", "")
+        except Exception:
+            api_key = ""
         if api_key:
-            st.session_state["cerebras_api_key"] = api_key
+            st.session_state["gemini_api_key"] = api_key
     if not api_key:
-        st.error("Please enter your Cerebras API key in the sidebar.")
+        st.error("Please enter your Gemini API key in the sidebar.")
         st.stop()
-    return OpenAI(
-        base_url="https://api.cerebras.ai/v1",
-        api_key=api_key,
-    )
+    return OpenAI(base_url=GEMINI_BASE_URL, api_key=api_key)
 
 
-def get_feedback(system_prompt: str, user_message: str, model: str = "qwen-3-235b-a22b-instruct-2507") -> str:
-    """Get LLM feedback from Cerebras (single-shot)."""
+def get_feedback(system_prompt: str, user_message: str, model: str = DEFAULT_MODEL) -> str:
+    """Get LLM feedback (single-shot)."""
     client = get_client()
     response = client.chat.completions.create(
         model=model,
@@ -69,7 +78,7 @@ def build_socratic_system_prompt(context: str, turn: int, max_turns: int = 3) ->
 def get_socratic_response(
     system_prompt: str,
     history: list,
-    model: str = "qwen-3-235b-a22b-instruct-2507",
+    model: str = DEFAULT_MODEL,
 ) -> str:
     """Multi-turn Socratic response. `history` is a list of {role, content} messages."""
     client = get_client()

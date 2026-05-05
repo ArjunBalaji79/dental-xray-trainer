@@ -1,7 +1,7 @@
 """Dental X-ray Training Platform — MVP
 
 An AI-powered educational tool for dental radiology training.
-Built with Streamlit + Cerebras API.
+Built with Streamlit + Google Gemini.
 
 Three focused modules:
   1. Tooth ID & Image Orientation
@@ -24,23 +24,23 @@ st.markdown("### AI-Powered Radiology Education — Socratic, Image-Grounded, Ex
 st.divider()
 
 # Auto-load API key from secrets if available
-if not st.session_state.get("cerebras_api_key"):
+if not st.session_state.get("gemini_api_key"):
     try:
-        key = st.secrets.get("CEREBRAS_API_KEY", "")
+        key = st.secrets.get("GEMINI_API_KEY", "")
         if key:
-            st.session_state["cerebras_api_key"] = key
+            st.session_state["gemini_api_key"] = key
     except Exception:
         pass
 
 with st.sidebar:
     st.header("Settings")
-    api_key = st.text_input("Cerebras API Key", type="password", key="cerebras_api_key_home")
+    api_key = st.text_input("Gemini API Key (Google AI Studio)", type="password", key="gemini_api_key_home")
     if api_key:
-        st.session_state["cerebras_api_key"] = api_key
-    if st.session_state.get("cerebras_api_key"):
+        st.session_state["gemini_api_key"] = api_key
+    if st.session_state.get("gemini_api_key"):
         st.success("API key set")
     else:
-        st.warning("Enter your Cerebras API key to enable AI feedback")
+        st.warning("Enter your Gemini API key to enable AI feedback. Get one free at https://aistudio.google.com/apikey")
 
 # Three module cards
 col1, col2, col3 = st.columns(3)
@@ -107,6 +107,6 @@ st.markdown(
 
     ---
 
-    *Built for the Dr. Perelman AIxEducation Project. Powered by Cerebras inference.*
+    *Built for the Dr. Perelman AIxEducation Project. Powered by Google Gemini.*
     """
 )
