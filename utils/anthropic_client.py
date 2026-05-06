@@ -1,48 +1,46 @@
-"""Gemini API client via Google's OpenAI-compatible endpoint.
+"""Anthropic Claude API client.
 
-Uses the standard `openai` SDK with Google's compatibility shim:
-    https://generativelanguage.googleapis.com/v1beta/openai/
-
-This keeps call sites unchanged from the previous Cerebras client — only the
-base URL, key source, and default model differ.
+Mirrors the function signatures of the previous Gemini client so call sites
+in ``utils/socratic_chat.py`` need only an import swap. Default model is
+Haiku 4.5 — fast, cheap, and strong enough for Socratic dental tutoring.
 """
 
 import streamlit as st
-from openai import OpenAI
+from anthropic import Anthropic
 
-GEMINI_BASE_URL = "https://generativelanguage.googleapis.com/v1beta/openai/"
-DEFAULT_MODEL = "gemini-2.5-flash"
+DEFAULT_MODEL = "claude-haiku-4-5"
 
 
-def get_client() -> OpenAI:
-    """Get an OpenAI-compatible client pointed at Gemini."""
-    api_key = st.session_state.get("gemini_api_key", "")
+def get_client() -> Anthropic:
+    """Return a configured Anthropic client (raises Streamlit error if no key)."""
+    api_key = st.session_state.get("anthropic_api_key", "")
     if not api_key:
         try:
-            api_key = st.secrets.get("GEMINI_API_KEY", "")
+            api_key = st.secrets.get("ANTHROPIC_API_KEY", "")
         except Exception:
             api_key = ""
         if api_key:
-            st.session_state["gemini_api_key"] = api_key
+            st.session_state["anthropic_api_key"] = api_key
     if not api_key:
-        st.error("Please enter your Gemini API key in the sidebar.")
+        st.error(
+            "Anthropic API key missing — set ANTHROPIC_API_KEY in "
+            ".streamlit/secrets.toml."
+        )
         st.stop()
-    return OpenAI(base_url=GEMINI_BASE_URL, api_key=api_key)
+    return Anthropic(api_key=api_key)
 
 
 def get_feedback(system_prompt: str, user_message: str, model: str = DEFAULT_MODEL) -> str:
-    """Get LLM feedback (single-shot)."""
+    """Single-shot completion."""
     client = get_client()
-    response = client.chat.completions.create(
+    msg = client.messages.create(
         model=model,
-        messages=[
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": user_message},
-        ],
-        temperature=0.3,
         max_tokens=1024,
+        temperature=0.3,
+        system=system_prompt,
+        messages=[{"role": "user", "content": user_message}],
     )
-    return response.choices[0].message.content
+    return msg.content[0].text
 
 
 def build_socratic_system_prompt(context: str, turn: int, max_turns: int = 3) -> str:
@@ -80,20 +78,25 @@ def get_socratic_response(
     history: list,
     model: str = DEFAULT_MODEL,
 ) -> str:
-    """Multi-turn Socratic response. `history` is a list of {role, content} messages."""
+    """Multi-turn Socratic response.
+
+    ``history`` is a list of ``{"role": "user"|"assistant", "content": str}``
+    in the OpenAI shape used by ``utils/socratic_chat.py``. Anthropic accepts
+    the same shape directly (system prompt is a top-level kwarg, not a message).
+    """
     client = get_client()
-    messages = [{"role": "system", "content": system_prompt}] + history
-    response = client.chat.completions.create(
+    msg = client.messages.create(
         model=model,
-        messages=messages,
-        temperature=0.4,
         max_tokens=800,
+        temperature=0.4,
+        system=system_prompt,
+        messages=history,
     )
-    return response.choices[0].message.content
+    return msg.content[0].text
 
 
 def build_coaching_system_prompt(context: str) -> str:
-    """Build a coaching prompt that NEVER reveals the answer — for in-exercise hints."""
+    """No-reveal coaching prompt — for in-exercise hints."""
     return (
         "You are a Socratic dental radiology coach helping a student DURING a labeling "
         "exercise. You must NEVER reveal the correct position, number, or answer — "

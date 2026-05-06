@@ -2,7 +2,7 @@
 
 import streamlit as st
 
-from utils.gemini_client import (
+from utils.anthropic_client import (
     build_coaching_system_prompt,
     build_socratic_system_prompt,
     get_socratic_response,

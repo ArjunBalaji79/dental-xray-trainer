@@ -24,9 +24,9 @@ st.markdown(
 # Sidebar — API key and case selection
 with st.sidebar:
     st.header("Settings")
-    api_key = st.text_input("Gemini API Key (Google AI Studio)", type="password", key="gemini_api_key_m1")
+    api_key = st.text_input("Anthropic API Key", type="password", key="anthropic_api_key_m1")
     if api_key:
-        st.session_state["gemini_api_key"] = api_key
+        st.session_state["anthropic_api_key"] = api_key
 
     st.divider()
 
@@ -110,8 +110,8 @@ with col_form:
     if submitted:
         if image_type == "-- Select --" or arch == "-- Select --" or region == "-- Select --":
             st.warning("Please fill in all fields before submitting.")
-        elif not st.session_state.get("gemini_api_key"):
-            st.warning("Please enter your Gemini API key in the sidebar.")
+        elif not st.session_state.get("anthropic_api_key"):
+            st.warning("Please enter your Anthropic API key in the sidebar.")
         else:
             context = (
                 f"- Image type: {case['image_type']}\n"

@@ -7,8 +7,16 @@ tooth-level bounding boxes, FDI numbering, and pathology labels
 
 import streamlit as st
 from PIL import Image
-from utils.dentex_loader import get_dentex_cases, draw_annotations, DIAGNOSES
-from utils.socratic_chat import start_socratic, render_socratic
+import utils.canvas_compat  # noqa: F401  -- patches Streamlit before canvas import
+from streamlit_drawable_canvas import st_canvas
+from utils.bbox_eval import evaluate_annotation, format_eval_for_socratic
+from utils.dentex_loader import (
+    DIAGNOSES,
+    DIAGNOSIS_COLORS,
+    draw_annotations,
+    get_dentex_cases,
+)
+from utils.socratic_chat import render_socratic, start_socratic
 
 st.set_page_config(page_title="DENTEX Practice", page_icon="🦷", layout="wide")
 
@@ -18,19 +26,14 @@ st.markdown(
     "Each image has expert-verified **tooth-level annotations** with FDI numbering and pathology labels."
 )
 
-# Sidebar
-with st.sidebar:
-    st.header("Settings")
-    api_key = st.text_input("Gemini API Key (Google AI Studio)", type="password", key="gemini_api_key_dentex")
-    if api_key:
-        st.session_state["gemini_api_key"] = api_key
-    elif not st.session_state.get("gemini_api_key"):
-        try:
-            key = st.secrets.get("GEMINI_API_KEY", "")
-            if key:
-                st.session_state["gemini_api_key"] = key
-        except Exception:
-            pass
+# Auto-load Anthropic key from secrets so deep-linking this page still works
+if not st.session_state.get("anthropic_api_key"):
+    try:
+        _key = st.secrets.get("ANTHROPIC_API_KEY", "")
+        if _key:
+            st.session_state["anthropic_api_key"] = _key
+    except Exception:
+        pass
 
 # Load cases
 cases = get_dentex_cases()
@@ -43,7 +46,6 @@ if not cases:
 
 # Filter by diagnosis
 with st.sidebar:
-    st.divider()
     st.header("Filter Cases")
     diag_filter = st.multiselect(
         "Filter by pathology",
@@ -82,123 +84,252 @@ pil_image = Image.open(case["image_path"])
 # Display
 st.subheader(f"Case: {case['file_name']}")
 
-col_img, col_form = st.columns([3, 2])
+DIAG_LIST = ["Caries", "Deep Caries", "Periapical Lesion", "Impacted"]
+MULTI_STROKE = "#FFFFFF"  # sentinel stroke color for boxes carrying >1 label
 
-with col_img:
-    # Toggle annotations overlay
-    show_annotations = st.checkbox("Show ground truth annotations", value=False, key="show_ann")
+active_key = f"dentex_active_diag_{case['image_id']}"
+canvas_ver_key = f"dentex_canvas_ver_{case['image_id']}"
+edit_key = f"dentex_edit_mode_{case['image_id']}"
+labels_key = f"dentex_box_labels_{case['image_id']}"  # pos-hash -> tuple(diagnoses)
+if active_key not in st.session_state:
+    st.session_state[active_key] = ["Caries"]
+if canvas_ver_key not in st.session_state:
+    st.session_state[canvas_ver_key] = 0
+if edit_key not in st.session_state:
+    st.session_state[edit_key] = False
+if labels_key not in st.session_state:
+    st.session_state[labels_key] = {}
 
-    if show_annotations:
-        annotated_img = draw_annotations(pil_image, case["annotations"])
-        st.image(annotated_img, use_container_width=True, caption="With annotations")
+active_set = set(st.session_state[active_key])
 
-        # Legend
-        st.markdown("**Legend:**")
-        legend_cols = st.columns(4)
-        colors = {"Impacted": "🔴", "Caries": "🟡", "Periapical Lesion": "🟢", "Deep Caries": "🟠"}
-        for i, (diag, emoji) in enumerate(colors.items()):
-            legend_cols[i].markdown(f"{emoji} {diag}")
+st.markdown(
+    "**Identify all pathological findings.** "
+    "Pick one or more pathologies, then draw a tight box around each finding. "
+    "When multiple are active, a box carries all of them (use this for co-occurring "
+    "findings on the same tooth). Use Edit to delete a box."
+)
+
+# Diagnosis picker (multi-select toggles) + tools row
+pick_cols = st.columns(len(DIAG_LIST) + 2)
+for i, diag in enumerate(DIAG_LIST):
+    is_active = diag in active_set
+    if pick_cols[i].button(
+        ("● " if is_active else "○ ") + diag,
+        key=f"dentex_pick_{case['image_id']}_{diag}",
+        type="primary" if is_active else "secondary",
+        use_container_width=True,
+    ):
+        s = set(st.session_state[active_key])
+        if diag in s and len(s) > 1:
+            s.discard(diag)        # toggle off (only if at least one stays)
+        else:
+            s.add(diag)            # toggle on (or no-op if it's the lone selected)
+        st.session_state[active_key] = sorted(s)
+        st.session_state[edit_key] = False
+        st.rerun()
+
+edit_now = pick_cols[len(DIAG_LIST)].toggle(
+    "✏️ Edit",
+    value=st.session_state[edit_key],
+    key=f"dentex_edit_toggle_{case['image_id']}",
+    help="In Edit mode, click a box to select; drag to move/resize. "
+         "Press Backspace/Delete to remove the selected box. "
+         "Note: moving/resizing a multi-label box may reset its labels.",
+)
+st.session_state[edit_key] = edit_now
+
+if pick_cols[len(DIAG_LIST) + 1].button(
+    "🗑️ Clear",
+    key=f"dentex_clear_{case['image_id']}",
+    use_container_width=True,
+):
+    st.session_state[canvas_ver_key] += 1
+    st.session_state[labels_key] = {}
+    st.rerun()
+
+# Stroke color: single-active → use that color; multi-active → white sentinel
+if len(active_set) == 1:
+    stroke_color = DIAGNOSIS_COLORS[next(iter(active_set))]
+else:
+    stroke_color = MULTI_STROKE
+drawing_mode = "transform" if st.session_state[edit_key] else "rect"
+
+DISPLAY_WIDTH = 900
+scale = DISPLAY_WIDTH / case["width"]
+canvas_height = int(case["height"] * scale)
+canvas_key = f"dentex_canvas_{case['image_id']}_v{st.session_state[canvas_ver_key]}"
+
+canvas_result = st_canvas(
+    fill_color="rgba(0, 0, 0, 0)",
+    stroke_width=3,
+    stroke_color=stroke_color,
+    background_image=pil_image,
+    update_streamlit=True,
+    height=canvas_height,
+    width=DISPLAY_WIDTH,
+    drawing_mode=drawing_mode,
+    key=canvas_key,
+)
+
+# Parse drawn rectangles. Single-label boxes recover their label from stroke
+# color. Multi-label boxes (white stroke) look up labels in our parallel store
+# keyed by position; new ones get the current active set assigned.
+color_to_diag = {v.lower(): k for k, v in DIAGNOSIS_COLORS.items()}
+labels_store = st.session_state[labels_key]
+new_labels_store: dict = {}
+student_boxes = []
+if canvas_result.json_data and isinstance(canvas_result.json_data, dict):
+    for obj in canvas_result.json_data.get("objects", []):
+        if obj.get("type") != "rect":
+            continue
+        sx = obj.get("scaleX", 1) or 1
+        sy = obj.get("scaleY", 1) or 1
+        disp_x = obj.get("left", 0)
+        disp_y = obj.get("top", 0)
+        disp_w = (obj.get("width", 0) or 0) * sx
+        disp_h = (obj.get("height", 0) or 0) * sy
+        pos_hash = (round(disp_x), round(disp_y), round(disp_w), round(disp_h))
+        stroke = (obj.get("stroke") or "").lower()
+
+        if stroke == MULTI_STROKE.lower():
+            diagnoses = list(labels_store.get(pos_hash, ()))
+            if not diagnoses:
+                # New multi-label rect → adopt the current active set
+                diagnoses = sorted(active_set)
+        else:
+            diag = color_to_diag.get(stroke)
+            if not diag:
+                continue
+            diagnoses = [diag]
+
+        new_labels_store[pos_hash] = tuple(diagnoses)
+        student_boxes.append({
+            "diagnoses": diagnoses,
+            "bbox": [disp_x / scale, disp_y / scale, disp_w / scale, disp_h / scale],
+        })
+
+# Prune deleted/moved boxes from the store
+st.session_state[labels_key] = new_labels_store
+
+info_col, list_col = st.columns([1, 2])
+with info_col:
+    st.metric("Boxes drawn", len(student_boxes))
+    active_str = " + ".join(sorted(active_set)) if active_set else "(none)"
+    st.caption(f"Active: **{active_str}**")
+    st.caption(f"Mode: **{'Edit' if st.session_state[edit_key] else 'Draw'}**")
+with list_col:
+    if student_boxes:
+        with st.expander(f"Drawn boxes ({len(student_boxes)})", expanded=False):
+            for i, b in enumerate(student_boxes):
+                x, y, w, h = (int(v) for v in b["bbox"])
+                label_str = " + ".join(b["diagnoses"])
+                st.markdown(f"{i + 1}. **{label_str}** — ({x}, {y}) · {w}×{h} px")
     else:
-        st.image(pil_image, use_container_width=True, caption="Unannotated panoramic radiograph")
+        st.info("Draw at least one box to enable submission.")
 
-with col_form:
-    # Practice mode selector
-    mode = st.radio(
-        "Practice mode",
-        ["Tooth Identification (Module 1)", "Pathology Detection (Module 4)"],
-        horizontal=True,
+# Diagnoses present = union of every label on every drawn box
+diag_answer = sorted({d for b in student_boxes for d in b["diagnoses"]})
+
+# ---- Diagnosis writeup form ----
+with st.form(f"dentex_unified_{case['image_id']}"):
+    st.markdown("**Write up your assessment:**")
+    findings_answer = st.text_area(
+        "Findings (describe each box's location and reasoning)",
+        placeholder="e.g., Tooth 48 — impacted, horizontal orientation\n"
+                    "Tooth 36 — radiolucency on mesial suggestive of caries...",
     )
+    impression = st.text_area(
+        "Overall impression",
+        placeholder="e.g., Panoramic radiograph showing multiple carious lesions and "
+                    "one impacted third molar...",
+    )
+    confidence = st.slider(
+        "Confidence (1-5)", 1, 5, 3, key=f"dentex_unified_conf_{case['image_id']}"
+    )
+    submitted = st.form_submit_button("Submit for Feedback", type="primary")
 
-    if mode == "Tooth Identification (Module 1)":
-        with st.form("dentex_m1"):
-            st.markdown("**Identify teeth with pathology in this panoramic radiograph:**")
-            teeth_answer = st.text_area(
-                "Which teeth do you see findings on? (use FDI numbers)",
-                placeholder="e.g., 18, 28, 38, 48 (third molars), or 36, 46 (first molars)...",
-            )
-            quadrants = st.multiselect(
-                "Which quadrants have findings?",
-                ["Q1 — Upper Right", "Q2 — Upper Left", "Q3 — Lower Left", "Q4 — Lower Right"],
-            )
-            confidence = st.slider("Confidence (1-5)", 1, 5, 3, key="dentex_m1_conf")
-            submitted = st.form_submit_button("Submit for Feedback", type="primary")
+unified_chat_key = f"dentex_chat_unified_{case['image_id']}"
+last_eval_key = f"dentex_unified_eval_{case['image_id']}"
 
-        dentex_m1_chat_key = f"dentex_chat_m1_{case['image_id']}"
+if submitted:
+    if not student_boxes:
+        st.warning("Draw at least one bounding box before submitting.")
+    elif not st.session_state.get("anthropic_api_key"):
+        st.warning("Anthropic API key missing — set ANTHROPIC_API_KEY in .streamlit/secrets.toml.")
+    else:
+        # Expand multi-label student boxes into per-label virtual boxes so the
+        # existing single-label IoU/match logic can grade each label independently.
+        expanded_boxes = []
+        for b in student_boxes:
+            for d in b["diagnoses"]:
+                expanded_boxes.append({"bbox": b["bbox"], "diagnosis": d})
+        report = evaluate_annotation(expanded_boxes, case["annotations"], iou_thresh=0.3)
+        st.session_state[last_eval_key] = report
 
-        if submitted and teeth_answer.strip():
-            if not st.session_state.get("gemini_api_key"):
-                st.warning("Please set your Gemini API key.")
-            else:
-                correct_teeth = ", ".join(case["teeth_present"])
-                correct_quads = ", ".join(sorted(set(
-                    a["quadrant"] for a in case["annotations"]
-                )))
-                findings_detail = "\n".join(
-                    f"  - Tooth {a['fdi_number']} ({a['quadrant']}): {a['diagnosis']}"
-                    for a in case["annotations"]
-                )
-                context = (
-                    f"Expert-verified panoramic radiograph ground truth (FDI numbering):\n"
-                    f"- Teeth with findings: {correct_teeth}\n"
-                    f"- Quadrants involved: {correct_quads}\n"
-                    f"- Detailed findings:\n{findings_detail}"
-                )
-                initial_msg = (
-                    f"Student submission (confidence: {confidence}/5):\n"
-                    f"- Teeth identified: {teeth_answer}\n"
-                    f"- Quadrants selected: {', '.join(quadrants) if quadrants else 'none selected'}"
-                )
-                start_socratic(dentex_m1_chat_key, context, initial_msg, case["summary"])
+        findings_detail = "\n".join(
+            f"  - Tooth {a['fdi_number']} ({a['quadrant']}): {a['diagnosis']}"
+            for a in case["annotations"]
+        )
+        student_box_summary = "\n".join(
+            f"  - Box {i + 1}: [{' + '.join(b['diagnoses'])}], "
+            f"bbox≈[{int(b['bbox'][0])},{int(b['bbox'][1])},"
+            f"{int(b['bbox'][2])},{int(b['bbox'][3])}]"
+            for i, b in enumerate(student_boxes)
+        )
+        correct_diags = ", ".join(case["diagnoses_present"])
+        context = (
+            f"Expert-verified panoramic radiograph ground truth "
+            f"({len(case['annotations'])} findings):\n{findings_detail}\n"
+            f"Diagnoses present: {correct_diags}\n\n"
+            "Student drew bounding boxes AND wrote a free-text diagnosis. An "
+            "automated evaluator computed IoU between every student box and every "
+            "ground-truth finding (greedy match, IoU>=0.3 counts as a detection):\n"
+            f"{format_eval_for_socratic(report)}\n\n"
+            "Use FDI numbering. Caries vs deep caries, impacted teeth, and "
+            "periapical lesions are all distinct categories to evaluate."
+        )
+        initial_msg = (
+            f"Student submission (confidence: {confidence}/5): "
+            f"drew {len(student_boxes)} boxes.\n\n"
+            f"BOXES:\n{student_box_summary}\n\n"
+            "AUTOMATED METRICS (IoU≥0.3):\n"
+            f"- Detection recall:    {report['detection_recall']:.0%} "
+            f"({report['num_matched']}/{report['num_gt']} findings detected)\n"
+            f"- Detection precision: {report['detection_precision']:.0%} "
+            f"({report['num_matched']}/{report['num_student']} boxes hit a finding)\n"
+            f"- Diagnosis accuracy when matched: "
+            f"{report['diagnosis_accuracy_when_matched']:.0%}\n\n"
+            f"FREE-TEXT FINDINGS:\n{findings_answer or '(none)'}\n\n"
+            f"DIAGNOSES PRESENT (from box labels): "
+            f"{', '.join(diag_answer) if diag_answer else 'none'}\n\n"
+            f"OVERALL IMPRESSION:\n{impression or '(none)'}"
+        )
+        start_socratic(unified_chat_key, context, initial_msg, case["summary"])
 
-        render_socratic(dentex_m1_chat_key)
+# Persisted metrics + GT overlay (after a submit)
+last_report = st.session_state.get(last_eval_key)
+if last_report:
+    m1, m2, m3 = st.columns(3)
+    m1.metric(
+        "Detection Recall",
+        f"{last_report['detection_recall']:.0%}",
+        help=f"{last_report['num_matched']} / {last_report['num_gt']} GT findings detected",
+    )
+    m2.metric(
+        "Precision",
+        f"{last_report['detection_precision']:.0%}",
+        help=f"{last_report['num_matched']} / {last_report['num_student']} boxes hit a finding",
+    )
+    m3.metric(
+        "Diagnosis Accuracy",
+        f"{last_report['diagnosis_accuracy_when_matched']:.0%}",
+        help="of detections that matched a GT finding",
+    )
+    with st.expander("Show your boxes vs ground truth", expanded=False):
+        gt_overlay = draw_annotations(pil_image, case["annotations"])
+        st.image(gt_overlay, use_container_width=True, caption="Ground truth annotations")
 
-    else:  # Pathology Detection
-        with st.form("dentex_m4"):
-            st.markdown("**Describe all pathological findings you see:**")
-            findings_answer = st.text_area(
-                "Findings",
-                placeholder="e.g., Tooth 48 — impacted, horizontal orientation\nTooth 36 — radiolucency on mesial suggestive of caries...",
-            )
-            st.markdown("**What diagnoses would you assign?**")
-            diag_answer = st.multiselect(
-                "Diagnoses present",
-                ["Caries", "Deep Caries", "Periapical Lesion", "Impacted", "Bone Loss", "Other"],
-                key="dentex_diag_select",
-            )
-            impression = st.text_area(
-                "Overall impression",
-                placeholder="e.g., Panoramic radiograph showing multiple carious lesions and one impacted third molar...",
-            )
-            confidence = st.slider("Confidence (1-5)", 1, 5, 3, key="dentex_m4_conf")
-            submitted = st.form_submit_button("Submit for Feedback", type="primary")
-
-        dentex_m4_chat_key = f"dentex_chat_m4_{case['image_id']}"
-
-        if submitted and (findings_answer.strip() or impression.strip()):
-            if not st.session_state.get("gemini_api_key"):
-                st.warning("Please set your Gemini API key.")
-            else:
-                findings_detail = "\n".join(
-                    f"  - Tooth {a['fdi_number']} ({a['quadrant']}): {a['diagnosis']}"
-                    for a in case["annotations"]
-                )
-                correct_diags = ", ".join(case["diagnoses_present"])
-                context = (
-                    f"Expert-verified panoramic radiograph ground truth "
-                    f"({len(case['annotations'])} findings):\n{findings_detail}\n"
-                    f"Diagnoses present: {correct_diags}\n"
-                    f"Use FDI numbering. Caries vs deep caries, impacted teeth, and periapical "
-                    f"lesions are all distinct categories to evaluate."
-                )
-                initial_msg = (
-                    f"Student submission (confidence: {confidence}/5):\n\n"
-                    f"FINDINGS:\n{findings_answer}\n\n"
-                    f"DIAGNOSES SELECTED: {', '.join(diag_answer) if diag_answer else 'none'}\n\n"
-                    f"OVERALL IMPRESSION:\n{impression}"
-                )
-                start_socratic(dentex_m4_chat_key, context, initial_msg, case["summary"])
-
-        render_socratic(dentex_m4_chat_key)
+render_socratic(unified_chat_key)
 
 # Progress
 st.divider()
