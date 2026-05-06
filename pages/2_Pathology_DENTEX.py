@@ -19,6 +19,7 @@ from utils.dentex_loader import (
     DIAGNOSIS_COLORS,
     draw_annotations,
     get_dentex_cases,
+    get_dentex_display_image,
 )
 from utils.socratic_chat import render_socratic, start_socratic
 
@@ -82,8 +83,6 @@ if not case["image_path"].exists():
     )
     st.stop()
 
-pil_image = Image.open(case["image_path"]).convert("RGB")
-
 st.subheader(f"Case: {case['file_name']}")
 
 DIAG_LIST = ["Caries", "Deep Caries", "Periapical Lesion", "Impacted"]
@@ -144,33 +143,34 @@ if pick_cols[len(DIAG_LIST) + 1].button(
 active_diag = st.session_state[active_key]
 stroke_color = DIAGNOSIS_COLORS[active_diag]
 
-# Render image with all current boxes drawn on it (in ORIGINAL pixel coords)
-display_img = pil_image.copy()
-draw = ImageDraw.Draw(display_img)
+DISPLAY_WIDTH = 900
+scale = DISPLAY_WIDTH / case["width"]
 
-# Outline thickness scales with image so it stays visible after display downscaling
-outline_w = max(4, case["width"] // 250)
-marker_r = max(8, case["width"] // 180)
+# Pull the cached, pre-resized display image and draw boxes at DISPLAY resolution.
+# Sending a 900-wide PNG to the iframe is ~10x cheaper than the full-res panoramic.
+display_img = get_dentex_display_image(str(case["image_path"]), DISPLAY_WIDTH).copy()
+draw = ImageDraw.Draw(display_img)
 
 for box in st.session_state[boxes_key]:
     color = DIAGNOSIS_COLORS[box["diagnosis"]]
     x, y, w, h = box["bbox"]
-    draw.rectangle([x, y, x + w, y + h], outline=color, width=outline_w)
+    draw.rectangle(
+        [x * scale, y * scale, (x + w) * scale, (y + h) * scale],
+        outline=color,
+        width=3,
+    )
 
 if st.session_state[pending_key] is not None:
     cx, cy = st.session_state[pending_key]
+    r = 6
     draw.ellipse(
-        [cx - marker_r, cy - marker_r, cx + marker_r, cy + marker_r],
+        [cx * scale - r, cy * scale - r, cx * scale + r, cy * scale + r],
         outline=stroke_color,
-        width=outline_w,
+        width=3,
     )
-
-DISPLAY_WIDTH = 900
-scale = DISPLAY_WIDTH / case["width"]
 
 click = streamlit_image_coordinates(
     display_img,
-    width=DISPLAY_WIDTH,
     key=f"dentex_click_{img_id}",
 )
 
@@ -306,7 +306,8 @@ if last_report:
         help="of detections that matched a GT finding",
     )
     with st.expander("Show your boxes vs ground truth", expanded=False):
-        gt_overlay = draw_annotations(pil_image, case["annotations"])
+        full_res_image = Image.open(case["image_path"]).convert("RGB")
+        gt_overlay = draw_annotations(full_res_image, case["annotations"])
         st.image(gt_overlay, use_container_width=True, caption="Ground truth annotations")
 
 render_socratic(unified_chat_key)

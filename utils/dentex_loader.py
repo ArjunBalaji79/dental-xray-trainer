@@ -16,6 +16,7 @@ import json
 from pathlib import Path
 from typing import List
 
+import streamlit as st
 from PIL import Image, ImageDraw, ImageFont
 
 DATASET_ROOT = Path(__file__).parent.parent / "datasets" / "dentex"
@@ -56,6 +57,7 @@ def fdi_number(cat_id_1: int, cat_id_2: int) -> str:
     return f"{quadrant}{position}"
 
 
+@st.cache_data(show_spinner=False)
 def get_dentex_cases() -> list[dict]:
     """Load all DENTEX validation cases with parsed annotations.
 
@@ -134,6 +136,21 @@ def get_dentex_cases() -> list[dict]:
         })
 
     return cases
+
+
+@st.cache_data(show_spinner=False)
+def get_dentex_display_image(image_path_str: str, display_width: int) -> Image.Image:
+    """Open and downscale a panoramic to ``display_width`` pixels wide.
+
+    Cached so reruns triggered by clicks reuse the small image instead of
+    re-decoding the full-resolution PNG every time.
+    """
+    img = Image.open(image_path_str).convert("RGB")
+    w, h = img.size
+    if w == display_width:
+        return img
+    new_h = max(1, int(round(h * display_width / w)))
+    return img.resize((display_width, new_h), Image.LANCZOS)
 
 
 def draw_annotations(image: Image.Image, annotations: list[dict], show_labels: bool = True) -> Image.Image:
