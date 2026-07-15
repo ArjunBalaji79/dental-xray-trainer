@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% from "_macros.html" import sb_row %}
+{% block title %}Module 1 Practice · Image Quality &amp; Error Correction — {{ platform.name }}{% endblock %}
+
+{% block storyboard %}
+  <div class="sb-eyebrow">Module 1 · Practice</div>
+  <div class="sb-title">{{ m1.module.title }}</div>
+  <div class="sb-goal">{{ m1.module.goal }}</div>
+  <div class="sb-div"></div>
+  {{ sb_row('layers', 'Error cases', m1.cases | length) }}
+  <div class="sb-row"><span class="glyph">{{ icon('target', 16) }}</span><div><div class="sb-fl">Session score</div><div class="sb-fv" id="sb-score">0 / {{ m1.total_points }} pts</div></div></div>
+  <div class="sb-row"><span class="glyph">{{ icon('check', 16) }}</span><div><div class="sb-fl">Diagnostic calls</div><div class="sb-fv" id="sb-acc">—</div></div></div>
+  <div class="sb-div"></div>
+  <div class="sb-fl" style="margin-bottom:8px">Cases</div>
+  <div id="sb-caselist">
+    {% for c in m1.cases %}
+    <div class="sb-plain-item" data-caseidx="{{ loop.index0 }}">
+      <div class="sb-li-id">{{ c.id }}</div>
+      <div class="sb-li-name">{{ c.name }}</div>
+    </div>
+    {% endfor %}
+  </div>
+{% endblock %}
+
+{% block content %}
+<div class="crumbs">
+  <a href="{{ url_for('overview') }}">Overview</a><span class="sep">›</span>
+  <a href="{{ url_for('module', number=1) }}">Module 1</a><span class="sep">›</span>Practice
+</div>
+
+<div class="section-banner">
+  <span class="section-kicker">Module 1 · Practice</span>
+  <h2>Image Quality &amp; Error Correction</h2>
+  <span class="sub">Diagnostic quality → error → cause → correction → comparison</span>
+</div>
+
+<div class="p4-progresswrap" id="p1-progress" style="display:none">
+  <span class="lab" id="p1-lab">Case 1 of {{ m1.cases | length }}</span>
+  <div class="bar"><span id="p1-bar" style="width:0%"></span></div>
+  <span class="lab" id="p1-score">0 pts</span>
+</div>
+
+<div id="p1-app"><!-- rendered by module1.js --></div>
+
+<script type="application/json" id="m1-data">{{ m1 | tojson }}</script>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/module1.js') }}"></script>
+{% endblock %}

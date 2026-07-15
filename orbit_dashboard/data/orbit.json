@@ -1,0 +1,2301 @@
+{
+  "platform": {
+    "name": "ORBIT",
+    "full_name": "Oral Radiology Board-Interpretation Trainer",
+    "org": "Dr. Perelman AIxEducation Project",
+    "tagline": "AI-assisted dental radiology education — curriculum console"
+  },
+  "stats": {
+    "modules": 8,
+    "objectives": 62,
+    "objectives_with_target": 62,
+    "cases": 18,
+    "steps": 45,
+    "difficulty_tiers": 3,
+    "ai_modules": [
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "ai_module_count": 5,
+    "difficulty_distribution": [
+      {
+        "level": 1,
+        "label": "Obvious / basic",
+        "count": 5
+      },
+      {
+        "level": 2,
+        "label": "Moderate",
+        "count": 11
+      },
+      {
+        "level": 3,
+        "label": "Subtle / complex",
+        "count": 2
+      }
+    ],
+    "cases_per_module": [
+      {
+        "number": 1,
+        "title": "Image Quality and Error Correction",
+        "count": 10
+      },
+      {
+        "number": 2,
+        "title": "Radiographic Mounting",
+        "count": 0
+      },
+      {
+        "number": 3,
+        "title": "Tooth Identification and Localization",
+        "count": 0
+      },
+      {
+        "number": 4,
+        "title": "Normal Anatomy vs Pathology",
+        "count": 4
+      },
+      {
+        "number": 5,
+        "title": "Radiographic Interpretation & AI Comparison",
+        "count": 4
+      },
+      {
+        "number": 6,
+        "title": "Clinical Documentation and EHR Simulation",
+        "count": 0
+      },
+      {
+        "number": 7,
+        "title": "Panoramic View",
+        "count": 0
+      },
+      {
+        "number": 8,
+        "title": "Advanced Cases & Clinical Decision Making",
+        "count": 0
+      }
+    ],
+    "objectives_per_module": [
+      {
+        "number": 1,
+        "title": "Image Quality and Error Correction",
+        "count": 6
+      },
+      {
+        "number": 2,
+        "title": "Radiographic Mounting",
+        "count": 6
+      },
+      {
+        "number": 3,
+        "title": "Tooth Identification and Localization",
+        "count": 6
+      },
+      {
+        "number": 4,
+        "title": "Normal Anatomy vs Pathology",
+        "count": 7
+      },
+      {
+        "number": 5,
+        "title": "Radiographic Interpretation & AI Comparison",
+        "count": 9
+      },
+      {
+        "number": 6,
+        "title": "Clinical Documentation and EHR Simulation",
+        "count": 9
+      },
+      {
+        "number": 7,
+        "title": "Panoramic View",
+        "count": 9
+      },
+      {
+        "number": 8,
+        "title": "Advanced Cases & Clinical Decision Making",
+        "count": 10
+      }
+    ]
+  },
+  "modules": [
+    {
+      "number": 1,
+      "title": "Image Quality and Error Correction",
+      "slug": "module-1-image-quality-and-error-correction",
+      "note": null,
+      "tagline": "Image quality triage",
+      "glyph": "🩻",
+      "description": "Develop the ability to identify radiographic errors, understand their causes, and apply corrective techniques to produce diagnostic-quality images.",
+      "objectives": [
+        {
+          "n": 1,
+          "text": "Accurately classify radiographs as diagnostic or non-diagnostic with ≥90% accuracy",
+          "target": "≥90%",
+          "kind": "mastery"
+        },
+        {
+          "n": 2,
+          "text": "Identify common radiographic errors (e.g., cone cut, overlap, elongation, foreshortening, motion artifact, exposure errors) with ≥ 90% accuracy",
+          "target": "≥90%",
+          "kind": "mastery"
+        },
+        {
+          "n": 3,
+          "text": "Determine the most likely cause of radiographic errors, including positioning, angulation, receptor placement, and exposure technique, in ≥90% of cases",
+          "target": "≥90%",
+          "kind": "mastery"
+        },
+        {
+          "n": 4,
+          "text": "Select the appropriate corrective action needed to produce a diagnostic-quality image in ≥90% of cases",
+          "target": "≥90%",
+          "kind": "mastery"
+        },
+        {
+          "n": 5,
+          "text": "Differentiate errors requiring retake from acceptable diagnostic variation in ≥90% of cases",
+          "target": "≥90%",
+          "kind": "mastery"
+        },
+        {
+          "n": 6,
+          "text": "Explain how specific image quality errors impact diagnostic interpretation and clinical decision-making in ≥90% of responses",
+          "target": "≥90%",
+          "kind": "mastery"
+        }
+      ],
+      "objective_count": 6,
+      "ai_enabled": false,
+      "cases": [
+        {
+          "id": "M1-01",
+          "module": 1,
+          "name": "Cone Cut BW",
+          "type": "Error correction",
+          "difficulty": 1,
+          "ground_truth": "Cone cut",
+          "question_type": "Error ID",
+          "notes": "Easy",
+          "steps": 0,
+          "has_activity": false,
+          "points": 0
+        },
+        {
+          "id": "M1-02",
+          "module": 1,
+          "name": "Horizontal Overlap BW",
+          "type": "Error correction",
+          "difficulty": 2,
+          "ground_truth": "Horizontal overlap",
+          "question_type": "Error ID",
+          "notes": "Incorrect horizontal",
+          "steps": 5,
+          "has_activity": true,
+          "points": 7
+        },
+        {
+          "id": "M1-03",
+          "module": 1,
+          "name": "Elongated PA",
+          "type": "Error correction",
+          "difficulty": 2,
+          "ground_truth": "Elongation",
+          "question_type": "Error ID",
+          "notes": "Vertical angulation too low",
+          "steps": 5,
+          "has_activity": true,
+          "points": 7
+        },
+        {
+          "id": "M1-04",
+          "module": 1,
+          "name": "Foreshortened Premolar PA",
+          "type": "Error correction",
+          "difficulty": 2,
+          "ground_truth": "Foreshortening",
+          "question_type": "Error ID",
+          "notes": "Vertical angulation too steep",
+          "steps": 5,
+          "has_activity": true,
+          "points": 7
+        },
+        {
+          "id": "M1-05",
+          "module": 1,
+          "name": "Motion Blur Molar BW",
+          "type": "Error correction",
+          "difficulty": 1,
+          "ground_truth": "Motion artifact",
+          "question_type": "Error ID",
+          "notes": "Patient movement during exposure",
+          "steps": 5,
+          "has_activity": true,
+          "points": 7
+        },
+        {
+          "id": "M1-06",
+          "module": 1,
+          "name": "Light Exposure BW",
+          "type": "Error correction",
+          "difficulty": 1,
+          "ground_truth": "Underexposure",
+          "question_type": "Error ID",
+          "notes": "Insufficient exposure settings",
+          "steps": 5,
+          "has_activity": true,
+          "points": 7
+        },
+        {
+          "id": "M1-07",
+          "module": 1,
+          "name": "Dark Exposure PA",
+          "type": "Error correction",
+          "difficulty": 1,
+          "ground_truth": "Overexposure",
+          "question_type": "Error ID",
+          "notes": "Excessive exposure settin",
+          "steps": 5,
+          "has_activity": true,
+          "points": 7
+        },
+        {
+          "id": "M1-08",
+          "module": 1,
+          "name": "Reversed Film Artifact",
+          "type": "Error correction",
+          "difficulty": 2,
+          "ground_truth": "Herringbone artifact",
+          "question_type": "Error ID",
+          "notes": "Receptor placed backward",
+          "steps": 5,
+          "has_activity": true,
+          "points": 7
+        },
+        {
+          "id": "M1-09",
+          "module": 1,
+          "name": "Partial Cone Cut PA",
+          "type": "Error correction",
+          "difficulty": 1,
+          "ground_truth": "Cone cut",
+          "question_type": "Error ID",
+          "notes": "PID misalignment",
+          "steps": 5,
+          "has_activity": true,
+          "points": 7
+        },
+        {
+          "id": "M1-10",
+          "module": 1,
+          "name": "Overlapped Premolar Contacts",
+          "type": "Error correction",
+          "difficulty": 2,
+          "ground_truth": "Horizontal overlap",
+          "question_type": "Error ID",
+          "notes": "Difficult caries visualization",
+          "steps": 5,
+          "has_activity": true,
+          "points": 7
+        }
+      ],
+      "case_count": 10,
+      "interaction": [
+        {
+          "module": "1",
+          "objective": "1",
+          "question_type": "Diagnostic quality",
+          "student_action": "Select diagnostic vs nondiagnostic",
+          "input_type": "Multiple choice",
+          "correct_answer_type": "Binary",
+          "measures": "Classification accuracy"
+        },
+        {
+          "module": "1",
+          "objective": "2",
+          "question_type": "Error identification",
+          "student_action": "Select radiographic error",
+          "input_type": "Multiple choice",
+          "correct_answer_type": "Single select",
+          "measures": "Error recognition"
+        },
+        {
+          "module": "1",
+          "objective": "3",
+          "question_type": "Cause identification",
+          "student_action": "Select likely cause",
+          "input_type": "Multiple choice",
+          "correct_answer_type": "Single select",
+          "measures": "Understanding"
+        },
+        {
+          "module": "1",
+          "objective": "4",
+          "question_type": "Correction selection",
+          "student_action": "Choose corrective action",
+          "input_type": "Multiple choice",
+          "correct_answer_type": "Single select",
+          "measures": "Decision-making"
+        }
+      ],
+      "authored_steps": 45
+    },
+    {
+      "number": 2,
+      "title": "Radiographic Mounting",
+      "slug": "module-2-radiographic-mounting",
+      "note": null,
+      "tagline": "Mounting & orientation",
+      "glyph": "🗂",
+      "description": "Build skills to correctly orient and mount intraoral radiographs using standard conventions and anatomical cues",
+      "objectives": [
+        {
+          "n": 1,
+          "text": "Correctly orient intraoral radiographs (maxillary vs mandibular, right vs left) with ≥90% accuracy",
+          "target": "≥90%",
+          "kind": "mastery"
+        },
+        {
+          "n": 2,
+          "text": "Assemble bitewing and full-mouth radiographic series (FMX) using standard mounting conventions with ≥90% accuracy",
+          "target": "≥90%",
+          "kind": "mastery"
+        },
+        {
+          "n": 3,
+          "text": "Identify anatomical landmarks used to determine radiographic orientation in ≥90% of cases",
+          "target": "≥90%",
+          "kind": "mastery"
+        },
+        {
+          "n": 4,
+          "text": "Differentiate correctly mounted from incorrectly mounted radiographs with ≥90% accuracy",
+          "target": "≥90%",
+          "kind": "mastery"
+        },
+        {
+          "n": 5,
+          "text": "Apply spatial reasoning to localize radiographic structures within the oral cavity in ≥90% of cases",
+          "target": "≥90%",
+          "kind": "mastery"
+        },
+        {
+          "n": 6,
+          "text": "Correct mounting and orientation errors using anatomical and positional cues in ≥90% of exercises",
+          "target": "≥90%",
+          "kind": "mastery"
+        }
+      ],
+      "objective_count": 6,
+      "ai_enabled": false,
+      "cases": [],
+      "case_count": 0,
+      "interaction": [],
+      "authored_steps": 0
+    },
+    {
+      "number": 3,
+      "title": "Tooth Identification and Localization",
+      "slug": "module-3-tooth-identification-and-localization",
+      "note": null,
+      "tagline": "Tooth ID & localization",
+      "glyph": "🦷",
+      "description": "Establish fluency in identifying and localizing teeth across radiographic views using morphology, position",
+      "objectives": [
+        {
+          "n": 1,
+          "text": "Correctly identify teeth on bitewing and periapical radiographs using the Universal numbering system with ≥90% accuracy",
+          "target": "≥90%",
+          "kind": "mastery"
+        },
+        {
+          "n": 2,
+          "text": "Correctly determine whether a radiograph shows the right or left side of the mouth with ≥90% accuracy",
+          "target": "≥90%",
+          "kind": "mastery"
+        },
+        {
+          "n": 3,
+          "text": "Correctly determine whether a radiograph is maxillary or mandibular with ≥85% accuracy",
+          "target": "≥85%",
+          "kind": "mastery"
+        },
+        {
+          "n": 4,
+          "text": "Use tooth shape, root structure, and position within the arch to distinguish between similar teeth on radiographs with ≥80% accuracy",
+          "target": "≥80%",
+          "kind": "mastery"
+        },
+        {
+          "n": 5,
+          "text": "Correctly identify adjacent teeth and tooth relationships on radiographs with ≥90% accuracy",
+          "target": "≥90%",
+          "kind": "mastery"
+        },
+        {
+          "n": 6,
+          "text": "Identify missing, restored, impacted, or malpositioned teeth on radiographs with ≥90% accuracy",
+          "target": "≥90%",
+          "kind": "mastery"
+        }
+      ],
+      "objective_count": 6,
+      "ai_enabled": false,
+      "cases": [],
+      "case_count": 0,
+      "interaction": [],
+      "authored_steps": 0
+    },
+    {
+      "number": 4,
+      "title": "Normal Anatomy vs Pathology",
+      "slug": "module-4-normal-anatomy-vs-pathology",
+      "note": "Maybe Normal anatomy",
+      "tagline": "Normal vs pathology",
+      "glyph": "🔍",
+      "description": "Train learners to differentiate normal anatomical structures and radiographic artifacts from pathology through pattern recognition and visual discrimination.",
+      "objectives": [
+        {
+          "n": 1,
+          "text": "Correctly classify radiographic findings as normal anatomy, radiographic artifact, or pathology with ≥90% accuracy",
+          "target": "≥90%",
+          "kind": "mastery"
+        },
+        {
+          "n": 2,
+          "text": "Identify common normal anatomical structures on radiographs (e.g., mental foramen, maxillary sinus, nutrient canals) with ≥90% accuracy",
+          "target": "≥90%",
+          "kind": "mastery"
+        },
+        {
+          "n": 3,
+          "text": "Differentiate common radiographic artifacts and normal anatomical variations from caries or periapical pathology in ≥90% of cases",
+          "target": "≥90%",
+          "kind": "mastery"
+        },
+        {
+          "n": 4,
+          "text": "Correctly identify false-positive trap cases (e.g., cervical burnout, overlapping contacts, mental foramen) with ≥90% accuracy",
+          "target": "≥90%",
+          "kind": "mastery"
+        },
+        {
+          "n": 5,
+          "text": "Use radiographic features such as shape, border definition, location, and symmetry to justify whether a finding is normal or pathologic in ≥90% of responses",
+          "target": "≥90%",
+          "kind": "mastery"
+        },
+        {
+          "n": 6,
+          "text": "Avoid overdiagnosing normal anatomical structures or artifacts as pathology in ≥90% of cases",
+          "target": "≥90%",
+          "kind": "mastery"
+        },
+        {
+          "n": 7,
+          "text": "Demonstrate improved accuracy in distinguishing normal anatomy from pathology after AI dialogue or annotation review in ≥15% of applicable cases",
+          "target": "≥15%",
+          "kind": "improvement"
+        }
+      ],
+      "objective_count": 7,
+      "ai_enabled": true,
+      "cases": [
+        {
+          "id": "M4-01",
+          "module": 4,
+          "name": "Mental Foramen",
+          "type": "False positive trap",
+          "difficulty": 2,
+          "ground_truth": "Normal anatomy",
+          "question_type": "Normal/pathology",
+          "notes": "High yield",
+          "steps": 0,
+          "has_activity": false,
+          "points": 0
+        },
+        {
+          "id": "M4-02",
+          "module": 4,
+          "name": "Cervical Burnout",
+          "type": "False positive trap",
+          "difficulty": 2,
+          "ground_truth": "Artifact",
+          "question_type": "Normal/pathology",
+          "notes": "Common error",
+          "steps": 0,
+          "has_activity": false,
+          "points": 0
+        },
+        {
+          "id": "M4-03",
+          "module": 4,
+          "name": "Nutrient Canal Mimic",
+          "type": "False positive trap",
+          "difficulty": 2,
+          "ground_truth": "Normal anatomy",
+          "question_type": "Normal vs pathology",
+          "notes": "Linear radiolucency mistaken for fracture or lesion",
+          "steps": 0,
+          "has_activity": false,
+          "points": 0
+        },
+        {
+          "id": "M4-04",
+          "module": 4,
+          "name": "Maxillary Sinus Superimposition",
+          "type": "False positive trap",
+          "difficulty": 2,
+          "ground_truth": "Normal anatomy",
+          "question_type": "Normal vs pathology",
+          "notes": "Sinus floor mistaken for pathology near molar roots",
+          "steps": 0,
+          "has_activity": false,
+          "points": 0
+        }
+      ],
+      "case_count": 4,
+      "interaction": [
+        {
+          "module": "4",
+          "objective": "1",
+          "question_type": "Normal vs pathology",
+          "student_action": "Select classification",
+          "input_type": "Binary",
+          "correct_answer_type": "Binary",
+          "measures": "False positives"
+        }
+      ],
+      "authored_steps": 0
+    },
+    {
+      "number": 5,
+      "title": "Radiographic Interpretation & AI Comparison",
+      "slug": "module-5-radiographic-interpretation-ai-comparison",
+      "note": null,
+      "tagline": "Interpretation + AI",
+      "glyph": "🤖",
+      "description": "Apply structured diagnostic reasoning to identify pathology, then compare, refine, and justify interpretations through AI-assisted dialogue and feedback.",
+      "objectives": [
+        {
+          "n": 1,
+          "text": "Correctly identify common radiographic findings, including caries, bone loss, periapical lesions, and restorative defects, with ≥90% accuracy",
+          "target": "≥90%",
+          "kind": "mastery"
+        },
+        {
+          "n": 2,
+          "text": "Correctly identify the affected tooth and surface associated with a radiographic finding with ≥90% accuracy",
+          "target": "≥90%",
+          "kind": "mastery"
+        },
+        {
+          "n": 3,
+          "text": "Use radiographic evidence, including radiolucency pattern, location, border definition, and surrounding structures, to support diagnostic decisions in ≥90% of responses",
+          "target": "≥90%",
+          "kind": "mastery"
+        },
+        {
+          "n": 4,
+          "text": "Differentiate true pathology from overlapping structures, artifacts, or normal anatomy in ≥90% of cases",
+          "target": "≥90%",
+          "kind": "mastery"
+        },
+        {
+          "n": 5,
+          "text": "Compare personal diagnostic interpretations with AI-generated feedback and determine whether the AI interpretation is correct in ≥90% of cases",
+          "target": "≥90%",
+          "kind": "mastery"
+        },
+        {
+          "n": 6,
+          "text": "Appropriately accept, refine, or challenge AI-generated interpretations using radiographic evidence in ≥90% of interactions",
+          "target": "≥90%",
+          "kind": "mastery"
+        },
+        {
+          "n": 7,
+          "text": "Demonstrate improvement in diagnostic accuracy after AI dialogue or annotation review in ≥15% of applicable cases",
+          "target": "≥15%",
+          "kind": "improvement"
+        },
+        {
+          "n": 8,
+          "text": "Avoid changing a correct diagnosis to an incorrect diagnosis after AI or annotation feedback in ≥90% of applicable cases",
+          "target": "≥90%",
+          "kind": "mastery"
+        },
+        {
+          "n": 9,
+          "text": "Demonstrate improved confidence calibration by aligning confidence scores with diagnostic accuracy in ≥90% of cases",
+          "target": "≥90%",
+          "kind": "mastery"
+        }
+      ],
+      "objective_count": 9,
+      "ai_enabled": true,
+      "cases": [
+        {
+          "id": "M5-02",
+          "module": 5,
+          "name": "Recurrent Decay Under Crown",
+          "type": "Interpretation + AI",
+          "difficulty": 3,
+          "ground_truth": "Recurrent caries on #19D",
+          "question_type": "Diagnosis + AI agreement",
+          "notes": "Subtle radiolucency beneath crown margin",
+          "steps": 0,
+          "has_activity": false,
+          "points": 0
+        },
+        {
+          "id": "M5-03",
+          "module": 5,
+          "name": "Early Horizontal Bone Loss",
+          "type": "Interpretation + AI",
+          "difficulty": 2,
+          "ground_truth": "Mild periodontal bone loss",
+          "question_type": "Diagnosis + AI agreement",
+          "notes": "Requires identifying crestal bone changes",
+          "steps": 0,
+          "has_activity": false,
+          "points": 0
+        },
+        {
+          "id": "M5-04",
+          "module": 5,
+          "name": "Distal Caries vs Overlap",
+          "type": "Interpretation + AI",
+          "difficulty": 2,
+          "ground_truth": "Interproximal caries on #30D",
+          "question_type": "Diagnosis + AI agreement",
+          "notes": "Differentiate true caries from contact overlap",
+          "steps": 0,
+          "has_activity": false,
+          "points": 0
+        },
+        {
+          "id": "M5-05",
+          "module": 5,
+          "name": "Periapical Lesion vs Mental Foramen",
+          "type": "Interpretation + AI",
+          "difficulty": 3,
+          "ground_truth": "Mental foramen (normal anatomy)",
+          "question_type": "Diagnosis + AI agreement",
+          "notes": "AI may incorrectly suggest periapical pathology",
+          "steps": 0,
+          "has_activity": false,
+          "points": 0
+        }
+      ],
+      "case_count": 4,
+      "interaction": [
+        {
+          "module": "5",
+          "objective": "5",
+          "question_type": "AI agreement",
+          "student_action": "Agree/disagree with AI",
+          "input_type": "Button select",
+          "correct_answer_type": "Agreement logic",
+          "measures": "AI reliance"
+        }
+      ],
+      "authored_steps": 0
+    },
+    {
+      "number": 6,
+      "title": "Clinical Documentation and EHR Simulation",
+      "slug": "module-6-clinical-documentation-and-ehr-simulation",
+      "note": null,
+      "tagline": "EHR charting",
+      "glyph": "📋",
+      "description": "Translate radiographic findings into accurate clinical documentation by selecting the correct tooth, surfaces, and diagnoses within a simulated EHR workflow",
+      "objectives": [
+        {
+          "n": 1,
+          "text": "Correctly select the affected tooth on a digital odontogram based on radiographic findings with ≥90% accuracy",
+          "target": "≥90%",
+          "kind": "mastery"
+        },
+        {
+          "n": 2,
+          "text": "Correctly identify and chart the affected tooth surfaces (M, D, O, B, L) with 90% accuracy",
+          "target": "≥90%",
+          "kind": "mastery"
+        },
+        {
+          "n": 3,
+          "text": "Accurately assign radiographic findings or diagnoses within the simulated EHR workflow in ≥85% of cases",
+          "target": "≥85%",
+          "kind": "mastery"
+        },
+        {
+          "n": 4,
+          "text": "Differentiate between findings that require treatment, monitoring, or no intervention in ≥80% of cases",
+          "target": "≥80%",
+          "kind": "mastery"
+        },
+        {
+          "n": 5,
+          "text": "Use patient history, symptoms, and radiographic findings together to support charting and treatment decisions in ≥90% of cases",
+          "target": "≥90%",
+          "kind": "mastery"
+        },
+        {
+          "n": 6,
+          "text": "Complete the correct clinical workflow sequence (review radiograph → interpret findings → chart diagnosis) in ≥90% of exercises",
+          "target": "≥90%",
+          "kind": "mastery"
+        },
+        {
+          "n": 7,
+          "text": "Avoid documentation errors involving incorrect tooth selection, wrong surface selection, or incorrect diagnosis assignment in ≥85% of cases",
+          "target": "≥85%",
+          "kind": "mastery"
+        },
+        {
+          "n": 8,
+          "text": "Revise charting decisions appropriately after AI dialogue or annotation review in ≥90% of applicable cases",
+          "target": "≥90%",
+          "kind": "mastery"
+        },
+        {
+          "n": 9,
+          "text": "Demonstrate improved efficiency in completing radiographic charting tasks over repeated cases while maintaining diagnostic accuracy in ≥80% of exercises",
+          "target": "≥80%",
+          "kind": "mastery"
+        }
+      ],
+      "objective_count": 9,
+      "ai_enabled": true,
+      "cases": [],
+      "case_count": 0,
+      "interaction": [],
+      "authored_steps": 0
+    },
+    {
+      "number": 7,
+      "title": "Panoramic View",
+      "slug": "module-7-panoramic-view",
+      "note": null,
+      "tagline": "Panoramic reading",
+      "glyph": "🌑",
+      "description": "Interpreting panoramic radiographs, including recognition of anatomy, distortions, artifacts, and diagnostic limitations.",
+      "objectives": [
+        {
+          "n": 1,
+          "text": "Correctly identify major anatomical structures on panoramic radiographs with ≥90% accuracy",
+          "target": "≥90%",
+          "kind": "mastery"
+        },
+        {
+          "n": 2,
+          "text": "Correctly determine whether panoramic findings represent normal anatomy, artifact, distortion, or pathology in ≥80% of cases",
+          "target": "≥80%",
+          "kind": "mastery"
+        },
+        {
+          "n": 3,
+          "text": "Identify common panoramic imaging errors and distortions (e.g., ghost images, positioning errors, magnification, blurring) with ≥90% accuracy",
+          "target": "≥90%",
+          "kind": "mastery"
+        },
+        {
+          "n": 4,
+          "text": "Differentiate true pathology from panoramic artifacts or superimposed structures in ≥90% of cases",
+          "target": "≥90%",
+          "kind": "mastery"
+        },
+        {
+          "n": 5,
+          "text": "Recognize when panoramic imaging is appropriate or insufficient for diagnostic evaluation in ≥80% of scenarios",
+          "target": "≥80%",
+          "kind": "mastery"
+        },
+        {
+          "n": 6,
+          "text": "Correctly localize radiographic findings to the appropriate region of the jaws on panoramic images with ≥90% accuracy",
+          "target": "≥90%",
+          "kind": "mastery"
+        },
+        {
+          "n": 7,
+          "text": "Use panoramic radiographic features, including symmetry, location, and border definition, to support interpretation decisions in ≥90% of responses",
+          "target": "≥90%",
+          "kind": "mastery"
+        },
+        {
+          "n": 8,
+          "text": "Compare personal interpretations with AI-generated feedback and appropriately accept, refine, or challenge AI-supported findings in ≥90% of applicable cases",
+          "target": "≥90%",
+          "kind": "mastery"
+        },
+        {
+          "n": 9,
+          "text": "Demonstrate improved accuracy in identifying panoramic artifacts and distortions after AI dialogue or annotation review in ≥15% of applicable cases",
+          "target": "≥15%",
+          "kind": "improvement"
+        }
+      ],
+      "objective_count": 9,
+      "ai_enabled": true,
+      "cases": [],
+      "case_count": 0,
+      "interaction": [],
+      "authored_steps": 0
+    },
+    {
+      "number": 8,
+      "title": "Advanced Cases & Clinical Decision Making",
+      "slug": "module-8-advanced-cases-clinical-decision-making",
+      "note": null,
+      "tagline": "Advanced decisions",
+      "glyph": "🧩",
+      "description": "Integrate radiographic interpretation, clinical context, AI interaction, and decision-making in complex, ambiguous cases requiring prioritization and judgment",
+      "objectives": [
+        {
+          "n": 1,
+          "text": "Correctly identify multiple radiographic findings within a single case with ≥90% accuracy",
+          "target": "≥90%",
+          "kind": "mastery"
+        },
+        {
+          "n": 2,
+          "text": "Correctly determine which radiographic finding is the highest clinical priority in ≥90% of cases",
+          "target": "≥90%",
+          "kind": "mastery"
+        },
+        {
+          "n": 3,
+          "text": "Differentiate findings that require treatment, monitoring, referral, or no intervention in ≥90% of cases",
+          "target": "≥90%",
+          "kind": "mastery"
+        },
+        {
+          "n": 4,
+          "text": "Use radiographic evidence, patient history, symptoms, and risk factors together to support clinical decision-making in ≥90% of responses",
+          "target": "≥90%",
+          "kind": "mastery"
+        },
+        {
+          "n": 5,
+          "text": "Correctly distinguish clinically significant pathology from incidental findings, normal anatomy, or radiographic artifacts in ≥90% of cases",
+          "target": "≥90%",
+          "kind": "mastery"
+        },
+        {
+          "n": 6,
+          "text": "Appropriately accept, refine, or challenge AI-generated interpretations and treatment recommendations using radiographic evidence in ≥90% of interactions",
+          "target": "≥90%",
+          "kind": "mastery"
+        },
+        {
+          "n": 7,
+          "text": "Avoid changing a correct diagnosis or management decision to an incorrect one after AI or annotation feedback in ≥90% of applicable cases",
+          "target": "≥90%",
+          "kind": "mastery"
+        },
+        {
+          "n": 8,
+          "text": "Demonstrate improvement in diagnostic accuracy and management decisions after AI dialogue or annotation review in ≥15% of applicable cases",
+          "target": "≥15%",
+          "kind": "improvement"
+        },
+        {
+          "n": 9,
+          "text": "Provide evidence-based justification for treatment, monitoring, or referral decisions in ≥90% of responses",
+          "target": "≥90%",
+          "kind": "mastery"
+        },
+        {
+          "n": 10,
+          "text": "Demonstrate improved efficiency in evaluating complex multi-finding cases while maintaining diagnostic accuracy in ≥90% of exercises",
+          "target": "≥90%",
+          "kind": "mastery"
+        }
+      ],
+      "objective_count": 10,
+      "ai_enabled": true,
+      "cases": [],
+      "case_count": 0,
+      "interaction": [],
+      "authored_steps": 0
+    }
+  ],
+  "cases": [
+    {
+      "id": "M1-01",
+      "module": 1,
+      "name": "Cone Cut BW",
+      "type": "Error correction",
+      "difficulty": 1,
+      "ground_truth": "Cone cut",
+      "question_type": "Error ID",
+      "notes": "Easy",
+      "steps": 0,
+      "has_activity": false,
+      "points": 0
+    },
+    {
+      "id": "M1-02",
+      "module": 1,
+      "name": "Horizontal Overlap BW",
+      "type": "Error correction",
+      "difficulty": 2,
+      "ground_truth": "Horizontal overlap",
+      "question_type": "Error ID",
+      "notes": "Incorrect horizontal",
+      "steps": 5,
+      "has_activity": true,
+      "points": 7
+    },
+    {
+      "id": "M1-03",
+      "module": 1,
+      "name": "Elongated PA",
+      "type": "Error correction",
+      "difficulty": 2,
+      "ground_truth": "Elongation",
+      "question_type": "Error ID",
+      "notes": "Vertical angulation too low",
+      "steps": 5,
+      "has_activity": true,
+      "points": 7
+    },
+    {
+      "id": "M1-04",
+      "module": 1,
+      "name": "Foreshortened Premolar PA",
+      "type": "Error correction",
+      "difficulty": 2,
+      "ground_truth": "Foreshortening",
+      "question_type": "Error ID",
+      "notes": "Vertical angulation too steep",
+      "steps": 5,
+      "has_activity": true,
+      "points": 7
+    },
+    {
+      "id": "M1-05",
+      "module": 1,
+      "name": "Motion Blur Molar BW",
+      "type": "Error correction",
+      "difficulty": 1,
+      "ground_truth": "Motion artifact",
+      "question_type": "Error ID",
+      "notes": "Patient movement during exposure",
+      "steps": 5,
+      "has_activity": true,
+      "points": 7
+    },
+    {
+      "id": "M1-06",
+      "module": 1,
+      "name": "Light Exposure BW",
+      "type": "Error correction",
+      "difficulty": 1,
+      "ground_truth": "Underexposure",
+      "question_type": "Error ID",
+      "notes": "Insufficient exposure settings",
+      "steps": 5,
+      "has_activity": true,
+      "points": 7
+    },
+    {
+      "id": "M1-07",
+      "module": 1,
+      "name": "Dark Exposure PA",
+      "type": "Error correction",
+      "difficulty": 1,
+      "ground_truth": "Overexposure",
+      "question_type": "Error ID",
+      "notes": "Excessive exposure settin",
+      "steps": 5,
+      "has_activity": true,
+      "points": 7
+    },
+    {
+      "id": "M1-08",
+      "module": 1,
+      "name": "Reversed Film Artifact",
+      "type": "Error correction",
+      "difficulty": 2,
+      "ground_truth": "Herringbone artifact",
+      "question_type": "Error ID",
+      "notes": "Receptor placed backward",
+      "steps": 5,
+      "has_activity": true,
+      "points": 7
+    },
+    {
+      "id": "M1-09",
+      "module": 1,
+      "name": "Partial Cone Cut PA",
+      "type": "Error correction",
+      "difficulty": 1,
+      "ground_truth": "Cone cut",
+      "question_type": "Error ID",
+      "notes": "PID misalignment",
+      "steps": 5,
+      "has_activity": true,
+      "points": 7
+    },
+    {
+      "id": "M1-10",
+      "module": 1,
+      "name": "Overlapped Premolar Contacts",
+      "type": "Error correction",
+      "difficulty": 2,
+      "ground_truth": "Horizontal overlap",
+      "question_type": "Error ID",
+      "notes": "Difficult caries visualization",
+      "steps": 5,
+      "has_activity": true,
+      "points": 7
+    },
+    {
+      "id": "M4-01",
+      "module": 4,
+      "name": "Mental Foramen",
+      "type": "False positive trap",
+      "difficulty": 2,
+      "ground_truth": "Normal anatomy",
+      "question_type": "Normal/pathology",
+      "notes": "High yield",
+      "steps": 0,
+      "has_activity": false,
+      "points": 0
+    },
+    {
+      "id": "M4-02",
+      "module": 4,
+      "name": "Cervical Burnout",
+      "type": "False positive trap",
+      "difficulty": 2,
+      "ground_truth": "Artifact",
+      "question_type": "Normal/pathology",
+      "notes": "Common error",
+      "steps": 0,
+      "has_activity": false,
+      "points": 0
+    },
+    {
+      "id": "M4-03",
+      "module": 4,
+      "name": "Nutrient Canal Mimic",
+      "type": "False positive trap",
+      "difficulty": 2,
+      "ground_truth": "Normal anatomy",
+      "question_type": "Normal vs pathology",
+      "notes": "Linear radiolucency mistaken for fracture or lesion",
+      "steps": 0,
+      "has_activity": false,
+      "points": 0
+    },
+    {
+      "id": "M4-04",
+      "module": 4,
+      "name": "Maxillary Sinus Superimposition",
+      "type": "False positive trap",
+      "difficulty": 2,
+      "ground_truth": "Normal anatomy",
+      "question_type": "Normal vs pathology",
+      "notes": "Sinus floor mistaken for pathology near molar roots",
+      "steps": 0,
+      "has_activity": false,
+      "points": 0
+    },
+    {
+      "id": "M5-02",
+      "module": 5,
+      "name": "Recurrent Decay Under Crown",
+      "type": "Interpretation + AI",
+      "difficulty": 3,
+      "ground_truth": "Recurrent caries on #19D",
+      "question_type": "Diagnosis + AI agreement",
+      "notes": "Subtle radiolucency beneath crown margin",
+      "steps": 0,
+      "has_activity": false,
+      "points": 0
+    },
+    {
+      "id": "M5-03",
+      "module": 5,
+      "name": "Early Horizontal Bone Loss",
+      "type": "Interpretation + AI",
+      "difficulty": 2,
+      "ground_truth": "Mild periodontal bone loss",
+      "question_type": "Diagnosis + AI agreement",
+      "notes": "Requires identifying crestal bone changes",
+      "steps": 0,
+      "has_activity": false,
+      "points": 0
+    },
+    {
+      "id": "M5-04",
+      "module": 5,
+      "name": "Distal Caries vs Overlap",
+      "type": "Interpretation + AI",
+      "difficulty": 2,
+      "ground_truth": "Interproximal caries on #30D",
+      "question_type": "Diagnosis + AI agreement",
+      "notes": "Differentiate true caries from contact overlap",
+      "steps": 0,
+      "has_activity": false,
+      "points": 0
+    },
+    {
+      "id": "M5-05",
+      "module": 5,
+      "name": "Periapical Lesion vs Mental Foramen",
+      "type": "Interpretation + AI",
+      "difficulty": 3,
+      "ground_truth": "Mental foramen (normal anatomy)",
+      "question_type": "Diagnosis + AI agreement",
+      "notes": "AI may incorrectly suggest periapical pathology",
+      "steps": 0,
+      "has_activity": false,
+      "points": 0
+    }
+  ],
+  "buildout": {
+    "order": [
+      "M1-02",
+      "M1-03",
+      "M1-04",
+      "M1-05",
+      "M1-06",
+      "M1-07",
+      "M1-08",
+      "M1-09",
+      "M1-10"
+    ],
+    "by_case": {
+      "M1-02": [
+        {
+          "case_id": "M1-02",
+          "image_ref": "TBD_M1_02",
+          "step": "1",
+          "objective": "1",
+          "prompt": "Is this radiograph diagnostic or non-diagnostic?",
+          "student_action": "Select answer",
+          "answer_type": "Binary",
+          "answer_options": [
+            "Diagnostic",
+            "Non-diagnostic"
+          ],
+          "correct_answer": "Non-diagnostic",
+          "points": 1,
+          "feedback": "Overlapping contacts limit interpretation",
+          "data_captured": "Diagnostic classification",
+          "difficulty": 2,
+          "adaptive_tag": "diagnostic_quality",
+          "ai_compatibility": "future"
+        },
+        {
+          "case_id": "M1-02",
+          "image_ref": "TBD_M1_03",
+          "step": "2",
+          "objective": "2",
+          "prompt": "What is the primary radiographic error?",
+          "student_action": "Select error",
+          "answer_type": "Single Select",
+          "answer_options": [
+            "Cone cut",
+            "Horizontal overlap",
+            "Elongation",
+            "Foreshortening",
+            "Motion artifact",
+            "Underexposure",
+            "Overexposure",
+            "Herringbone artifact"
+          ],
+          "correct_answer": "Horizontal overlap",
+          "points": 2,
+          "feedback": "Contacts are superimposed",
+          "data_captured": "Error identification",
+          "difficulty": 2,
+          "adaptive_tag": "overlap",
+          "ai_compatibility": "future"
+        },
+        {
+          "case_id": "M1-02",
+          "image_ref": "TBD_M1_04",
+          "step": "3",
+          "objective": "3",
+          "prompt": "What most likely caused this error?",
+          "student_action": "Select cause",
+          "answer_type": "Single Select",
+          "answer_options": [
+            "Sensor positioned incorrectly",
+            "Incorrect horizontal angulation",
+            "Incorrect vertical angulation",
+            "Patient movement",
+            "Incorrect exposure settings"
+          ],
+          "correct_answer": "Incorrect horizontal angulation",
+          "points": 2,
+          "feedback": "Beam angulation was improper",
+          "data_captured": "Cause identification",
+          "difficulty": 2,
+          "adaptive_tag": "horizontal_angulation",
+          "ai_compatibility": "future"
+        },
+        {
+          "case_id": "M1-02",
+          "image_ref": "TBD_M1_05",
+          "step": "4",
+          "objective": "4",
+          "prompt": "What adjustment would best correct this issue?",
+          "student_action": "Select correction",
+          "answer_type": "Single Select",
+          "answer_options": [
+            "Adjust horizontal angulation",
+            "Reposition sensor",
+            "Adjust vertical angulation",
+            "Stabilize patient",
+            "Modify exposure settings"
+          ],
+          "correct_answer": "Adjust horizontal angulation",
+          "points": 2,
+          "feedback": "Proper angulation opens contacts",
+          "data_captured": "Corrective action",
+          "difficulty": 2,
+          "adaptive_tag": "overlap_correction",
+          "ai_compatibility": "future"
+        },
+        {
+          "case_id": "M1-02",
+          "image_ref": "TBD_M1_06",
+          "step": "5",
+          "objective": "6",
+          "prompt": "Compare original and corrected image",
+          "student_action": "Visual comparison",
+          "answer_type": "Visual Comparison",
+          "answer_options": [],
+          "correct_answer": "Contacts opened",
+          "points": 0,
+          "feedback": "Diagnostic quality improved",
+          "data_captured": "Visual learning reinforcement",
+          "difficulty": 1,
+          "adaptive_tag": "visual_comparison",
+          "ai_compatibility": "future"
+        }
+      ],
+      "M1-03": [
+        {
+          "case_id": "M1-03",
+          "image_ref": "TBD_M1_03",
+          "step": "1",
+          "objective": "1",
+          "prompt": "is this radiograph diagnostic or non-diagnostic?",
+          "student_action": "Select answer",
+          "answer_type": "Binary",
+          "answer_options": [
+            "Diagnostic",
+            "Non-diagnostic"
+          ],
+          "correct_answer": "Non-diagnostic",
+          "points": 1,
+          "feedback": "Elongation distorts tooth length and limits diagnostic interpretation",
+          "data_captured": "Diagnostic classification",
+          "difficulty": 2,
+          "adaptive_tag": "diagnostic_quality",
+          "ai_compatibility": "future"
+        },
+        {
+          "case_id": "M1-03",
+          "image_ref": "TBD_M1_03",
+          "step": "2",
+          "objective": "2",
+          "prompt": "What is the primary radiographic error?",
+          "student_action": "Select error",
+          "answer_type": "Single Select",
+          "answer_options": [
+            "Cone cut",
+            "Horizontal overlap",
+            "Elongation",
+            "Foreshortening",
+            "Motion artifact",
+            "Underexposure",
+            "Overexposure",
+            "Herringbone artifact"
+          ],
+          "correct_answer": "Elongation",
+          "points": 2,
+          "feedback": "The teeth appear longer than their actual anatomical length",
+          "data_captured": "Error identification",
+          "difficulty": 2,
+          "adaptive_tag": "elongation",
+          "ai_compatibility": "future"
+        },
+        {
+          "case_id": "M1-03",
+          "image_ref": "TBD_M1_03",
+          "step": "3",
+          "objective": "3",
+          "prompt": "What most likely caused this error?",
+          "student_action": "Select cause",
+          "answer_type": "Single Select",
+          "answer_options": [
+            "Sensor positioned incorrectly",
+            "Incorrect horizontal angulation",
+            "Insufficient vertical angulation",
+            "Excessive vertical angulation",
+            "Patient movement",
+            "Incorrect exposure settings"
+          ],
+          "correct_answer": "Insufficient vertical angulation",
+          "points": 2,
+          "feedback": "Elongation occurs when the vertical angulation is too shallow",
+          "data_captured": "Cause identification",
+          "difficulty": 2,
+          "adaptive_tag": "Cause identification",
+          "ai_compatibility": "future"
+        },
+        {
+          "case_id": "M1-03",
+          "image_ref": "TBD_M1_03",
+          "step": "4",
+          "objective": "4",
+          "prompt": "What adjustment would best correct this issue?",
+          "student_action": "Select correction",
+          "answer_type": "Single Select",
+          "answer_options": [
+            "Adjust horizontal angulation",
+            "Increase vertical angulation",
+            "Decrease vertical angulation",
+            "Reposition sensor",
+            "Stabilize patient",
+            "Modify exposure settings"
+          ],
+          "correct_answer": "Increase vertical angulation",
+          "points": 2,
+          "feedback": "Increasing vertical angulation helps correct elongat",
+          "data_captured": "Corrective action",
+          "difficulty": 2,
+          "adaptive_tag": "elongation_correction",
+          "ai_compatibility": "future"
+        },
+        {
+          "case_id": "M1-03",
+          "image_ref": "TBD_M1_03",
+          "step": "5",
+          "objective": "6",
+          "prompt": "Compare the original and corrected image",
+          "student_action": "Visual comparison",
+          "answer_type": "Visual comparison",
+          "answer_options": [],
+          "correct_answer": "Corrected image shows more accurate tooth length",
+          "points": 0,
+          "feedback": "Correcting vertical angulation improves anatomical representation and diagnostic quality",
+          "data_captured": "Visual learning reinforcement",
+          "difficulty": 1,
+          "adaptive_tag": "visual_comparison",
+          "ai_compatibility": "future"
+        }
+      ],
+      "M1-04": [
+        {
+          "case_id": "M1-04",
+          "image_ref": "TBD_M1_04",
+          "step": "1",
+          "objective": "1",
+          "prompt": "Is this radiograph diagnostic or non-diagnostic?",
+          "student_action": "Select answer",
+          "answer_type": "Binary",
+          "answer_options": [
+            "Diagnostic",
+            "Non-diagnostic"
+          ],
+          "correct_answer": "Non-diagnostic",
+          "points": 1,
+          "feedback": "Foreshortening distorts anatomical structures and may limit diagnostic interpretation.",
+          "data_captured": "Diagnostic classification",
+          "difficulty": 2,
+          "adaptive_tag": "diagnostic_quality",
+          "ai_compatibility": ""
+        },
+        {
+          "case_id": "M1-04",
+          "image_ref": "TBD_M1_04",
+          "step": "2",
+          "objective": "2",
+          "prompt": "What is the primary radiographic error?",
+          "student_action": "Select error",
+          "answer_type": "Single Select",
+          "answer_options": [
+            "Cone cut",
+            "Horizontal overlap",
+            "Elongation",
+            "Foreshortening",
+            "Motion artifact",
+            "Underexposure",
+            "Overexposure",
+            "Herringbone artifact"
+          ],
+          "correct_answer": "Foreshortening",
+          "points": 2,
+          "feedback": "The teeth appear shorter than their actual anatomical length",
+          "data_captured": "Error identification",
+          "difficulty": 2,
+          "adaptive_tag": "foreshortening",
+          "ai_compatibility": ""
+        },
+        {
+          "case_id": "M1-04",
+          "image_ref": "TBD_M1_04",
+          "step": "3",
+          "objective": "3",
+          "prompt": "What most likely caused this error?",
+          "student_action": "Select cause",
+          "answer_type": "Single Select",
+          "answer_options": [
+            "Sensor positioned incorrectly",
+            "Incorrect horizontal angulation",
+            "Insufficient vertical angulation",
+            "Excessive vertical angulation",
+            "Patient movement",
+            "Incorrect exposure settings"
+          ],
+          "correct_answer": "Excessive vertical angulation",
+          "points": 2,
+          "feedback": "Foreshortening occurs when the vertical angulation is too steep",
+          "data_captured": "Cause identification",
+          "difficulty": 2,
+          "adaptive_tag": "vertical_angulation",
+          "ai_compatibility": ""
+        },
+        {
+          "case_id": "M1-04",
+          "image_ref": "TBD_M1_04",
+          "step": "4",
+          "objective": "4",
+          "prompt": "What adjustment would best correct this issue?",
+          "student_action": "Select correction",
+          "answer_type": "Single Select",
+          "answer_options": [
+            "Adjust horizontal angulation",
+            "Increase vertical angulation",
+            "Decrease vertical angulation",
+            "Reposition sensor",
+            "Stabilize patient",
+            "Modify exposure settings"
+          ],
+          "correct_answer": "Decrease vertical angulation",
+          "points": 2,
+          "feedback": "Decreasing vertical angulation helps correct foreshortening and improves image accuracy.",
+          "data_captured": "Corrective action",
+          "difficulty": 2,
+          "adaptive_tag": "foreshortening_correction",
+          "ai_compatibility": ""
+        },
+        {
+          "case_id": "M1-04",
+          "image_ref": "TBD_M1_04",
+          "step": "5",
+          "objective": "6",
+          "prompt": "Compare original and corrected image",
+          "student_action": "Visual comparison",
+          "answer_type": "Visual Comparison",
+          "answer_options": [],
+          "correct_answer": "Corrected image shows more accurate tooth length and anatomical representation",
+          "points": 0,
+          "feedback": "Correcting vertical angulation improves anatomical representation and diagnostic quality.",
+          "data_captured": "Visual learning reinforcement",
+          "difficulty": 1,
+          "adaptive_tag": "visual_comparison",
+          "ai_compatibility": ""
+        }
+      ],
+      "M1-05": [
+        {
+          "case_id": "M1-05",
+          "image_ref": "TBD_M1_05",
+          "step": "1",
+          "objective": "1",
+          "prompt": "Is this radiograph diagnostic or non-diagnostic?",
+          "student_action": "Select answer",
+          "answer_type": "Binary",
+          "answer_options": [
+            "Diagnostic",
+            "Non-diagnostic"
+          ],
+          "correct_answer": "Non-diagnostic",
+          "points": 1,
+          "feedback": "",
+          "data_captured": "Diagnostic classification",
+          "difficulty": 2,
+          "adaptive_tag": "",
+          "ai_compatibility": ""
+        },
+        {
+          "case_id": "M1-05",
+          "image_ref": "TBD_M1_05",
+          "step": "2",
+          "objective": "2",
+          "prompt": "What is the primary radiographic error?",
+          "student_action": "Select error",
+          "answer_type": "Single Select",
+          "answer_options": [
+            "Cone cut",
+            "Horizontal overlap",
+            "Elongation",
+            "Foreshortening",
+            "Motion artifact",
+            "Underexposure",
+            "Overexposure",
+            "Herringbone artifact"
+          ],
+          "correct_answer": "Motion artifact",
+          "points": 2,
+          "feedback": "Blurring of structures indicates movement during image acquisition.",
+          "data_captured": "Error identification",
+          "difficulty": 2,
+          "adaptive_tag": "motion_artifact",
+          "ai_compatibility": ""
+        },
+        {
+          "case_id": "M1-05",
+          "image_ref": "TBD_M1_05",
+          "step": "3",
+          "objective": "3",
+          "prompt": "What most likely caused this error?",
+          "student_action": "Select cause",
+          "answer_type": "Single Select",
+          "answer_options": [
+            "Sensor positioned incorrectly",
+            "Incorrect horizontal angulation",
+            "Insufficient vertical angulation",
+            "Excessive vertical angulation",
+            "Patient movement",
+            "Incorrect exposure settings"
+          ],
+          "correct_answer": "Patient movement",
+          "points": 2,
+          "feedback": "Movement during exposure causes loss of image sharpness.",
+          "data_captured": "Cause identification",
+          "difficulty": 2,
+          "adaptive_tag": "patient_stabilization",
+          "ai_compatibility": ""
+        },
+        {
+          "case_id": "M1-05",
+          "image_ref": "TBD_M1_05",
+          "step": "4",
+          "objective": "4",
+          "prompt": "What adjustment would best correct this issue?",
+          "student_action": "Select correction",
+          "answer_type": "Single Select",
+          "answer_options": [
+            "Adjust horizontal angulation",
+            "Increase vertical angulation",
+            "Decrease vertical angulation",
+            "Reposition sensor",
+            "Stabilize patient",
+            "Modify exposure settings"
+          ],
+          "correct_answer": "Stabilize patient",
+          "points": 2,
+          "feedback": "Reducing movement improves image clarity and diagnostic quality.",
+          "data_captured": "Corrective action",
+          "difficulty": 2,
+          "adaptive_tag": "motion_correction",
+          "ai_compatibility": ""
+        },
+        {
+          "case_id": "M1-05",
+          "image_ref": "TBD_M1_05",
+          "step": "5",
+          "objective": "6",
+          "prompt": "Compare original and corrected image",
+          "student_action": "Visual comparison",
+          "answer_type": "Visual Comparison",
+          "answer_options": [],
+          "correct_answer": "",
+          "points": 0,
+          "feedback": "",
+          "data_captured": "Visual learning reinforcement",
+          "difficulty": 1,
+          "adaptive_tag": "visual_comparison",
+          "ai_compatibility": ""
+        }
+      ],
+      "M1-06": [
+        {
+          "case_id": "M1-06",
+          "image_ref": "TBD_M1_06",
+          "step": "1",
+          "objective": "1",
+          "prompt": "Is this radiograph diagnostic or non-diagnostic?",
+          "student_action": "Select answer",
+          "answer_type": "Binary",
+          "answer_options": [
+            "Diagnostic",
+            "Non-diagnostic"
+          ],
+          "correct_answer": "Non-diagnostic",
+          "points": 1,
+          "feedback": "",
+          "data_captured": "Diagnostic classification",
+          "difficulty": 2,
+          "adaptive_tag": "",
+          "ai_compatibility": ""
+        },
+        {
+          "case_id": "M1-06",
+          "image_ref": "TBD_M1_06",
+          "step": "2",
+          "objective": "2",
+          "prompt": "What is the primary radiographic error?",
+          "student_action": "Select error",
+          "answer_type": "Single Select",
+          "answer_options": [
+            "Cone cut",
+            "Horizontal overlap",
+            "Elongation",
+            "Foreshortening",
+            "Motion artifact",
+            "Underexposure",
+            "Overexposure",
+            "Herringbone artifact"
+          ],
+          "correct_answer": "Exposure error",
+          "points": 2,
+          "feedback": "The image appears too light, limiting visualization of structures",
+          "data_captured": "Error identification",
+          "difficulty": 2,
+          "adaptive_tag": "underexposure",
+          "ai_compatibility": ""
+        },
+        {
+          "case_id": "M1-06",
+          "image_ref": "TBD_M1_06",
+          "step": "3",
+          "objective": "3",
+          "prompt": "What most likely caused this error?",
+          "student_action": "Select cause",
+          "answer_type": "Single Select",
+          "answer_options": [
+            "Sensor positioned incorrectly",
+            "Incorrect horizontal angulation",
+            "Insufficient vertical angulation",
+            "Excessive vertical angulation",
+            "Patient movement",
+            "Incorrect exposure settings"
+          ],
+          "correct_answer": "Incorrect exposure settings",
+          "points": 2,
+          "feedback": "Insufficient exposure results in a light image with reduced diagnostic value.",
+          "data_captured": "Cause identification",
+          "difficulty": 2,
+          "adaptive_tag": "exposure_settings",
+          "ai_compatibility": ""
+        },
+        {
+          "case_id": "M1-06",
+          "image_ref": "TBD_M1_06",
+          "step": "4",
+          "objective": "4",
+          "prompt": "What adjustment would best correct this issue?",
+          "student_action": "Select correction",
+          "answer_type": "Single Select",
+          "answer_options": [
+            "Adjust horizontal angulation",
+            "Increase vertical angulation",
+            "Decrease vertical angulation",
+            "Reposition sensor",
+            "Stabilize patient",
+            "Modify exposure settings"
+          ],
+          "correct_answer": "Modify exposure settings",
+          "points": 2,
+          "feedback": "Increasing exposure improves image density and visibility.",
+          "data_captured": "Corrective action",
+          "difficulty": 2,
+          "adaptive_tag": "exposure_correction",
+          "ai_compatibility": ""
+        },
+        {
+          "case_id": "M1-06",
+          "image_ref": "TBD_M1_06",
+          "step": "5",
+          "objective": "6",
+          "prompt": "Compare original and corrected image",
+          "student_action": "Visual comparison",
+          "answer_type": "Visual Comparison",
+          "answer_options": [],
+          "correct_answer": "",
+          "points": 0,
+          "feedback": "",
+          "data_captured": "Visual learning reinforcement",
+          "difficulty": 1,
+          "adaptive_tag": "",
+          "ai_compatibility": ""
+        }
+      ],
+      "M1-07": [
+        {
+          "case_id": "M1-07",
+          "image_ref": "TBD_M1_07",
+          "step": "1",
+          "objective": "1",
+          "prompt": "Is this radiograph diagnostic or non-diagnostic?",
+          "student_action": "Select answer",
+          "answer_type": "Binary",
+          "answer_options": [
+            "Diagnostic",
+            "Non-diagnostic"
+          ],
+          "correct_answer": "Non-diagnostic",
+          "points": 1,
+          "feedback": "",
+          "data_captured": "Diagnostic classification",
+          "difficulty": 2,
+          "adaptive_tag": "",
+          "ai_compatibility": ""
+        },
+        {
+          "case_id": "M1-07",
+          "image_ref": "TBD_M1_07",
+          "step": "2",
+          "objective": "2",
+          "prompt": "What is the primary radiographic error?",
+          "student_action": "Select error",
+          "answer_type": "Single Select",
+          "answer_options": [
+            "Cone cut",
+            "Horizontal overlap",
+            "Elongation",
+            "Foreshortening",
+            "Motion artifact",
+            "Underexposure",
+            "Overexposure",
+            "Herringbone artifact"
+          ],
+          "correct_answer": "Exposure error",
+          "points": 2,
+          "feedback": "The image appears too dark, obscuring anatomical details.",
+          "data_captured": "Error identification",
+          "difficulty": 2,
+          "adaptive_tag": "overexposure",
+          "ai_compatibility": ""
+        },
+        {
+          "case_id": "M1-07",
+          "image_ref": "TBD_M1_07",
+          "step": "3",
+          "objective": "3",
+          "prompt": "What most likely caused this error?",
+          "student_action": "Select cause",
+          "answer_type": "Single Select",
+          "answer_options": [
+            "Sensor positioned incorrectly",
+            "Incorrect horizontal angulation",
+            "Incorrect vertical angulation",
+            "Patient movement",
+            "Incorrect exposure settings"
+          ],
+          "correct_answer": "Incorrect exposure settings",
+          "points": 2,
+          "feedback": "Excessive exposure results in a dark image and loss of detail.",
+          "data_captured": "Cause identification",
+          "difficulty": 2,
+          "adaptive_tag": "exposure_settings",
+          "ai_compatibility": ""
+        },
+        {
+          "case_id": "M1-07",
+          "image_ref": "TBD_M1_07",
+          "step": "4",
+          "objective": "4",
+          "prompt": "What adjustment would best correct this issue?",
+          "student_action": "Select correction",
+          "answer_type": "Single Select",
+          "answer_options": [
+            "Adjust horizontal angulation",
+            "Reposition sensor",
+            "Adjust vertical angulation",
+            "Stabilize patient",
+            "Modify exposure settings"
+          ],
+          "correct_answer": "Modify exposure settings",
+          "points": 2,
+          "feedback": "Reducing exposure improves image quality and diagnostic value.",
+          "data_captured": "Corrective action",
+          "difficulty": 2,
+          "adaptive_tag": "exposure_correction",
+          "ai_compatibility": ""
+        },
+        {
+          "case_id": "M1-07",
+          "image_ref": "TBD_M1_07",
+          "step": "5",
+          "objective": "6",
+          "prompt": "Compare original and corrected image",
+          "student_action": "Visual comparison",
+          "answer_type": "Visual Comparison",
+          "answer_options": [],
+          "correct_answer": "",
+          "points": 0,
+          "feedback": "",
+          "data_captured": "Visual learning reinforcement",
+          "difficulty": 1,
+          "adaptive_tag": "",
+          "ai_compatibility": ""
+        }
+      ],
+      "M1-08": [
+        {
+          "case_id": "M1-08",
+          "image_ref": "TBD_M1_08",
+          "step": "1",
+          "objective": "1",
+          "prompt": "is this radiograph diagnostic or non-diagnostic?",
+          "student_action": "Select answer",
+          "answer_type": "Binary",
+          "answer_options": [
+            "Diagnostic",
+            "Non-diagnostic"
+          ],
+          "correct_answer": "Non-diagnostic",
+          "points": 1,
+          "feedback": "",
+          "data_captured": "Diagnostic classification",
+          "difficulty": 2,
+          "adaptive_tag": "",
+          "ai_compatibility": ""
+        },
+        {
+          "case_id": "M1-08",
+          "image_ref": "TBD_M1_08",
+          "step": "2",
+          "objective": "2",
+          "prompt": "What is the primary radiographic error?",
+          "student_action": "Select error",
+          "answer_type": "Single Select",
+          "answer_options": [
+            "Cone cut",
+            "Horizontal overlap",
+            "Elongation",
+            "Foreshortening",
+            "Motion artifact",
+            "Underexposure",
+            "Overexposure",
+            "Herringbone artifact"
+          ],
+          "correct_answer": "Exposure error (or Herringbone artifact if you add it to answer choices)",
+          "points": 2,
+          "feedback": "The characteristic herringbone pattern indicates the receptor was placed backwards.",
+          "data_captured": "Error identification",
+          "difficulty": 2,
+          "adaptive_tag": "herringbone",
+          "ai_compatibility": ""
+        },
+        {
+          "case_id": "M1-08",
+          "image_ref": "TBD_M1_08",
+          "step": "3",
+          "objective": "3",
+          "prompt": "What most likely caused this error?",
+          "student_action": "Select cause",
+          "answer_type": "Single Select",
+          "answer_options": [
+            "Sensor positioned incorrectly",
+            "Incorrect horizontal angulation",
+            "Insufficient vertical angulation",
+            "Excessive vertical angulation",
+            "Patient movement",
+            "Incorrect exposure settings"
+          ],
+          "correct_answer": "Sensor positioned incorrectly",
+          "points": 2,
+          "feedback": "The image receptor was reversed during exposure.",
+          "data_captured": "Cause identification",
+          "difficulty": 2,
+          "adaptive_tag": "receptor_orientation",
+          "ai_compatibility": ""
+        },
+        {
+          "case_id": "M1-08",
+          "image_ref": "TBD_M1_08",
+          "step": "4",
+          "objective": "4",
+          "prompt": "What adjustment would best correct this issue?",
+          "student_action": "Select correction",
+          "answer_type": "Single Select",
+          "answer_options": [
+            "Adjust horizontal angulation",
+            "Increase vertical angulation",
+            "Decrease vertical angulation",
+            "Reposition sensor",
+            "Stabilize patient",
+            "Modify exposure settings"
+          ],
+          "correct_answer": "Reposition sensor",
+          "points": 2,
+          "feedback": "Correct sensor orientation prevents herringbone artifacts.",
+          "data_captured": "Corrective action",
+          "difficulty": 2,
+          "adaptive_tag": "herringbone_correction",
+          "ai_compatibility": ""
+        },
+        {
+          "case_id": "M1-08",
+          "image_ref": "TBD_M1_08",
+          "step": "5",
+          "objective": "6",
+          "prompt": "Compare the original and corrected image",
+          "student_action": "Visual comparison",
+          "answer_type": "Visual comparison",
+          "answer_options": [],
+          "correct_answer": "",
+          "points": 0,
+          "feedback": "",
+          "data_captured": "Visual learning reinforcement",
+          "difficulty": 1,
+          "adaptive_tag": "",
+          "ai_compatibility": ""
+        }
+      ],
+      "M1-09": [
+        {
+          "case_id": "M1-09",
+          "image_ref": "TBD_M1_09",
+          "step": "1",
+          "objective": "1",
+          "prompt": "Is this radiograph diagnostic or non-diagnostic?",
+          "student_action": "Select answer",
+          "answer_type": "Binary",
+          "answer_options": [
+            "Diagnostic",
+            "Non-diagnostic"
+          ],
+          "correct_answer": "Non-diagnostic",
+          "points": 1,
+          "feedback": "",
+          "data_captured": "Diagnostic classification",
+          "difficulty": 2,
+          "adaptive_tag": "",
+          "ai_compatibility": ""
+        },
+        {
+          "case_id": "M1-09",
+          "image_ref": "TBD_M1_09",
+          "step": "2",
+          "objective": "2",
+          "prompt": "What is the primary radiographic error?",
+          "student_action": "Select error",
+          "answer_type": "Single Select",
+          "answer_options": [
+            "Cone cut",
+            "Horizontal overlap",
+            "Elongation",
+            "Foreshortening",
+            "Motion artifact",
+            "Underexposure",
+            "Overexposure",
+            "Herringbone artifact"
+          ],
+          "correct_answer": "Cone cut",
+          "points": 2,
+          "feedback": "A portion of the receptor was not exposed by the X-ray beam.",
+          "data_captured": "Error identification",
+          "difficulty": 2,
+          "adaptive_tag": "cone_cut",
+          "ai_compatibility": ""
+        },
+        {
+          "case_id": "M1-09",
+          "image_ref": "TBD_M1_09",
+          "step": "3",
+          "objective": "3",
+          "prompt": "What most likely caused this error?",
+          "student_action": "Select cause",
+          "answer_type": "Single Select",
+          "answer_options": [
+            "Sensor positioned incorrectly",
+            "Incorrect horizontal angulation",
+            "Insufficient vertical angulation",
+            "Excessive vertical angulation",
+            "Patient movement",
+            "Incorrect exposure settings"
+          ],
+          "correct_answer": "Sensor positioned incorrectly or beam not centered if you later expand options)",
+          "points": 2,
+          "feedback": "The X-ray beam did not fully cover the receptor",
+          "data_captured": "Cause identification",
+          "difficulty": 2,
+          "adaptive_tag": "beam_alignment",
+          "ai_compatibility": ""
+        },
+        {
+          "case_id": "M1-09",
+          "image_ref": "TBD_M1_09",
+          "step": "4",
+          "objective": "4",
+          "prompt": "What adjustment would best correct this issue?",
+          "student_action": "Select correction",
+          "answer_type": "Single Select",
+          "answer_options": [
+            "Adjust horizontal angulation",
+            "Increase vertical angulation",
+            "Decrease vertical angulation",
+            "Reposition sensor",
+            "Stabilize patient",
+            "Modify exposure settings"
+          ],
+          "correct_answer": "Reposition sensor",
+          "points": 2,
+          "feedback": "Proper alignment ensures complete receptor coverage.",
+          "data_captured": "Corrective action",
+          "difficulty": 2,
+          "adaptive_tag": "cone_cut_correction",
+          "ai_compatibility": ""
+        },
+        {
+          "case_id": "M1-09",
+          "image_ref": "TBD_M1_09",
+          "step": "5",
+          "objective": "6",
+          "prompt": "Compare original and corrected image",
+          "student_action": "Visual comparison",
+          "answer_type": "Visual Comparison",
+          "answer_options": [],
+          "correct_answer": "",
+          "points": 0,
+          "feedback": "",
+          "data_captured": "Visual learning reinforcement",
+          "difficulty": 1,
+          "adaptive_tag": "",
+          "ai_compatibility": ""
+        }
+      ],
+      "M1-10": [
+        {
+          "case_id": "M1-10",
+          "image_ref": "TBD_M1_10",
+          "step": "1",
+          "objective": "1",
+          "prompt": "Is this radiograph diagnostic or non-diagnostic?",
+          "student_action": "Select answer",
+          "answer_type": "Binary",
+          "answer_options": [
+            "Diagnostic",
+            "Non-diagnostic"
+          ],
+          "correct_answer": "Non-diagnostic",
+          "points": 1,
+          "feedback": "",
+          "data_captured": "Diagnostic classification",
+          "difficulty": 2,
+          "adaptive_tag": "",
+          "ai_compatibility": ""
+        },
+        {
+          "case_id": "M1-10",
+          "image_ref": "TBD_M1_10",
+          "step": "2",
+          "objective": "2",
+          "prompt": "What is the primary radiographic error?",
+          "student_action": "Select error",
+          "answer_type": "Single Select",
+          "answer_options": [
+            "Cone cut",
+            "Horizontal overlap",
+            "Elongation",
+            "Foreshortening",
+            "Motion artifact",
+            "Underexposure",
+            "Overexposure",
+            "Herringbone artifact"
+          ],
+          "correct_answer": "Horizontal overlap",
+          "points": 2,
+          "feedback": "Overlapping contacts prevent accurate interproximal evaluation.",
+          "data_captured": "Error identification",
+          "difficulty": 2,
+          "adaptive_tag": "overlap",
+          "ai_compatibility": ""
+        },
+        {
+          "case_id": "M1-10",
+          "image_ref": "TBD_M1_10",
+          "step": "3",
+          "objective": "3",
+          "prompt": "What most likely caused this error?",
+          "student_action": "Select cause",
+          "answer_type": "Single Select",
+          "answer_options": [
+            "Sensor positioned incorrectly",
+            "Incorrect horizontal angulation",
+            "Insufficient vertical angulation",
+            "Excessive vertical angulation",
+            "Patient movement",
+            "Incorrect exposure settings"
+          ],
+          "correct_answer": "Incorrect horizontal angulation",
+          "points": 2,
+          "feedback": "Improper horizontal angulation causes contact overlap",
+          "data_captured": "Cause identification",
+          "difficulty": 2,
+          "adaptive_tag": "horizontal_angulation",
+          "ai_compatibility": ""
+        },
+        {
+          "case_id": "M1-10",
+          "image_ref": "TBD_M1_10",
+          "step": "4",
+          "objective": "4",
+          "prompt": "What adjustment would best correct this issue?",
+          "student_action": "Select correction",
+          "answer_type": "Single Select",
+          "answer_options": [
+            "Adjust horizontal angulation",
+            "Increase vertical angulation",
+            "Decrease vertical angulation",
+            "Reposition sensor",
+            "Stabilize patient",
+            "Modify exposure settings"
+          ],
+          "correct_answer": "Adjust horizontal angulation",
+          "points": 2,
+          "feedback": "Proper horizontal angulation opens contacts for interpretation.",
+          "data_captured": "Corrective action",
+          "difficulty": 2,
+          "adaptive_tag": "overlap_correction",
+          "ai_compatibility": ""
+        },
+        {
+          "case_id": "M1-10",
+          "image_ref": "TBD_M1_10",
+          "step": "5",
+          "objective": "6",
+          "prompt": "Compare original and corrected image",
+          "student_action": "Visual comparison",
+          "answer_type": "Visual Comparison",
+          "answer_options": [],
+          "correct_answer": "",
+          "points": 0,
+          "feedback": "",
+          "data_captured": "Visual learning reinforcement",
+          "difficulty": 1,
+          "adaptive_tag": "",
+          "ai_compatibility": ""
+        }
+      ]
+    }
+  },
+  "interaction": [
+    {
+      "module": "1",
+      "objective": "1",
+      "question_type": "Diagnostic quality",
+      "student_action": "Select diagnostic vs nondiagnostic",
+      "input_type": "Multiple choice",
+      "correct_answer_type": "Binary",
+      "measures": "Classification accuracy"
+    },
+    {
+      "module": "1",
+      "objective": "2",
+      "question_type": "Error identification",
+      "student_action": "Select radiographic error",
+      "input_type": "Multiple choice",
+      "correct_answer_type": "Single select",
+      "measures": "Error recognition"
+    },
+    {
+      "module": "1",
+      "objective": "3",
+      "question_type": "Cause identification",
+      "student_action": "Select likely cause",
+      "input_type": "Multiple choice",
+      "correct_answer_type": "Single select",
+      "measures": "Understanding"
+    },
+    {
+      "module": "1",
+      "objective": "4",
+      "question_type": "Correction selection",
+      "student_action": "Choose corrective action",
+      "input_type": "Multiple choice",
+      "correct_answer_type": "Single select",
+      "measures": "Decision-making"
+    },
+    {
+      "module": "4",
+      "objective": "1",
+      "question_type": "Normal vs pathology",
+      "student_action": "Select classification",
+      "input_type": "Binary",
+      "correct_answer_type": "Binary",
+      "measures": "False positives"
+    },
+    {
+      "module": "5",
+      "objective": "5",
+      "question_type": "AI agreement",
+      "student_action": "Agree/disagree with AI",
+      "input_type": "Button select",
+      "correct_answer_type": "Agreement logic",
+      "measures": "AI reliance"
+    }
+  ],
+  "reference": {
+    "difficulty": [
+      {
+        "level": 1,
+        "definition": "Obvious/basic"
+      },
+      {
+        "level": 2,
+        "definition": "Moderate"
+      },
+      {
+        "level": 3,
+        "definition": "Subtle/complex"
+      }
+    ],
+    "adaptive_tags": [
+      "Overlap",
+      "cone_cut",
+      "elongation",
+      "foreshortening",
+      "diagnostic_quality",
+      "false_positive",
+      "localization",
+      "AI_overreliance",
+      "bone_loss",
+      "recurrent_caries"
+    ],
+    "ai_compatible": [
+      "yes",
+      "no",
+      "future"
+    ],
+    "question_types": [
+      "Error ID",
+      "Cause ID",
+      "Correction",
+      "Normal vs pathology",
+      "Diagnosis",
+      "AI agreement",
+      "Annotation review",
+      "Management decision",
+      "Visual comparison"
+    ],
+    "case_types": [
+      "Error correction",
+      "False positive trap",
+      "Interpretation",
+      "AI interpretation",
+      "Panoramic artifact",
+      "Advanced decision-making"
+    ]
+  }
+}

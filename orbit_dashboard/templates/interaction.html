@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% from "_macros.html" import chip, sb_row %}
+{% block title %}Interaction Matrix — {{ platform.name }}{% endblock %}
+
+{% block storyboard %}
+  {% set ns = namespace(ai=0) %}
+  {% for r in rows %}{% if 'AI' in (r.measures or '') %}{% set ns.ai = ns.ai + 1 %}{% endif %}{% endfor %}
+  <div class="sb-eyebrow">Interaction</div>
+  <div class="sb-title">Interaction Design</div>
+  <div class="sb-goal">How each objective is assessed — question type, student action, and what is measured.</div>
+  <div class="sb-div"></div>
+  {{ sb_row('sliders', 'Mapped rows', rows | length) }}
+  {{ sb_row('target', 'Objectives', stats.objectives) }}
+  {{ sb_row('ai', 'AI-measured', ns.ai) }}
+{% endblock %}
+
+{% block content %}
+<div class="crumbs"><a href="{{ url_for('overview') }}">Overview</a><span class="sep">›</span>Interaction Matrix</div>
+
+<div class="section-banner">
+  <span class="section-kicker">Interaction Matrix</span>
+  <h2>Question Design by Objective</h2>
+  <span class="sub">{{ rows | length }} mapped interactions</span>
+</div>
+
+<div class="card">
+  <div class="card-head"><span class="keyline"></span><h3>Interaction Design</h3></div>
+  <div class="grid-wrap">
+    <table class="data-grid" style="min-width:900px">
+      <thead>
+        <tr><th class="num">Module</th><th class="num">Obj</th><th>Question Type</th><th>Student Action</th><th>Input Type</th><th>Answer Type</th><th>What We Measure</th></tr>
+      </thead>
+      <tbody>
+        {% for r in rows %}
+        <tr {% if r.module and r.module|string in ['1','2','3','4','5','6','7','8'] %}class="rowlink" onclick="location.href='{{ url_for('module', number=r.module|int) }}'"{% endif %}>
+          <td class="num tabular">{{ r.module }}</td>
+          <td class="num tabular">{{ r.objective }}</td>
+          <td>{{ chip(r.question_type) }}</td>
+          <td>{{ r.student_action }}</td>
+          <td>{{ r.input_type }}</td>
+          <td>{{ r.correct_answer_type }}</td>
+          <td class="cname">{{ r.measures }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

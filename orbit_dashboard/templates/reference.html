@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% from "_macros.html" import diff_pill, chip, sb_row %}
+{% block title %}Reference — {{ platform.name }}{% endblock %}
+
+{% block storyboard %}
+  <div class="sb-eyebrow">Reference</div>
+  <div class="sb-title">Authoring Reference</div>
+  <div class="sb-goal">The controlled vocabularies used across the case library and activity builder.</div>
+  <div class="sb-div"></div>
+  {{ sb_row('image', 'Difficulty tiers', reference.difficulty | length) }}
+  {{ sb_row('sliders', 'Adaptive tags', reference.adaptive_tags | length) }}
+  {{ sb_row('info', 'Question types', reference.question_types | length) }}
+  {{ sb_row('layers', 'Case types', reference.case_types | length) }}
+{% endblock %}
+
+{% block content %}
+<div class="crumbs"><a href="{{ url_for('overview') }}">Overview</a><span class="sep">›</span>Reference</div>
+
+<div class="section-banner">
+  <span class="section-kicker">Reference</span>
+  <h2>Controlled Vocabularies</h2>
+  <span class="sub">Difficulty · tags · question &amp; case types</span>
+</div>
+
+<div class="grid-2" style="align-items:start">
+  <div style="display:flex; flex-direction:column; gap:12px">
+    <div class="card">
+      <div class="card-head"><span class="keyline"></span><h3>Difficulty Tiers</h3></div>
+      <div class="grid-wrap">
+        <table class="deftable">
+          <thead><tr><th style="width:90px">Tier</th><th>Definition</th></tr></thead>
+          <tbody>
+            {% for d in reference.difficulty %}
+            <tr><td>{{ diff_pill(d.level) }}</td><td>{{ d.definition }}</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><span class="keyline"></span><h3>Question Types</h3></div>
+      <div class="card-body" style="display:flex; flex-wrap:wrap; gap:8px">
+        {% for q in reference.question_types %}{{ chip(q) }}{% endfor %}
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><span class="keyline"></span><h3>Case Types</h3></div>
+      <div class="card-body" style="display:flex; flex-wrap:wrap; gap:8px">
+        {% for t in reference.case_types %}{{ chip(t) }}{% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex; flex-direction:column; gap:12px">
+    <div class="card">
+      <div class="card-head"><span class="keyline"></span><h3>Adaptive Tags</h3><div class="actions"><span class="pts">{{ reference.adaptive_tags | length }}</span></div></div>
+      <div class="card-body" style="display:flex; flex-wrap:wrap; gap:8px">
+        {% for t in reference.adaptive_tags %}{{ chip(t) }}{% endfor %}
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><span class="keyline"></span><h3>AI Compatibility</h3></div>
+      <div class="card-body" style="display:flex; flex-wrap:wrap; gap:8px">
+        {% for a in reference.ai_compatible %}
+          {% if a|lower == 'yes' %}{{ chip('yes', 'ai') }}{% elif a|lower == 'future' %}{{ chip('future', 'future') }}{% else %}{{ chip(a) }}{% endif %}
+        {% endfor %}
+      </div>
+      <div class="card-body" style="border-top:1px solid var(--cell-sep)">
+        <div class="callout">{{ icon('ai', 18) }}<div class="ct"><b>AI-comparison</b> is enabled in Modules {{ stats.ai_modules | join(', ') }} — students compare their read against a Socratic AI tutor and can refine through dialogue.</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

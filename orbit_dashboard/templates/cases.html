@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% from "_macros.html" import diff_pill, chip, sb_row %}
+{% block title %}Case Library — {{ platform.name }}{% endblock %}
+
+{% block storyboard %}
+  <div class="sb-eyebrow">Case Library</div>
+  <div class="sb-title">Authored Cases</div>
+  <div class="sb-goal">Every case is an expert-labeled radiograph with a multi-step activity.</div>
+  <div class="sb-div"></div>
+  {{ sb_row('grid', 'Total cases', stats.cases) }}
+  {{ sb_row('layers', 'Case types', case_types | length) }}
+  {{ sb_row('image', 'Showing', rows | length) }}
+  <div class="sb-div"></div>
+  <div class="sb-fl" style="margin-bottom:8px">Difficulty legend</div>
+  {% for d in stats.difficulty_distribution %}
+  <div class="sb-row" style="margin-bottom:10px">
+    <span style="flex:0 0 auto">{{ diff_pill(d.level, label=False) }}</span>
+    <div><div class="sb-fv" style="margin-top:0">{{ d.label }}</div><div class="sb-fl">{{ d.count }} cases</div></div>
+  </div>
+  {% endfor %}
+{% endblock %}
+
+{% block content %}
+<div class="crumbs"><a href="{{ url_for('overview') }}">Overview</a><span class="sep">›</span>Case Library</div>
+
+<div class="section-banner">
+  <span class="section-kicker">Case Library</span>
+  <h2>All Authored Cases</h2>
+  <span class="sub">{{ total }} cases · filter by module, type &amp; difficulty</span>
+</div>
+
+<form class="filter-bar" method="get" action="{{ url_for('cases') }}">
+  <span class="fl">{{ icon('sliders', 14, 'var(--muted)') }} Filters</span>
+  <label>Module
+    <select name="module" onchange="this.form.submit()">
+      <option value="">All</option>
+      {% for m in modules_with_cases %}
+      <option value="{{ m }}" {{ 'selected' if f_module == m }}>Module {{ m }}</option>
+      {% endfor %}
+    </select>
+  </label>
+  <label>Difficulty
+    <select name="difficulty" onchange="this.form.submit()">
+      <option value="">All</option>
+      {% for lvl in [1,2,3] %}
+      <option value="{{ lvl }}" {{ 'selected' if f_diff == lvl }}>{{ DIFFICULTY[lvl].label }}</option>
+      {% endfor %}
+    </select>
+  </label>
+  <label>Case type
+    <select name="type" onchange="this.form.submit()">
+      <option value="">All</option>
+      {% for t in case_types %}
+      <option value="{{ t }}" {{ 'selected' if f_type == t }}>{{ t }}</option>
+      {% endfor %}
+    </select>
+  </label>
+  {% if f_module or f_diff or f_type %}<a class="link" href="{{ url_for('cases') }}">Clear</a>{% endif %}
+  <span class="count"><b>{{ rows | length }}</b> of {{ total }} cases</span>
+</form>
+
+<div class="card">
+  <div class="card-head"><span class="keyline"></span><h3>Case Library</h3>
+    <div class="actions"><a class="link" href="{{ url_for('api_data') }}">Export JSON</a></div>
+  </div>
+  {% if rows %}
+  <div class="grid-wrap">
+    <table class="data-grid" style="min-width:1000px">
+      <thead>
+        <tr>
+          <th>Case ID <span class="caret active">▲</span></th>
+          <th class="num">Module</th>
+          <th>Case Name</th>
+          <th>Case Type</th>
+          <th>Difficulty</th>
+          <th>Ground Truth</th>
+          <th>Question Type</th>
+          <th class="num">Steps</th>
+          <th>Notes</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for c in rows %}
+        <tr class="rowlink" onclick="location.href='{{ url_for('case', case_id=c.id) }}'">
+          <td><a class="cid" href="{{ url_for('case', case_id=c.id) }}">{{ c.id }}</a></td>
+          <td class="num tabular">{{ c.module }}</td>
+          <td class="cname">{{ c.name }}</td>
+          <td>{{ chip(c.type) }}</td>
+          <td>{{ diff_pill(c.difficulty) }}</td>
+          <td>{{ c.ground_truth }}</td>
+          <td>{{ c.question_type }}</td>
+          <td class="num tabular">{{ c.steps }}</td>
+          <td class="notes" title="{{ c.notes }}">{{ c.notes or '—' }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty">{{ icon('grid', 26) }}<div class="et">No cases match these filters</div><div class="es"><a class="link" href="{{ url_for('cases') }}">Clear filters</a> to see all {{ total }} cases.</div></div>
+  {% endif %}
+</div>
+{% endblock %}

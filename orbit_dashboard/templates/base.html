@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}{{ platform.name }} — Curriculum Console{% endblock %}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/orbit.css') }}">
+</head>
+<body data-page="{{ page }}">
+{% from "_icons.html" import icon %}
+{% from "_macros.html" import sb_row %}
+
+<header class="app-bar">
+  <a class="brand" href="{{ url_for('overview') }}">
+    <span class="brand-mark">{{ platform.name }}</span>
+    <span class="brand-sub">{{ platform.full_name }}</span>
+  </a>
+  <nav class="tabstrip" aria-label="Workspace activities">
+    <a class="tab {{ 'tab--active' if page == 'overview' }}" href="{{ url_for('overview') }}">Overview</a>
+    <a class="tab {{ 'tab--active' if page == 'modules' }}" href="{{ url_for('module', number=4) }}">Modules</a>
+    <a class="tab {{ 'tab--active' if page == 'cases' }}" href="{{ url_for('cases') }}">Case Library</a>
+    <a class="tab {{ 'tab--active' if page == 'interaction' }}" href="{{ url_for('interaction') }}">Interaction Matrix</a>
+    <a class="tab {{ 'tab--active' if page == 'reference' }}" href="{{ url_for('reference') }}">Reference</a>
+  </nav>
+  <div class="bar-right">
+    {{ icon('wrench', 16, 'rgba(255,255,255,.75)') }}
+    {{ icon('gear', 16, 'rgba(255,255,255,.75)') }}
+    <div class="identity" title="Signed in as curriculum author">
+      <div class="avatar">AB</div>
+      <span class="name">A. Balaji · Author</span>
+      {{ icon('chevron-down', 14, 'rgba(255,255,255,.8)', 2) }}
+    </div>
+  </div>
+</header>
+
+<div class="workspace">
+  <aside class="storyboard" aria-label="Storyboard">
+    {% block storyboard %}
+    <div class="sb-eyebrow">Program</div>
+    <div class="sb-title">{{ platform.name }} Curriculum</div>
+    <div class="sb-goal">{{ platform.tagline }}</div>
+    <div class="sb-div"></div>
+    {{ sb_row('layers', 'Modules', stats.modules) }}
+    {{ sb_row('target', 'Objectives', stats.objectives ~ ' measurable') }}
+    {{ sb_row('image', 'Authored cases', stats.cases) }}
+    {{ sb_row('grid', 'Activity steps', stats.steps) }}
+    {{ sb_row('ai', 'AI-comparison', stats.ai_module_count ~ ' modules') }}
+    <div class="sb-div"></div>
+    <div class="sb-fl" style="margin-bottom:8px">Jump to module</div>
+    {% for m in nav_modules %}
+      <a class="sb-plain-item" href="{{ url_for('module', number=m.number) }}">
+        <div class="sb-li-id">M{{ m.number }}</div>
+        <div class="sb-li-name">{{ m.title }}</div>
+      </a>
+    {% endfor %}
+    {% endblock %}
+  </aside>
+
+  <main class="canvas">
+    {% block content %}{% endblock %}
+    <div class="footer">
+      {{ platform.name }} · {{ platform.full_name }} · {{ platform.org }} — Curriculum Authoring Console
+    </div>
+  </main>
+</div>
+{% block scripts %}{% endblock %}
+</body>
+</html>

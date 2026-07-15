@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% block title %}Not found — {{ platform.name }}{% endblock %}
+{% block content %}
+<div class="section-banner"><span class="section-kicker">404</span><h2>Page not found</h2></div>
+<div class="card">
+  <div class="empty">
+    {{ icon('compass', 28) }}
+    <div class="et">That workspace doesn't exist</div>
+    <div class="es">The module or case you requested isn't in the ORBIT curriculum.</div>
+    <div style="margin-top:12px"><a class="link" href="{{ url_for('overview') }}">← Back to the Program Dashboard</a></div>
+  </div>
+</div>
+{% endblock %}

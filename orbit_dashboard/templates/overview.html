@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% from "_macros.html" import diff_pill, chip %}
+{% block title %}{{ platform.name }} · Program Dashboard{% endblock %}
+
+{% block content %}
+{% set maxcases = (stats.cases_per_module | map(attribute='count') | max) or 1 %}
+{% set maxdiff = (stats.difficulty_distribution | map(attribute='count') | max) or 1 %}
+
+<div class="section-banner">
+  <span class="section-kicker">Overview</span>
+  <h2>Program Dashboard</h2>
+  <span class="sub">Curriculum authoring &amp; coverage · {{ platform.org }}</span>
+</div>
+
+<div class="kpi-row">
+  <div class="kpi-tile"><div class="kpi-num tabular">{{ stats.modules }}</div><div class="kpi-cap">Modules</div><div class="kpi-note">Image Quality → Advanced Cases</div></div>
+  <div class="kpi-tile"><div class="kpi-num tabular">{{ stats.objectives }}</div><div class="kpi-cap">Objectives</div><div class="kpi-note">{{ stats.objectives_with_target }} carry a measurable target</div></div>
+  <div class="kpi-tile"><div class="kpi-num tabular">{{ stats.cases }}</div><div class="kpi-cap">Authored Cases</div><div class="kpi-note">Expert-labeled radiographs</div></div>
+  <div class="kpi-tile"><div class="kpi-num tabular">{{ stats.steps }}</div><div class="kpi-cap">Activity Steps</div><div class="kpi-note">Interactive CaseBuildout steps</div></div>
+  <div class="kpi-tile"><div class="kpi-num tabular">{{ stats.difficulty_tiers }}</div><div class="kpi-cap">Difficulty Tiers</div><div class="kpi-note">Obvious · Moderate · Subtle</div></div>
+  <div class="kpi-tile"><div class="kpi-num tabular">{{ stats.ai_module_count }}</div><div class="kpi-cap">AI-Comparison</div><div class="kpi-note">Modules {{ stats.ai_modules | join(', ') }}</div></div>
+</div>
+
+<div class="callout" style="margin-bottom:12px">
+  {{ icon('play', 18) }}
+  <div class="ct"><b>Two interactive modules are live and demo-ready:</b> <a class="link" href="{{ url_for('module1_practice') }}">Module 1 · Image Quality &amp; Error Correction →</a> &nbsp;·&nbsp; <a class="link" href="{{ url_for('module4_practice') }}">Module 4 · Normal Anatomy vs Pathology →</a></div>
+</div>
+
+<div class="card" style="margin-bottom:12px">
+  <div class="card-head"><span class="keyline"></span><h3>Module Coverage</h3>
+    <div class="actions"><span class="pts">bar = cases authored vs. M{{ (stats.cases_per_module | sort(attribute='count', reverse=True) | first).number }} ({{ maxcases }})</span></div>
+  </div>
+  <div class="card-body">
+    <div class="grid-cards">
+      {% for m in nav_modules %}
+      <a class="mod-mini" href="{{ url_for('module', number=m.number) }}">
+        <div class="mnum">Module {{ m.number }}</div>
+        <div class="mtitle">{{ m.title }}{% if m.ai_enabled %} {{ chip('AI', 'ai') }}{% endif %}</div>
+        <div class="mstats"><span><b>{{ m.objective_count }}</b> obj</span><span><b>{{ m.case_count }}</b> cases</span>{% if m.authored_steps %}<span><b>{{ m.authored_steps }}</b> steps</span>{% endif %}</div>
+        <div class="progress" title="{{ m.case_count }} of {{ maxcases }} cases"><span style="width:{{ (100 * m.case_count / maxcases) | round(0, 'floor') | int }}%"></span></div>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<div class="grid-2" style="margin-bottom:12px">
+  <div class="card">
+    <div class="card-head"><span class="keyline"></span><h3>Cases · Continue Authoring</h3>
+      <div class="actions"><a class="link" href="{{ url_for('cases') }}">View all {{ stats.cases }}</a></div>
+    </div>
+    <div class="grid-wrap">
+      <table class="data-grid">
+        <thead><tr><th>Case ID</th><th>Case Name</th><th class="num">Module</th><th>Difficulty</th><th class="num">Steps</th><th>Status</th></tr></thead>
+        <tbody>
+          {% for c in recent_cases %}
+          <tr class="rowlink" onclick="location.href='{{ url_for('case', case_id=c.id) }}'">
+            <td><a class="cid" href="{{ url_for('case', case_id=c.id) }}">{{ c.id }}</a></td>
+            <td class="cname">{{ c.name }}</td>
+            <td class="num tabular">{{ c.module }}</td>
+            <td>{{ diff_pill(c.difficulty) }}</td>
+            <td class="num tabular">{{ c.steps }}</td>
+            <td>{% if c.has_activity %}<a class="link" href="{{ url_for('case', case_id=c.id) }}">Open</a>{% else %}<span class="pts">Author</span>{% endif %}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div style="display:flex; flex-direction:column; gap:12px">
+    <div class="card">
+      <div class="card-head"><span class="keyline"></span><h3>Difficulty Mix</h3><div class="actions">{{ icon('dot-grid', 14, 'var(--muted)') }}</div></div>
+      <div class="card-body">
+        {% for d in stats.difficulty_distribution %}
+        {% set fills = {1:'var(--diff1-fill)',2:'var(--diff2-fill)',3:'var(--diff3-fill)'} %}
+        {% set texts = {1:'var(--diff1-text)',2:'var(--diff2-text)',3:'#fff'} %}
+        <div class="mix-row">
+          <div class="mix-lab">{{ diff_pill(d.level, label=False) }} {{ d.label }}</div>
+          <div class="mix-track"><div class="mix-fill" style="width:{{ (100 * d.count / maxdiff) | round(0,'floor') | int }}%; background:{{ fills[d.level] }}; color:{{ texts[d.level] }}">{{ d.count if d.count else '' }}</div></div>
+          <div class="mix-count tabular">{{ d.count }}</div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head"><span class="keyline"></span><h3>Objective Targets</h3></div>
+      <div class="card-body" style="display:flex; align-items:center; gap:14px">
+        <div><div class="kpi-num tabular">{{ stats.objectives_with_target }}</div><div class="kpi-cap">carry a target</div></div>
+        <div class="callout" style="flex:1">{{ icon('target', 18) }}<div class="ct">Every objective sets a measurable <b>mastery threshold</b> — most require <b>≥90%</b> accuracy; AI-gain objectives target <b>≥15%</b> improvement.</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="callout">
+  {{ icon('ai', 18) }}
+  <div class="ct"><b>AI-comparison is live</b> in Modules {{ stats.ai_modules | join(', ') }} — students reason through the case first, then compare against a Socratic AI tutor and can refine their answer through dialogue.</div>
+</div>
+{% endblock %}

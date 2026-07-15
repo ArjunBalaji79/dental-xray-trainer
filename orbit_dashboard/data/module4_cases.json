@@ -1,0 +1,195 @@
+{
+  "module": {
+    "number": 4,
+    "title": "Normal Anatomy vs Pathology",
+    "note": "Maybe Normal anatomy",
+    "goal": "Train learners to differentiate normal anatomical structures and radiographic artifacts from pathology through pattern recognition and visual discrimination.",
+    "objectives": [
+      {"n": 1, "text": "Correctly classify radiographic findings as normal anatomy, radiographic artifact, or pathology.", "target": "≥90%"},
+      {"n": 2, "text": "Identify common normal anatomical structures on radiographs (mental foramen, maxillary sinus, nutrient canals).", "target": "≥90%"},
+      {"n": 3, "text": "Differentiate radiographic artifacts and normal variations from caries or periapical pathology.", "target": "≥90%"},
+      {"n": 4, "text": "Correctly identify false-positive trap cases (cervical burnout, overlapping contacts, mental foramen).", "target": "≥90%"},
+      {"n": 5, "text": "Use radiographic features (shape, border definition, location, symmetry) to justify a finding as normal or pathologic.", "target": "≥90%"},
+      {"n": 6, "text": "Avoid overdiagnosing normal anatomical structures or artifacts as pathology.", "target": "≥90%"},
+      {"n": 7, "text": "Demonstrate improved accuracy in distinguishing normal anatomy from pathology after AI dialogue or annotation review.", "target": "≥15%", "kind": "improvement"}
+    ]
+  },
+  "cases": [
+    {
+      "id": "M4-01",
+      "name": "Mental Foramen",
+      "image": "case_mental_foramen.jpg",
+      "difficulty": 2,
+      "ground_truth": "Normal anatomy",
+      "roi": {"x": 40, "y": 70, "r": 7},
+      "finding": "A well-defined, round radiolucency is projected over the apex of the mandibular left second premolar. The patient is asymptomatic and the tooth tests vital.",
+      "classify": {
+        "objective": 1,
+        "prompt": "Classify the highlighted finding.",
+        "options": ["Normal anatomy", "Radiographic artifact", "Pathology"],
+        "correct": "Normal anatomy",
+        "feedback": {
+          "Normal anatomy": "Correct. This is the mental foramen — a normal opening in the mandible where the mental nerve exits. Its round shape, corticated border, and location near the premolar apices give it away.",
+          "Radiographic artifact": "Close, but this is a true anatomical structure, not an artifact. The mental foramen is a normal opening in the mandible — reclassify it as normal anatomy.",
+          "Pathology": "This is the classic false-positive. A round, corticated radiolucency at the premolar apex with a vital tooth is the mental foramen, not a periapical lesion — calling it pathology is an overdiagnosis."
+        }
+      },
+      "identify": {
+        "objective": 2,
+        "prompt": "Which structure is this?",
+        "options": ["Mental foramen", "Periapical granuloma", "Nutrient canal", "Maxillary sinus"],
+        "correct": "Mental foramen",
+        "feedback_correct": "Right — the mental foramen sits in the mandibular premolar region and can superimpose on a premolar apex.",
+        "feedback_incorrect": "Not quite. The location (mandibular premolar apex) and round, corticated appearance point to the mental foramen."
+      },
+      "justify": {
+        "objective": 5,
+        "prompt": "Which feature best supports a NORMAL interpretation?",
+        "options": [
+          "Round shape with a corticated (well-defined) border at the premolar apex, and an intact lamina dura on a vital tooth",
+          "Ill-defined borders with external root resorption",
+          "Loss of lamina dura and a widened periodontal ligament space",
+          "The finding is associated with a non-vital, symptomatic tooth"
+        ],
+        "correct": "Round shape with a corticated (well-defined) border at the premolar apex, and an intact lamina dura on a vital tooth",
+        "explain": "A corticated border plus an intact lamina dura on a vital tooth argues strongly against a periapical lesion, which would show loss of lamina dura and an ill-defined radiolucency."
+      },
+      "trap": "Frequently mistaken for periapical pathology at a premolar apex.",
+      "review_hint": "Check the tooth's vitality and trace the lamina dura. A corticated foramen border with intact lamina dura on a vital tooth means normal anatomy — not a lesion.",
+      "features": ["Round / oval shape", "Corticated, well-defined border", "At or near the premolar apices", "Often bilateral and symmetric"],
+      "objectives_hit": [1, 2, 3, 4, 5, 6, 7]
+    },
+    {
+      "id": "M4-02",
+      "name": "Cervical Burnout",
+      "image": "case_cervical_burnout.jpg",
+      "difficulty": 2,
+      "ground_truth": "Radiographic artifact",
+      "roi": {"x": 62, "y": 50, "r": 6},
+      "finding": "A wedge-shaped radiolucency appears at the cervical region of a molar — between the enamel cap and the alveolar crest — on both the mesial and distal surfaces.",
+      "classify": {
+        "objective": 1,
+        "prompt": "Classify the highlighted finding.",
+        "options": ["Normal anatomy", "Radiographic artifact", "Pathology"],
+        "correct": "Radiographic artifact",
+        "feedback": {
+          "Radiographic artifact": "Correct. This is cervical burnout — an optical artifact from the sharp drop in X-ray absorption between the enamel and the alveolar bone. It is not a real lesion.",
+          "Normal anatomy": "Not an anatomical structure — it's an imaging artifact (cervical burnout) produced by differential absorption at the cervical region.",
+          "Pathology": "This is the common overdiagnosis: cervical burnout is mistaken for root/cervical caries. The symmetric, ill-defined cervical radiolucency with no cavitation is an artifact, not decay."
+        }
+      },
+      "identify": {
+        "objective": 2,
+        "prompt": "What is the most likely explanation?",
+        "options": ["Cervical burnout", "Root-surface caries", "Cervical abrasion", "Internal resorption"],
+        "correct": "Cervical burnout",
+        "feedback_correct": "Yes — the symmetric cervical radiolucency between enamel and crest is classic cervical burnout.",
+        "feedback_incorrect": "Reconsider. Caries and abrasion tend to be discrete and often cavitated; burnout is a symmetric, fading optical effect at the cervical region."
+      },
+      "justify": {
+        "objective": 5,
+        "prompt": "Which feature best supports an ARTIFACT (not caries)?",
+        "options": [
+          "Symmetric, ill-defined radiolucency confined between the enamel edge and crestal bone, fading gradually, with no cavitation",
+          "A discrete, well-cavitated radiolucency undermining the enamel",
+          "Radiolucency extending into the pulp chamber",
+          "Asymmetric lesion on a single proximal surface with sclerotic margins"
+        ],
+        "correct": "Symmetric, ill-defined radiolucency confined between the enamel edge and crestal bone, fading gradually, with no cavitation",
+        "explain": "Burnout is symmetric on both proximal surfaces and fades gradually because it is an absorption effect; caries is usually a discrete, often cavitated lesion."
+      },
+      "trap": "Commonly mistaken for cervical or root-surface caries.",
+      "review_hint": "Look for symmetry and cavitation. Burnout is symmetric on both proximal surfaces and fades gradually; caries is a discrete, often cavitated lesion.",
+      "features": ["Wedge / triangular radiolucency", "At the cervical region (enamel-to-crest)", "Symmetric on mesial and distal", "Ill-defined, fades gradually — no cavitation"],
+      "objectives_hit": [1, 3, 4, 5, 6, 7]
+    },
+    {
+      "id": "M4-03",
+      "name": "Nutrient Canal Mimic",
+      "image": "case_nutrient_canal.jpg",
+      "difficulty": 2,
+      "ground_truth": "Normal anatomy",
+      "roi": {"x": 50, "y": 66, "r": 6},
+      "finding": "A thin, vertical linear radiolucency runs through the alveolar bone between the mandibular central incisors.",
+      "classify": {
+        "objective": 1,
+        "prompt": "Classify the highlighted finding.",
+        "options": ["Normal anatomy", "Radiographic artifact", "Pathology"],
+        "correct": "Normal anatomy",
+        "feedback": {
+          "Normal anatomy": "Correct. This is a nutrient canal — a normal vascular channel in the alveolar bone. Its uniform width and thin corticated walls are the giveaway.",
+          "Radiographic artifact": "It's a real anatomical channel, not an artifact. A uniform, corticated linear radiolucency in bone is a nutrient canal — normal anatomy.",
+          "Pathology": "Overdiagnosis trap. A uniform-width, corticated linear radiolucency in bone is a nutrient canal, not a vertical root fracture or lesion."
+        }
+      },
+      "identify": {
+        "objective": 2,
+        "prompt": "Which structure is this?",
+        "options": ["Nutrient canal", "Vertical root fracture", "Periodontal bone defect", "Lateral periodontal cyst"],
+        "correct": "Nutrient canal",
+        "feedback_correct": "Correct — nutrient canals are common between the mandibular incisors, especially in thin bone.",
+        "feedback_incorrect": "Reconsider. A fracture crosses the tooth/root and lacks cortication; this uniform, corticated channel lies in bone."
+      },
+      "justify": {
+        "objective": 5,
+        "prompt": "Which feature best supports a NORMAL interpretation?",
+        "options": [
+          "Uniform-width radiolucency with thin corticated (tram-track) walls, running within bone rather than through a root",
+          "A jagged line crossing the root with displacement of fragments",
+          "A widening radiolucency destroying the surrounding trabecular bone",
+          "An expansile, corticated cyst displacing adjacent roots"
+        ],
+        "correct": "Uniform-width radiolucency with thin corticated (tram-track) walls, running within bone rather than through a root",
+        "explain": "Nutrient canals are uniform in width with corticated walls and lie in bone; fractures cross the root, are irregular, and lack cortication."
+      },
+      "trap": "Mistaken for a vertical root fracture or a bony lesion.",
+      "review_hint": "Uniform width + corticated tram-track walls + located in bone = nutrient canal. Fractures cross the root, are irregular, and lack cortication.",
+      "features": ["Thin, linear radiolucency", "Uniform width", "Thin corticated (tram-track) walls", "Runs within bone, not through a root"],
+      "objectives_hit": [1, 3, 4, 5, 6, 7]
+    },
+    {
+      "id": "M4-04",
+      "name": "Maxillary Sinus Superimposition",
+      "image": "case_maxillary_sinus.jpg",
+      "difficulty": 2,
+      "ground_truth": "Normal anatomy",
+      "roi": {"x": 62, "y": 34, "r": 8},
+      "finding": "A large radiolucent area with a thin, continuous white superior border overlies the roots of the maxillary molars. The roots appear to project into it.",
+      "classify": {
+        "objective": 1,
+        "prompt": "Classify the highlighted finding.",
+        "options": ["Normal anatomy", "Radiographic artifact", "Pathology"],
+        "correct": "Normal anatomy",
+        "feedback": {
+          "Normal anatomy": "Correct. The radiolucency is the maxillary sinus superimposed over the molar roots. The thin, intact corticated floor confirms it is air-filled sinus, not a lesion.",
+          "Radiographic artifact": "It's a real anatomical space (the maxillary sinus), not an artifact — reclassify as normal anatomy.",
+          "Pathology": "Overdiagnosis trap. The radiolucency is the maxillary sinus; the intact corticated floor means there is no periapical destruction — not pathology."
+        }
+      },
+      "identify": {
+        "objective": 2,
+        "prompt": "Which structure is this?",
+        "options": ["Maxillary sinus", "Periapical cyst", "Odontogenic keratocyst", "Nasal fossa"],
+        "correct": "Maxillary sinus",
+        "feedback_correct": "Correct — the maxillary sinus routinely superimposes over posterior maxillary roots.",
+        "feedback_incorrect": "Reconsider. The location above the posterior maxillary roots and a thin corticated floor point to the maxillary sinus."
+      },
+      "justify": {
+        "objective": 5,
+        "prompt": "Which feature best supports a NORMAL interpretation?",
+        "options": [
+          "A large radiolucency bounded by a thin, intact corticated floor, with roots projecting into it and no bone destruction",
+          "Loss of the lamina dura around the molar apices with an ill-defined radiolucency",
+          "An expansile radiolucency destroying the sinus floor",
+          "A well-corticated cyst centered on a single non-vital root apex"
+        ],
+        "correct": "A large radiolucency bounded by a thin, intact corticated floor, with roots projecting into it and no bone destruction",
+        "explain": "An intact, continuous corticated sinus floor means the radiolucency is air within the sinus; a periapical lesion would erode the lamina dura and floor."
+      },
+      "trap": "Sinus floor mistaken for periapical pathology near the molar roots.",
+      "review_hint": "Trace the thin corticated sinus floor. If it is intact and continuous, the radiolucency is air in the sinus — not a periapical lesion.",
+      "features": ["Large radiolucency over posterior maxillary roots", "Thin, continuous corticated floor", "Roots may project into it", "Bilateral — no bone destruction"],
+      "objectives_hit": [1, 2, 3, 4, 5, 6, 7]
+    }
+  ]
+}

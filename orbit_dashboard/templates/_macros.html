@@ -1,0 +1,40 @@
+{% from "_icons.html" import icon %}
+
+{# Difficulty pill with ordinal dots (1-3 filled) for CVD-safe secondary encoding. #}
+{%- macro diff_pill(level, label=True) -%}
+  {%- if level in (1,2,3) -%}
+  <span class="pill pill--diff{{ level }}">
+    {%- if label %}Diff {{ level }}{% else %}{{ level }}{% endif %}
+    <span class="dots">
+      {%- for i in range(1,4) -%}
+        <i class="dot{{ '' if i <= level else ' off' }}"></i>
+      {%- endfor -%}
+    </span>
+  </span>
+  {%- else -%}
+  <span class="chip">—</span>
+  {%- endif -%}
+{%- endmacro -%}
+
+{%- macro chip(text, kind='') -%}
+  {%- if kind == 'ai' -%}<span class="chip chip--ai">{{ text }}</span>
+  {%- elif kind == 'future' -%}<span class="chip chip--future">{{ text }}</span>
+  {%- else -%}<span class="chip">{{ text }}</span>{%- endif -%}
+{%- endmacro -%}
+
+{%- macro mastery(obj) -%}
+  {%- if obj.target -%}
+    {%- if obj.kind == 'improvement' -%}
+      <span class="mastery mastery--improve" title="Improvement target">{{ obj.target }}</span>
+    {%- else -%}
+      <span class="mastery" title="Mastery threshold">{{ obj.target }}</span>
+    {%- endif -%}
+  {%- endif -%}
+{%- endmacro -%}
+
+{%- macro sb_row(name, label, value) -%}
+  <div class="sb-row">
+    {{ icon(name, 16, 'currentColor') }}
+    <div><div class="sb-fl">{{ label }}</div><div class="sb-fv">{{ value }}</div></div>
+  </div>
+{%- endmacro -%}

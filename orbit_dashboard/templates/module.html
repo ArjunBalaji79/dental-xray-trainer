@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% from "_macros.html" import diff_pill, chip, mastery, sb_row %}
+{% block title %}Module {{ mod.number }} · {{ mod.title }} — {{ platform.name }}{% endblock %}
+
+{% set diffs = mod.cases | map(attribute='difficulty') | select('number') | list %}
+{% set dmin = diffs | min if diffs else None %}
+{% set dmax = diffs | max if diffs else None %}
+{% set drange = ('—' if dmin is none else (dmin|string if dmin == dmax else dmin|string ~ '–' ~ dmax|string)) %}
+
+{% block storyboard %}
+  <div class="sb-eyebrow">Module {{ mod.number }}</div>
+  <div class="sb-title">{{ mod.title }}</div>
+  <div class="sb-goal">{{ mod.description }}</div>
+  {% if mod.ai_enabled %}
+  <div class="sb-chip" style="margin-top:10px">{{ icon('ai', 12) }}&nbsp;AI dialogue · Built-in</div>
+  {% endif %}
+  {% if practice_url %}
+  <a class="btn-primary" href="{{ practice_url }}" style="margin-top:12px; width:100%; justify-content:center">{{ icon('play', 14, '#fff') }} Launch practice</a>
+  {% endif %}
+  <div class="sb-div"></div>
+  {{ sb_row('target', 'Objectives', mod.objective_count ~ ' measurable') }}
+  {{ sb_row('layers', 'Authored cases', mod.case_count) }}
+  {{ sb_row('grid', 'Activity steps', mod.authored_steps) }}
+  {{ sb_row('image', 'Difficulty range', drange) }}
+  {% if mod.cases %}
+  <div class="sb-div"></div>
+  <div class="sb-fl" style="margin-bottom:8px">Cases in module</div>
+  {% for c in mod.cases %}
+    <a class="sb-plain-item" href="{{ url_for('case', case_id=c.id) }}">
+      <div class="sb-li-id">{{ c.id }}</div>
+      <div class="sb-li-name">{{ c.name }}</div>
+    </a>
+  {% endfor %}
+  {% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="crumbs"><a href="{{ url_for('overview') }}">Overview</a><span class="sep">›</span>Module {{ mod.number }}</div>
+
+<div class="section-banner">
+  <span class="section-kicker">Module Detail</span>
+  <h2>Module {{ mod.number }} · {{ mod.title }}</h2>
+  <span class="sub">{{ mod.objective_count }} objectives · {{ mod.case_count }} cases{% if mod.ai_enabled %} · AI dialogue{% endif %}</span>
+</div>
+
+<div class="mod-header">
+  <div class="top">
+    <span class="mnum">Module {{ mod.number }}</span>
+    <h3>{{ mod.title }}</h3>
+    {% if practice_url %}<a class="btn-primary" href="{{ practice_url }}" style="margin-left:auto">{{ icon('play', 14, '#fff') }} Launch practice</a>
+    {% elif mod.ai_enabled %}<span class="chip chip--ai" style="margin-left:auto">AI-comparison · on</span>{% endif %}
+  </div>
+  <div class="goal-edit">
+    {{ icon('edit', 16) }}
+    <span>{{ mod.description }}</span>
+  </div>
+  {% if mod.note %}<div class="mod-note">Authoring note · <b>{{ mod.note }}</b></div>{% endif %}
+  <div class="mod-kpis">
+    <div class="mod-kpi"><div class="k tabular">{{ mod.objective_count }}</div><div class="l">Objectives</div></div>
+    <div class="mod-kpi"><div class="k tabular">{{ mod.case_count }}</div><div class="l">Cases</div></div>
+    <div class="mod-kpi"><div class="k tabular">{{ mod.authored_steps }}</div><div class="l">Activity Steps</div></div>
+    <div class="mod-kpi"><div class="k">{{ drange }}</div><div class="l">Difficulty</div></div>
+  </div>
+</div>
+
+<div class="grid-2">
+  <div class="card">
+    <div class="card-head"><span class="keyline"></span><h3>Learning Objectives</h3><div class="actions"><span class="pts">{{ mod.objective_count }} total</span></div></div>
+    <div>
+      {% for o in mod.objectives %}
+      <div class="obj-row">
+        <div class="obj-num tabular">{{ o.n }}</div>
+        <div class="obj-body">
+          <div class="obj-text">{{ o.text }}</div>
+          {% if o.target %}<div class="obj-meta">{{ mastery(o) }}<span class="qt">{{ 'Improvement after AI dialogue' if o.kind == 'improvement' else 'Mastery threshold' }}</span></div>{% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><span class="keyline"></span><h3>Cases in Module {{ mod.number }}</h3><div class="actions"><a class="link" href="{{ url_for('cases', module=mod.number) }}">Filter library</a></div></div>
+    {% if mod.cases %}
+    <div class="grid-wrap">
+      <table class="data-grid tight">
+        <thead><tr><th>Case</th><th>Type</th><th class="num">Diff</th></tr></thead>
+        <tbody>
+          {% for c in mod.cases %}
+          <tr class="rowlink" onclick="location.href='{{ url_for('case', case_id=c.id) }}'">
+            <td><a class="cid" href="{{ url_for('case', case_id=c.id) }}">{{ c.id }}</a><div class="cname">{{ c.name }}</div></td>
+            <td>{{ chip(c.type) }}</td>
+            <td class="num">{{ diff_pill(c.difficulty, label=False) }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="empty">{{ icon('layers', 26) }}<div class="et">No cases authored yet</div><div class="es">This module's case library is still being built out.</div></div>
+    {% endif %}
+
+    {% if mod.interaction %}
+    <div class="card-head" style="border-top:1px solid var(--border)"><span class="keyline"></span><h3>Interaction Design · scoped</h3></div>
+    <div class="grid-wrap">
+      <table class="data-grid tight">
+        <thead><tr><th>Obj</th><th>Question Type</th><th>What we measure</th></tr></thead>
+        <tbody>
+          {% for r in mod.interaction %}
+          <tr><td class="num tabular">{{ r.objective }}</td><td>{{ r.question_type }}</td><td class="notes" title="{{ r.measures }}">{{ r.measures }}</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<div class="mod-nav">
+  {% if prev_num %}<a href="{{ url_for('module', number=prev_num) }}">{{ icon('arrow-left', 14) }} Module {{ prev_num }}</a>{% else %}<span></span>{% endif %}
+  <span class="spacer"></span>
+  {% if next_num %}<a href="{{ url_for('module', number=next_num) }}">Module {{ next_num }} {{ icon('arrow-right', 14) }}</a>{% endif %}
+</div>
+{% endblock %}

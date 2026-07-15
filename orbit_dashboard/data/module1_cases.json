@@ -1,0 +1,884 @@
+{
+  "module": {
+    "number": 1,
+    "title": "Image Quality and Error Correction",
+    "goal": "Develop the ability to identify radiographic errors, understand their causes, and apply corrective techniques to produce diagnostic-quality images.",
+    "objectives": [
+      {
+        "n": 1,
+        "text": "Accurately classify radiographs as diagnostic or non-diagnostic with ≥90% accuracy",
+        "target": "≥90%"
+      },
+      {
+        "n": 2,
+        "text": "Identify common radiographic errors (e.g., cone cut, overlap, elongation, foreshortening, motion artifact, exposure errors) with ≥ 90% accuracy",
+        "target": "≥90%"
+      },
+      {
+        "n": 3,
+        "text": "Determine the most likely cause of radiographic errors, including positioning, angulation, receptor placement, and exposure technique, in ≥90% of cases",
+        "target": "≥90%"
+      },
+      {
+        "n": 4,
+        "text": "Select the appropriate corrective action needed to produce a diagnostic-quality image in ≥90% of cases",
+        "target": "≥90%"
+      },
+      {
+        "n": 5,
+        "text": "Differentiate errors requiring retake from acceptable diagnostic variation in ≥90% of cases",
+        "target": "≥90%"
+      },
+      {
+        "n": 6,
+        "text": "Explain how specific image quality errors impact diagnostic interpretation and clinical decision-making in ≥90% of responses",
+        "target": "≥90%"
+      }
+    ]
+  },
+  "cases": [
+    {
+      "id": "M1-02",
+      "name": "Horizontal Overlap BW",
+      "modality": "Bitewing",
+      "difficulty": 2,
+      "ground_truth": "Horizontal overlap",
+      "notes": "Incorrect horizontal",
+      "finding": "The proximal contacts of the posterior teeth are superimposed — the enamel surfaces overlap and the interproximal areas cannot be evaluated.",
+      "pearl": "Open contacts require the beam to pass perpendicular to the buccal surfaces — correct horizontal angulation.",
+      "steps": [
+        {
+          "n": 1,
+          "key": "diagnostic",
+          "objective": 1,
+          "answer_type": "Binary",
+          "prompt": "Is this radiograph diagnostic or non-diagnostic?",
+          "options": [
+            "Diagnostic",
+            "Non-diagnostic"
+          ],
+          "expected": "Non-diagnostic",
+          "feedback": "Overlapping contacts limit interpretation",
+          "points": 1
+        },
+        {
+          "n": 2,
+          "key": "error",
+          "objective": 2,
+          "answer_type": "Single Select",
+          "prompt": "What is the primary radiographic error?",
+          "options": [
+            "Cone cut",
+            "Horizontal overlap",
+            "Elongation",
+            "Foreshortening",
+            "Motion artifact",
+            "Underexposure",
+            "Overexposure",
+            "Herringbone artifact"
+          ],
+          "expected": "Horizontal overlap",
+          "feedback": "Contacts are superimposed",
+          "points": 2
+        },
+        {
+          "n": 3,
+          "key": "cause",
+          "objective": 3,
+          "answer_type": "Single Select",
+          "prompt": "What most likely caused this error?",
+          "options": [
+            "Sensor positioned incorrectly",
+            "Incorrect horizontal angulation",
+            "Incorrect vertical angulation",
+            "Patient movement",
+            "Incorrect exposure settings"
+          ],
+          "expected": "Incorrect horizontal angulation",
+          "feedback": "Beam angulation was improper",
+          "points": 2
+        },
+        {
+          "n": 4,
+          "key": "correction",
+          "objective": 4,
+          "answer_type": "Single Select",
+          "prompt": "What adjustment would best correct this issue?",
+          "options": [
+            "Adjust horizontal angulation",
+            "Reposition sensor",
+            "Adjust vertical angulation",
+            "Stabilize patient",
+            "Modify exposure settings"
+          ],
+          "expected": "Adjust horizontal angulation",
+          "feedback": "Proper angulation opens contacts",
+          "points": 2
+        },
+        {
+          "n": 5,
+          "key": "compare",
+          "objective": 6,
+          "answer_type": "Visual Comparison",
+          "prompt": "Compare original and corrected image",
+          "options": [],
+          "expected": "Contacts opened",
+          "feedback": "Diagnostic quality improved",
+          "points": 0
+        }
+      ],
+      "points": 7
+    },
+    {
+      "id": "M1-03",
+      "name": "Elongated PA",
+      "modality": "Periapical",
+      "difficulty": 2,
+      "ground_truth": "Elongation",
+      "notes": "Vertical angulation too low",
+      "finding": "The teeth appear elongated: the roots are projected markedly longer than their true anatomic length.",
+      "pearl": "Elongation = vertical angulation too shallow. Increase vertical angulation to shorten the image.",
+      "steps": [
+        {
+          "n": 1,
+          "key": "diagnostic",
+          "objective": 1,
+          "answer_type": "Binary",
+          "prompt": "is this radiograph diagnostic or non-diagnostic?",
+          "options": [
+            "Diagnostic",
+            "Non-diagnostic"
+          ],
+          "expected": "Non-diagnostic",
+          "feedback": "Elongation distorts tooth length and limits diagnostic interpretation",
+          "points": 1
+        },
+        {
+          "n": 2,
+          "key": "error",
+          "objective": 2,
+          "answer_type": "Single Select",
+          "prompt": "What is the primary radiographic error?",
+          "options": [
+            "Cone cut",
+            "Horizontal overlap",
+            "Elongation",
+            "Foreshortening",
+            "Motion artifact",
+            "Underexposure",
+            "Overexposure",
+            "Herringbone artifact"
+          ],
+          "expected": "Elongation",
+          "feedback": "The teeth appear longer than their actual anatomical length",
+          "points": 2
+        },
+        {
+          "n": 3,
+          "key": "cause",
+          "objective": 3,
+          "answer_type": "Single Select",
+          "prompt": "What most likely caused this error?",
+          "options": [
+            "Sensor positioned incorrectly",
+            "Incorrect horizontal angulation",
+            "Insufficient vertical angulation",
+            "Excessive vertical angulation",
+            "Patient movement",
+            "Incorrect exposure settings"
+          ],
+          "expected": "Insufficient vertical angulation",
+          "feedback": "Elongation occurs when the vertical angulation is too shallow",
+          "points": 2
+        },
+        {
+          "n": 4,
+          "key": "correction",
+          "objective": 4,
+          "answer_type": "Single Select",
+          "prompt": "What adjustment would best correct this issue?",
+          "options": [
+            "Adjust horizontal angulation",
+            "Increase vertical angulation",
+            "Decrease vertical angulation",
+            "Reposition sensor",
+            "Stabilize patient",
+            "Modify exposure settings"
+          ],
+          "expected": "Increase vertical angulation",
+          "feedback": "Increasing vertical angulation helps correct elongat",
+          "points": 2
+        },
+        {
+          "n": 5,
+          "key": "compare",
+          "objective": 6,
+          "answer_type": "Visual comparison",
+          "prompt": "Compare the original and corrected image",
+          "options": [],
+          "expected": "Corrected image shows more accurate tooth length",
+          "feedback": "Correcting vertical angulation improves anatomical representation and diagnostic quality",
+          "points": 0
+        }
+      ],
+      "points": 7
+    },
+    {
+      "id": "M1-04",
+      "name": "Foreshortened Premolar PA",
+      "modality": "Periapical",
+      "difficulty": 2,
+      "ground_truth": "Foreshortening",
+      "notes": "Vertical angulation too steep",
+      "finding": "The teeth appear foreshortened — short and stubby, with the roots projected shorter than their true length.",
+      "pearl": "Foreshortening = vertical angulation too steep. Decrease vertical angulation to lengthen the image.",
+      "steps": [
+        {
+          "n": 1,
+          "key": "diagnostic",
+          "objective": 1,
+          "answer_type": "Binary",
+          "prompt": "Is this radiograph diagnostic or non-diagnostic?",
+          "options": [
+            "Diagnostic",
+            "Non-diagnostic"
+          ],
+          "expected": "Non-diagnostic",
+          "feedback": "Foreshortening distorts anatomical structures and may limit diagnostic interpretation.",
+          "points": 1
+        },
+        {
+          "n": 2,
+          "key": "error",
+          "objective": 2,
+          "answer_type": "Single Select",
+          "prompt": "What is the primary radiographic error?",
+          "options": [
+            "Cone cut",
+            "Horizontal overlap",
+            "Elongation",
+            "Foreshortening",
+            "Motion artifact",
+            "Underexposure",
+            "Overexposure",
+            "Herringbone artifact"
+          ],
+          "expected": "Foreshortening",
+          "feedback": "The teeth appear shorter than their actual anatomical length",
+          "points": 2
+        },
+        {
+          "n": 3,
+          "key": "cause",
+          "objective": 3,
+          "answer_type": "Single Select",
+          "prompt": "What most likely caused this error?",
+          "options": [
+            "Sensor positioned incorrectly",
+            "Incorrect horizontal angulation",
+            "Insufficient vertical angulation",
+            "Excessive vertical angulation",
+            "Patient movement",
+            "Incorrect exposure settings"
+          ],
+          "expected": "Excessive vertical angulation",
+          "feedback": "Foreshortening occurs when the vertical angulation is too steep",
+          "points": 2
+        },
+        {
+          "n": 4,
+          "key": "correction",
+          "objective": 4,
+          "answer_type": "Single Select",
+          "prompt": "What adjustment would best correct this issue?",
+          "options": [
+            "Adjust horizontal angulation",
+            "Increase vertical angulation",
+            "Decrease vertical angulation",
+            "Reposition sensor",
+            "Stabilize patient",
+            "Modify exposure settings"
+          ],
+          "expected": "Decrease vertical angulation",
+          "feedback": "Decreasing vertical angulation helps correct foreshortening and improves image accuracy.",
+          "points": 2
+        },
+        {
+          "n": 5,
+          "key": "compare",
+          "objective": 6,
+          "answer_type": "Visual Comparison",
+          "prompt": "Compare original and corrected image",
+          "options": [],
+          "expected": "Corrected image shows more accurate tooth length and anatomical representation",
+          "feedback": "Correcting vertical angulation improves anatomical representation and diagnostic quality.",
+          "points": 0
+        }
+      ],
+      "points": 7
+    },
+    {
+      "id": "M1-05",
+      "name": "Motion Blur Molar BW",
+      "modality": "Bitewing",
+      "difficulty": 1,
+      "ground_truth": "Motion artifact",
+      "notes": "Patient movement during exposure",
+      "finding": "Tooth margins and the trabecular pattern are blurred and smeared, with loss of sharp detail across the image.",
+      "pearl": "Motion blur is unrecoverable — stabilize the patient and receptor and retake.",
+      "steps": [
+        {
+          "n": 1,
+          "key": "diagnostic",
+          "objective": 1,
+          "answer_type": "Binary",
+          "prompt": "Is this radiograph diagnostic or non-diagnostic?",
+          "options": [
+            "Diagnostic",
+            "Non-diagnostic"
+          ],
+          "expected": "Non-diagnostic",
+          "feedback": "",
+          "points": 1
+        },
+        {
+          "n": 2,
+          "key": "error",
+          "objective": 2,
+          "answer_type": "Single Select",
+          "prompt": "What is the primary radiographic error?",
+          "options": [
+            "Cone cut",
+            "Horizontal overlap",
+            "Elongation",
+            "Foreshortening",
+            "Motion artifact",
+            "Underexposure",
+            "Overexposure",
+            "Herringbone artifact"
+          ],
+          "expected": "Motion artifact",
+          "feedback": "Blurring of structures indicates movement during image acquisition.",
+          "points": 2
+        },
+        {
+          "n": 3,
+          "key": "cause",
+          "objective": 3,
+          "answer_type": "Single Select",
+          "prompt": "What most likely caused this error?",
+          "options": [
+            "Sensor positioned incorrectly",
+            "Incorrect horizontal angulation",
+            "Insufficient vertical angulation",
+            "Excessive vertical angulation",
+            "Patient movement",
+            "Incorrect exposure settings"
+          ],
+          "expected": "Patient movement",
+          "feedback": "Movement during exposure causes loss of image sharpness.",
+          "points": 2
+        },
+        {
+          "n": 4,
+          "key": "correction",
+          "objective": 4,
+          "answer_type": "Single Select",
+          "prompt": "What adjustment would best correct this issue?",
+          "options": [
+            "Adjust horizontal angulation",
+            "Increase vertical angulation",
+            "Decrease vertical angulation",
+            "Reposition sensor",
+            "Stabilize patient",
+            "Modify exposure settings"
+          ],
+          "expected": "Stabilize patient",
+          "feedback": "Reducing movement improves image clarity and diagnostic quality.",
+          "points": 2
+        },
+        {
+          "n": 5,
+          "key": "compare",
+          "objective": 6,
+          "answer_type": "Visual Comparison",
+          "prompt": "Compare original and corrected image",
+          "options": [],
+          "expected": "",
+          "feedback": "",
+          "points": 0
+        }
+      ],
+      "points": 7
+    },
+    {
+      "id": "M1-06",
+      "name": "Light Exposure BW",
+      "modality": "Bitewing",
+      "difficulty": 1,
+      "ground_truth": "Underexposure",
+      "notes": "Insufficient exposure settings",
+      "finding": "The image is uniformly too light (low density); structures appear faint and washed-out.",
+      "pearl": "A light image usually means underexposure — increase mAs/exposure time (or check kVp).",
+      "steps": [
+        {
+          "n": 1,
+          "key": "diagnostic",
+          "objective": 1,
+          "answer_type": "Binary",
+          "prompt": "Is this radiograph diagnostic or non-diagnostic?",
+          "options": [
+            "Diagnostic",
+            "Non-diagnostic"
+          ],
+          "expected": "Non-diagnostic",
+          "feedback": "",
+          "points": 1
+        },
+        {
+          "n": 2,
+          "key": "error",
+          "objective": 2,
+          "answer_type": "Single Select",
+          "prompt": "What is the primary radiographic error?",
+          "options": [
+            "Cone cut",
+            "Horizontal overlap",
+            "Elongation",
+            "Foreshortening",
+            "Motion artifact",
+            "Underexposure",
+            "Overexposure",
+            "Herringbone artifact"
+          ],
+          "expected": "Underexposure",
+          "feedback": "The image appears too light, limiting visualization of structures",
+          "points": 2
+        },
+        {
+          "n": 3,
+          "key": "cause",
+          "objective": 3,
+          "answer_type": "Single Select",
+          "prompt": "What most likely caused this error?",
+          "options": [
+            "Sensor positioned incorrectly",
+            "Incorrect horizontal angulation",
+            "Insufficient vertical angulation",
+            "Excessive vertical angulation",
+            "Patient movement",
+            "Incorrect exposure settings"
+          ],
+          "expected": "Incorrect exposure settings",
+          "feedback": "Insufficient exposure results in a light image with reduced diagnostic value.",
+          "points": 2
+        },
+        {
+          "n": 4,
+          "key": "correction",
+          "objective": 4,
+          "answer_type": "Single Select",
+          "prompt": "What adjustment would best correct this issue?",
+          "options": [
+            "Adjust horizontal angulation",
+            "Increase vertical angulation",
+            "Decrease vertical angulation",
+            "Reposition sensor",
+            "Stabilize patient",
+            "Modify exposure settings"
+          ],
+          "expected": "Modify exposure settings",
+          "feedback": "Increasing exposure improves image density and visibility.",
+          "points": 2
+        },
+        {
+          "n": 5,
+          "key": "compare",
+          "objective": 6,
+          "answer_type": "Visual Comparison",
+          "prompt": "Compare original and corrected image",
+          "options": [],
+          "expected": "",
+          "feedback": "",
+          "points": 0
+        }
+      ],
+      "points": 7
+    },
+    {
+      "id": "M1-07",
+      "name": "Dark Exposure PA",
+      "modality": "Periapical",
+      "difficulty": 1,
+      "ground_truth": "Overexposure",
+      "notes": "Excessive exposure settin",
+      "finding": "The image is uniformly too dark (high density); detail is lost within the dense areas.",
+      "pearl": "A dark image usually means overexposure — reduce exposure settings.",
+      "steps": [
+        {
+          "n": 1,
+          "key": "diagnostic",
+          "objective": 1,
+          "answer_type": "Binary",
+          "prompt": "Is this radiograph diagnostic or non-diagnostic?",
+          "options": [
+            "Diagnostic",
+            "Non-diagnostic"
+          ],
+          "expected": "Non-diagnostic",
+          "feedback": "",
+          "points": 1
+        },
+        {
+          "n": 2,
+          "key": "error",
+          "objective": 2,
+          "answer_type": "Single Select",
+          "prompt": "What is the primary radiographic error?",
+          "options": [
+            "Cone cut",
+            "Horizontal overlap",
+            "Elongation",
+            "Foreshortening",
+            "Motion artifact",
+            "Underexposure",
+            "Overexposure",
+            "Herringbone artifact"
+          ],
+          "expected": "Overexposure",
+          "feedback": "The image appears too dark, obscuring anatomical details.",
+          "points": 2
+        },
+        {
+          "n": 3,
+          "key": "cause",
+          "objective": 3,
+          "answer_type": "Single Select",
+          "prompt": "What most likely caused this error?",
+          "options": [
+            "Sensor positioned incorrectly",
+            "Incorrect horizontal angulation",
+            "Incorrect vertical angulation",
+            "Patient movement",
+            "Incorrect exposure settings"
+          ],
+          "expected": "Incorrect exposure settings",
+          "feedback": "Excessive exposure results in a dark image and loss of detail.",
+          "points": 2
+        },
+        {
+          "n": 4,
+          "key": "correction",
+          "objective": 4,
+          "answer_type": "Single Select",
+          "prompt": "What adjustment would best correct this issue?",
+          "options": [
+            "Adjust horizontal angulation",
+            "Reposition sensor",
+            "Adjust vertical angulation",
+            "Stabilize patient",
+            "Modify exposure settings"
+          ],
+          "expected": "Modify exposure settings",
+          "feedback": "Reducing exposure improves image quality and diagnostic value.",
+          "points": 2
+        },
+        {
+          "n": 5,
+          "key": "compare",
+          "objective": 6,
+          "answer_type": "Visual Comparison",
+          "prompt": "Compare original and corrected image",
+          "options": [],
+          "expected": "",
+          "feedback": "",
+          "points": 0
+        }
+      ],
+      "points": 7
+    },
+    {
+      "id": "M1-08",
+      "name": "Reversed Film Artifact",
+      "modality": "Intraoral",
+      "difficulty": 2,
+      "ground_truth": "Herringbone artifact",
+      "notes": "Receptor placed backward",
+      "finding": "A herringbone / tyre-track pattern is superimposed over the image, which also appears unusually light.",
+      "pearl": "The herringbone pattern means the receptor was placed backwards — reposition it emulsion-side to the beam.",
+      "steps": [
+        {
+          "n": 1,
+          "key": "diagnostic",
+          "objective": 1,
+          "answer_type": "Binary",
+          "prompt": "is this radiograph diagnostic or non-diagnostic?",
+          "options": [
+            "Diagnostic",
+            "Non-diagnostic"
+          ],
+          "expected": "Non-diagnostic",
+          "feedback": "",
+          "points": 1
+        },
+        {
+          "n": 2,
+          "key": "error",
+          "objective": 2,
+          "answer_type": "Single Select",
+          "prompt": "What is the primary radiographic error?",
+          "options": [
+            "Cone cut",
+            "Horizontal overlap",
+            "Elongation",
+            "Foreshortening",
+            "Motion artifact",
+            "Underexposure",
+            "Overexposure",
+            "Herringbone artifact"
+          ],
+          "expected": "Herringbone artifact",
+          "feedback": "The characteristic herringbone pattern indicates the receptor was placed backwards.",
+          "points": 2
+        },
+        {
+          "n": 3,
+          "key": "cause",
+          "objective": 3,
+          "answer_type": "Single Select",
+          "prompt": "What most likely caused this error?",
+          "options": [
+            "Sensor positioned incorrectly",
+            "Incorrect horizontal angulation",
+            "Insufficient vertical angulation",
+            "Excessive vertical angulation",
+            "Patient movement",
+            "Incorrect exposure settings"
+          ],
+          "expected": "Sensor positioned incorrectly",
+          "feedback": "The image receptor was reversed during exposure.",
+          "points": 2
+        },
+        {
+          "n": 4,
+          "key": "correction",
+          "objective": 4,
+          "answer_type": "Single Select",
+          "prompt": "What adjustment would best correct this issue?",
+          "options": [
+            "Adjust horizontal angulation",
+            "Increase vertical angulation",
+            "Decrease vertical angulation",
+            "Reposition sensor",
+            "Stabilize patient",
+            "Modify exposure settings"
+          ],
+          "expected": "Reposition sensor",
+          "feedback": "Correct sensor orientation prevents herringbone artifacts.",
+          "points": 2
+        },
+        {
+          "n": 5,
+          "key": "compare",
+          "objective": 6,
+          "answer_type": "Visual comparison",
+          "prompt": "Compare the original and corrected image",
+          "options": [],
+          "expected": "",
+          "feedback": "",
+          "points": 0
+        }
+      ],
+      "points": 7
+    },
+    {
+      "id": "M1-09",
+      "name": "Partial Cone Cut PA",
+      "modality": "Periapical",
+      "difficulty": 1,
+      "ground_truth": "Cone cut",
+      "notes": "PID misalignment",
+      "finding": "A blank, unexposed curved region cuts across part of the film, clipping the anatomy at one edge.",
+      "pearl": "Cone cut = the beam missed part of the receptor — center the PID over the whole receptor.",
+      "steps": [
+        {
+          "n": 1,
+          "key": "diagnostic",
+          "objective": 1,
+          "answer_type": "Binary",
+          "prompt": "Is this radiograph diagnostic or non-diagnostic?",
+          "options": [
+            "Diagnostic",
+            "Non-diagnostic"
+          ],
+          "expected": "Non-diagnostic",
+          "feedback": "",
+          "points": 1
+        },
+        {
+          "n": 2,
+          "key": "error",
+          "objective": 2,
+          "answer_type": "Single Select",
+          "prompt": "What is the primary radiographic error?",
+          "options": [
+            "Cone cut",
+            "Horizontal overlap",
+            "Elongation",
+            "Foreshortening",
+            "Motion artifact",
+            "Underexposure",
+            "Overexposure",
+            "Herringbone artifact"
+          ],
+          "expected": "Cone cut",
+          "feedback": "A portion of the receptor was not exposed by the X-ray beam.",
+          "points": 2
+        },
+        {
+          "n": 3,
+          "key": "cause",
+          "objective": 3,
+          "answer_type": "Single Select",
+          "prompt": "What most likely caused this error?",
+          "options": [
+            "Sensor positioned incorrectly",
+            "Incorrect horizontal angulation",
+            "Insufficient vertical angulation",
+            "Excessive vertical angulation",
+            "Patient movement",
+            "Incorrect exposure settings"
+          ],
+          "expected": "Sensor positioned incorrectly",
+          "feedback": "The X-ray beam did not fully cover the receptor",
+          "points": 2
+        },
+        {
+          "n": 4,
+          "key": "correction",
+          "objective": 4,
+          "answer_type": "Single Select",
+          "prompt": "What adjustment would best correct this issue?",
+          "options": [
+            "Adjust horizontal angulation",
+            "Increase vertical angulation",
+            "Decrease vertical angulation",
+            "Reposition sensor",
+            "Stabilize patient",
+            "Modify exposure settings"
+          ],
+          "expected": "Reposition sensor",
+          "feedback": "Proper alignment ensures complete receptor coverage.",
+          "points": 2
+        },
+        {
+          "n": 5,
+          "key": "compare",
+          "objective": 6,
+          "answer_type": "Visual Comparison",
+          "prompt": "Compare original and corrected image",
+          "options": [],
+          "expected": "",
+          "feedback": "",
+          "points": 0
+        }
+      ],
+      "points": 7
+    },
+    {
+      "id": "M1-10",
+      "name": "Overlapped Premolar Contacts",
+      "modality": "Bitewing",
+      "difficulty": 2,
+      "ground_truth": "Horizontal overlap",
+      "notes": "Difficult caries visualization",
+      "finding": "The premolar proximal contacts are overlapped, obscuring the interproximal surfaces where caries would be seen.",
+      "pearl": "Overlap hides interproximal caries — reangle horizontally so contacts open before diagnosing.",
+      "steps": [
+        {
+          "n": 1,
+          "key": "diagnostic",
+          "objective": 1,
+          "answer_type": "Binary",
+          "prompt": "Is this radiograph diagnostic or non-diagnostic?",
+          "options": [
+            "Diagnostic",
+            "Non-diagnostic"
+          ],
+          "expected": "Non-diagnostic",
+          "feedback": "",
+          "points": 1
+        },
+        {
+          "n": 2,
+          "key": "error",
+          "objective": 2,
+          "answer_type": "Single Select",
+          "prompt": "What is the primary radiographic error?",
+          "options": [
+            "Cone cut",
+            "Horizontal overlap",
+            "Elongation",
+            "Foreshortening",
+            "Motion artifact",
+            "Underexposure",
+            "Overexposure",
+            "Herringbone artifact"
+          ],
+          "expected": "Horizontal overlap",
+          "feedback": "Overlapping contacts prevent accurate interproximal evaluation.",
+          "points": 2
+        },
+        {
+          "n": 3,
+          "key": "cause",
+          "objective": 3,
+          "answer_type": "Single Select",
+          "prompt": "What most likely caused this error?",
+          "options": [
+            "Sensor positioned incorrectly",
+            "Incorrect horizontal angulation",
+            "Insufficient vertical angulation",
+            "Excessive vertical angulation",
+            "Patient movement",
+            "Incorrect exposure settings"
+          ],
+          "expected": "Incorrect horizontal angulation",
+          "feedback": "Improper horizontal angulation causes contact overlap",
+          "points": 2
+        },
+        {
+          "n": 4,
+          "key": "correction",
+          "objective": 4,
+          "answer_type": "Single Select",
+          "prompt": "What adjustment would best correct this issue?",
+          "options": [
+            "Adjust horizontal angulation",
+            "Increase vertical angulation",
+            "Decrease vertical angulation",
+            "Reposition sensor",
+            "Stabilize patient",
+            "Modify exposure settings"
+          ],
+          "expected": "Adjust horizontal angulation",
+          "feedback": "Proper horizontal angulation opens contacts for interpretation.",
+          "points": 2
+        },
+        {
+          "n": 5,
+          "key": "compare",
+          "objective": 6,
+          "answer_type": "Visual Comparison",
+          "prompt": "Compare original and corrected image",
+          "options": [],
+          "expected": "",
+          "feedback": "",
+          "points": 0
+        }
+      ],
+      "points": 7
+    }
+  ],
+  "total_points": 63
+}
