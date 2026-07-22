@@ -67,7 +67,7 @@
     return '<div class="p4-view"><div class="p1-film' + (clickable ? " m5-clickable" : "") + '" id="film">' +
       '<div class="p1-corner tl"></div><div class="p1-corner tr"></div><div class="p1-corner bl"></div><div class="p1-corner br"></div>' +
       icon('<rect x="4" y="5" width="16" height="14" rx="2"/><path d="M9 5v14M13 5v14M17 5v14"/>', 1.1, 42) +
-      '<div class="p1-mod">' + esc(c.id) + " · " + esc(c.name) + "</div>" + dot +
+      '<div class="p1-mod">' + esc(c.id) + "</div>" + dot +
       (clickable ? '<div class="m5-hint">Click to place your marker</div>' : "") + "</div>" +
       '<div class="vcap"><div class="roinote">Representative film · illustrative (reference image pending)</div>' +
       '<div class="finding">Evaluate the radiograph and work through the steps — the diagnosis is revealed as you go.</div></div></div>';

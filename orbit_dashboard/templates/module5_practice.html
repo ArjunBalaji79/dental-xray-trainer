@@ -18,7 +18,7 @@
     {% for c in m5.cases %}
     <div class="sb-plain-item" data-caseidx="{{ loop.index0 }}">
       <div class="sb-li-id">{{ c.id }}</div>
-      <div class="sb-li-name">{{ c.name }}</div>
+      <div class="sb-li-name">Case {{ loop.index }}</div>
     </div>
     {% endfor %}
   </div>
