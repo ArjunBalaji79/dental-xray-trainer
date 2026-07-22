@@ -24,6 +24,7 @@ HERE = Path(__file__).resolve().parent
 DATA_FILE = HERE / "data" / "orbit.json"
 MODULE4_FILE = HERE / "data" / "module4_cases.json"
 MODULE1_FILE = HERE / "data" / "module1_cases.json"
+MODULE5_FILE = HERE / "data" / "module5_cases.json"
 
 DIFFICULTY = {
     1: {"label": "Obvious / basic", "short": "Basic", "cls": "diff1"},
@@ -45,13 +46,14 @@ CASES = DATA["cases"]
 BUILDOUT = DATA["buildout"]
 MODULE4 = load_json(MODULE4_FILE)
 MODULE1 = load_json(MODULE1_FILE)
+MODULE5 = load_json(MODULE5_FILE)
 
 MODULES_BY_NUM = {m["number"]: m for m in MODULES}
 CASES_BY_ID = {c["id"]: c for c in CASES}
 M4_BY_ID = {c["id"]: c for c in MODULE4["cases"]}
 
 # Modules that have a functioning interactive trainer -> its route endpoint.
-PRACTICE_ENDPOINTS = {1: "module1_practice", 4: "module4_practice"}
+PRACTICE_ENDPOINTS = {1: "module1_practice", 4: "module4_practice", 5: "module5_practice"}
 
 app = Flask(__name__)
 
@@ -127,6 +129,11 @@ def module(number: int):
 @app.route("/module/1/practice")
 def module1_practice():
     return render_template("module1_practice.html", page="modules", m1=MODULE1)
+
+
+@app.route("/module/5/practice")
+def module5_practice():
+    return render_template("module5_practice.html", page="modules", m5=MODULE5)
 
 
 @app.route("/module/4/practice")

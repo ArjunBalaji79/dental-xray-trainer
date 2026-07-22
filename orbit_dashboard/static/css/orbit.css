@@ -392,3 +392,15 @@ svg.glyph{display:inline-block; vertical-align:middle}
 .p1-corner.br{bottom:8px; right:8px; border-left:0; border-top:0}
 .choices--two{display:grid; grid-template-columns:1fr 1fr; gap:8px}
 .choices--two .choice{margin-bottom:0}
+
+/* Module 5 — area marker, AI panel */
+.m5-clickable{cursor:crosshair}
+.m5-marker{position:absolute; width:26px; height:26px; margin:-13px 0 0 -13px; border:2px solid #ffd23f;
+  border-radius:50%; box-shadow:0 0 0 2px rgba(0,0,0,.35),0 0 12px rgba(255,210,63,.6)}
+.m5-hint{position:absolute; bottom:10px; left:0; right:0; text-align:center; font-size:11px; color:#9aa7b4}
+.ai-panel{display:flex; gap:10px; align-items:flex-start; padding:11px 12px; margin-bottom:10px;
+  background:var(--ai-fill); border:1px solid var(--ai-border); border-radius:var(--r-card)}
+.ai-panel .glyph{color:var(--action); flex:0 0 16px}
+.ai-lab{font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--ai-text)}
+.ai-txt{font-size:13px; color:var(--ink); margin-top:3px; line-height:1.45}
+.p4-sub{font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.03em; color:var(--muted); margin-bottom:6px}

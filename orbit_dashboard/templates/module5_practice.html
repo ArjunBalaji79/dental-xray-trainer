@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% from "_macros.html" import sb_row %}
+{% block title %}Module 5 Practice · Interpretation &amp; AI Comparison — {{ platform.name }}{% endblock %}
+
+{% block storyboard %}
+  <div class="sb-eyebrow">Module 5 · Practice</div>
+  <div class="sb-title">{{ m5.module.title }}</div>
+  <div class="sb-goal">{{ m5.module.goal }}</div>
+  <div class="sb-chip" style="margin-top:10px">{{ icon('ai', 12) }}&nbsp;AI comparison · built-in</div>
+  <div class="sb-div"></div>
+  {{ sb_row('layers', 'Cases', m5.cases | length) }}
+  <div class="sb-row"><span class="glyph">{{ icon('target', 16) }}</span><div><div class="sb-fl">Session score</div><div class="sb-fv" id="sb-score">0 / {{ m5.total_points }} pts</div></div></div>
+  <div class="sb-row"><span class="glyph">{{ icon('ai', 16) }}</span><div><div class="sb-fl">AI decisions</div><div class="sb-fv" id="sb-acc">—</div></div></div>
+  <div class="sb-div"></div>
+  <div class="sb-fl" style="margin-bottom:8px">Cases</div>
+  <div id="sb-caselist">
+    {% for c in m5.cases %}
+    <div class="sb-plain-item" data-caseidx="{{ loop.index0 }}">
+      <div class="sb-li-id">{{ c.id }}</div>
+      <div class="sb-li-name">{{ c.name }}</div>
+    </div>
+    {% endfor %}
+  </div>
+{% endblock %}
+
+{% block content %}
+<div class="crumbs">
+  <a href="{{ url_for('overview') }}">Overview</a><span class="sep">›</span>
+  <a href="{{ url_for('module', number=5) }}">Module 5</a><span class="sep">›</span>Practice
+</div>
+
+<div class="section-banner">
+  <span class="section-kicker">Module 5 · Practice</span>
+  <h2>Radiographic Interpretation &amp; AI Comparison</h2>
+  <span class="sub">Mark area → tooth &amp; surface → finding → AI decision → faculty review</span>
+</div>
+
+<div class="p4-progresswrap" id="p5-progress" style="display:none">
+  <span class="lab" id="p5-lab">Case 1 of {{ m5.cases | length }}</span>
+  <div class="bar"><span id="p5-bar" style="width:0%"></span></div>
+  <span class="lab" id="p5-score">0 pts</span>
+</div>
+
+<div id="p5-app"><!-- rendered by module5.js --></div>
+
+<script type="application/json" id="m5-data">{{ m5 | tojson }}</script>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/module5.js') }}"></script>
+{% endblock %}

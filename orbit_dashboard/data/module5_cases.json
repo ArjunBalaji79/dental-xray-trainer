@@ -1,0 +1,609 @@
+{
+  "module": {
+    "number": 5,
+    "title": "Radiographic Interpretation & AI Comparison",
+    "goal": "Apply structured diagnostic reasoning to identify pathology, then compare, refine, and justify interpretations through AI-assisted dialogue and feedback.",
+    "objectives": [
+      {
+        "n": 1,
+        "text": "Correctly identify common radiographic findings, including caries, bone loss, periapical lesions, and restorative defects, with ≥90% accuracy",
+        "target": "≥90%",
+        "kind": "mastery"
+      },
+      {
+        "n": 2,
+        "text": "Correctly identify the affected tooth and surface associated with a radiographic finding with ≥90% accuracy",
+        "target": "≥90%",
+        "kind": "mastery"
+      },
+      {
+        "n": 3,
+        "text": "Use radiographic evidence, including radiolucency pattern, location, border definition, and surrounding structures, to support diagnostic decisions in ≥90% of responses",
+        "target": "≥90%",
+        "kind": "mastery"
+      },
+      {
+        "n": 4,
+        "text": "Differentiate true pathology from overlapping structures, artifacts, or normal anatomy in ≥90% of cases",
+        "target": "≥90%",
+        "kind": "mastery"
+      },
+      {
+        "n": 5,
+        "text": "Compare personal diagnostic interpretations with AI-generated feedback and determine whether the AI interpretation is correct in ≥90% of cases",
+        "target": "≥90%",
+        "kind": "mastery"
+      },
+      {
+        "n": 6,
+        "text": "Appropriately accept, refine, or challenge AI-generated interpretations using radiographic evidence in ≥90% of interactions",
+        "target": "≥90%",
+        "kind": "mastery"
+      },
+      {
+        "n": 7,
+        "text": "Demonstrate improvement in diagnostic accuracy after AI dialogue or annotation review in ≥15% of applicable cases",
+        "target": "≥15%",
+        "kind": "improvement"
+      },
+      {
+        "n": 8,
+        "text": "Avoid changing a correct diagnosis to an incorrect diagnosis after AI or annotation feedback in ≥90% of applicable cases",
+        "target": "≥90%",
+        "kind": "mastery"
+      },
+      {
+        "n": 9,
+        "text": "Demonstrate improved confidence calibration by aligning confidence scores with diagnostic accuracy in ≥90% of cases",
+        "target": "≥90%",
+        "kind": "mastery"
+      }
+    ]
+  },
+  "cases": [
+    {
+      "id": "M5-01",
+      "name": "Interproximal Caries – #30 Mesial",
+      "difficulty": 2,
+      "ground_truth": "Interproximal caries on #30M",
+      "notes": "Introductory Module 5 case",
+      "ai_correct": true,
+      "steps": [
+        {
+          "n": 1,
+          "kind": "area",
+          "objective": "2",
+          "answer_type": "Area Selection",
+          "prompt": "Review the radiograph below. Mark the area you would like to evaluate first by placing a marker or drawing a box.",
+          "options": [
+            "Marker or Box"
+          ],
+          "expected": "Area marked includes the mesial interproximal lesion on tooth #30.",
+          "feedback": "The selected area should include the interproximal radiolucency on the mesial surface of tooth #30.",
+          "points": 2,
+          "ai_interpretation": ""
+        },
+        {
+          "n": 2,
+          "kind": "tooth",
+          "objective": "2",
+          "answer_type": "Interactive Odontogram",
+          "prompt": "Identify the tooth associated with the selected area and select the affected surface.",
+          "options": [
+            "Interactive Odontogram"
+          ],
+          "expected": "Tooth #30; Mesial surface",
+          "feedback": "The selected area corresponds to tooth #30 on the mesial surface.",
+          "points": 2,
+          "ai_interpretation": "",
+          "tooth": "#30",
+          "surface": "Mesial",
+          "tooth_options": [
+            "#3",
+            "#14",
+            "#19",
+            "#29",
+            "#30"
+          ],
+          "surface_options": [
+            "Mesial",
+            "Distal",
+            "Occlusal",
+            "Buccal",
+            "Lingual",
+            "Apical"
+          ],
+          "needs_surface": true
+        },
+        {
+          "n": 3,
+          "kind": "select",
+          "objective": "1",
+          "answer_type": "Single Select",
+          "prompt": "What is the primary radiographic finding?",
+          "options": [
+            "Interproximal caries",
+            "Recurrent caries",
+            "Occlusal caries",
+            "Bone loss",
+            "Periapical lesion",
+            "Normal anatomy",
+            "Radiographic artifact"
+          ],
+          "expected": "Interproximal caries",
+          "feedback": "The radiolucency on the mesial surface of tooth #30 is consistent with interproximal caries.",
+          "points": 2,
+          "ai_interpretation": ""
+        },
+        {
+          "n": 4,
+          "kind": "ai",
+          "objective": "5,6",
+          "answer_type": "Single Select",
+          "prompt": "Review the AI interpretation below. Based on your interpretation of the radiograph, how would you like to proceed?",
+          "options": [
+            "Keep my original interpretation",
+            "Revise my interpretation",
+            "I'm uncertain (Launches Coaching workflow)"
+          ],
+          "expected": "Student evaluates the AI interpretation and decides whether to keep or revise the original interpretation or request AI guidance.",
+          "feedback": "Compare the AI interpretation with your own assessment. Use the radiographic evidence to determine whether your original interpretation should be maintained or revised.",
+          "points": 2,
+          "ai_interpretation": "Identified Interproximal caries on the mesial surface of tooth #30.",
+          "ai_correct": true,
+          "correct_options": [
+            "Accept AI interpretation",
+            "Keep my original interpretation"
+          ]
+        },
+        {
+          "n": 5,
+          "kind": "faculty",
+          "objective": "9",
+          "answer_type": "Faculty Review",
+          "prompt": "Review the annotated radiograph and faculty explanation.",
+          "options": [],
+          "expected": "Faculty review completed",
+          "feedback": "The annotated image demonstrates interproximal caries on the mesial surface of tooth #30. The lesion appears as a triangular radiolucency extending beyond the dentinoenamel junction. Differentiate this appearance from cervical burnout, which has diffuse borders and occurs near the cementoenamel junction.",
+          "points": 0,
+          "ai_interpretation": "",
+          "expert": {
+            "correct": "",
+            "why": "",
+            "pitfall": "",
+            "teaching": "",
+            "pearls": ""
+          }
+        }
+      ],
+      "points": 8
+    },
+    {
+      "id": "M5-02",
+      "name": "Recurrent Decay Under Crown",
+      "difficulty": 3,
+      "ground_truth": "Recurrent caries on #19D",
+      "notes": "Subtle radiolucency beneath crown margin",
+      "ai_correct": true,
+      "steps": [
+        {
+          "n": 1,
+          "kind": "area",
+          "objective": "2",
+          "answer_type": "Area Selection",
+          "prompt": "Review the radiograph below. Mark the area you would like to evaluate first by placing a marker or drawing a box.",
+          "options": [
+            "Marker or Box"
+          ],
+          "expected": "Area marked includes the distal crown margin of tooth #19",
+          "feedback": "The selected area should include the radiolucency beneath the distal crown margin on tooth #19.",
+          "points": 2,
+          "ai_interpretation": ""
+        },
+        {
+          "n": 2,
+          "kind": "tooth",
+          "objective": "2",
+          "answer_type": "Tooth Selection",
+          "prompt": "Identify the tooth associated with the area you selected.",
+          "options": [
+            "Interactive Odontogram"
+          ],
+          "expected": "Tooth #19",
+          "feedback": "The selected area corresponds to tooth #19.",
+          "points": 2,
+          "ai_interpretation": "",
+          "tooth": "#19",
+          "surface": null,
+          "tooth_options": [
+            "#3",
+            "#14",
+            "#19",
+            "#29",
+            "#30"
+          ],
+          "surface_options": [
+            "Mesial",
+            "Distal",
+            "Occlusal",
+            "Buccal",
+            "Lingual",
+            "Apical"
+          ],
+          "needs_surface": false
+        },
+        {
+          "n": 3,
+          "kind": "select",
+          "objective": "1",
+          "answer_type": "Single Select",
+          "prompt": "What is the primary radiographic finding?",
+          "options": [
+            "Interproximal caries",
+            "Recurrent caries",
+            "Occlusal caries",
+            "Bone loss",
+            "Periapical lesion",
+            "Normal anatomy",
+            "Radiographic artifact"
+          ],
+          "expected": "Recurrent caries",
+          "feedback": "The radiolucency beneath the distal crown margin is consistent with recurrent caries.",
+          "points": 2,
+          "ai_interpretation": ""
+        },
+        {
+          "n": 4,
+          "kind": "ai",
+          "objective": "5,6",
+          "answer_type": "Single Select",
+          "prompt": "Review the AI interpretation below. Based on your interpretation of the radiograph, how would you like to proceed?",
+          "options": [
+            "Keep my original interpretation",
+            "Revise my interpretation",
+            "I'm uncertain"
+          ],
+          "expected": "Student evaluates the AI interpretation and decides whether to keep or revise the original interpretation. If the student selects \"I'm uncertain,\" ORBIT launches the AI Coaching workflow.",
+          "feedback": "Compare the AI interpretation with your own assessment. If you remain uncertain, use the AI Coaching guidance to help you arrive at your final interpretation.",
+          "points": 2,
+          "ai_interpretation": "I identified recurrent caries beneath the distal crown margin of tooth #19.",
+          "ai_correct": true,
+          "correct_options": [
+            "Accept AI interpretation",
+            "Keep my original interpretation"
+          ]
+        },
+        {
+          "n": 5,
+          "kind": "faculty",
+          "objective": "9",
+          "answer_type": "Faculty Review",
+          "prompt": "Recurrent caries on the distal surface of tooth #19 beneath the crown margin",
+          "options": [],
+          "expected": "Faculty review completed",
+          "feedback": "The annotated image demonstrates recurrent caries beneath the distal crown margin of tooth #19. Recurrent caries often appears as a radiolucency adjacent to an existing restoration or crown margin. Careful evaluation of restoration margins is essential to distinguish recurrent decay from restorative materials or radiographic artifacts.",
+          "points": 0,
+          "ai_interpretation": "",
+          "expert": {
+            "correct": "Recurrent caries on the distal surface of tooth #19 beneath the crown margin.",
+            "why": "The radiolucency is located beneath the distal margin of the crown and extends into the adjacent tooth structure, a classic radiographic appearance of recurrent caries.",
+            "pitfall": "Students often mistake radiolucencies beneath restoration margins for restorative material, burnout, or radiographic artifact rather than recurrent caries.",
+            "teaching": "Carefully evaluate all restoration and crown margins for radiolucencies.\n• Compare the radiographic density beneath the restoration with the surrounding dentin.\n• Correlate the radiographic appearance with the patient's caries risk and clinical findings.",
+            "pearls": "Always inspect restoration margins systematically—small radiolucencies beneath a crown or restoration may represent early recurrent caries before clinical symptoms develop."
+          }
+        }
+      ],
+      "points": 8
+    },
+    {
+      "id": "M5-03",
+      "name": "Early Horizontal Bone Loss",
+      "difficulty": 2,
+      "ground_truth": "Mild horizontal bone loss",
+      "notes": "Requires identifying crestal bone changes",
+      "ai_correct": true,
+      "steps": [
+        {
+          "n": 1,
+          "kind": "area",
+          "objective": "2",
+          "answer_type": "Area Selection",
+          "prompt": "Review the radiograph below. Mark the area you would like to evaluate first by placing a marker or drawing a box.",
+          "options": [
+            "Marker or Box"
+          ],
+          "expected": "Area marked includes the crestal bone between teeth #19 and #20.",
+          "feedback": "The selected area should include the crestal bone where early horizontal bone loss is present.",
+          "points": 2,
+          "ai_interpretation": ""
+        },
+        {
+          "n": 2,
+          "kind": "tooth",
+          "objective": "2",
+          "answer_type": "Interactive Odontogram",
+          "prompt": "Identify the tooth associated with the selected area and select the affected surface.",
+          "options": [
+            "Interactive Odontogram"
+          ],
+          "expected": "Tooth #19; Distal surface",
+          "feedback": "The selected region is associated with the distal surface of tooth #19.",
+          "points": 2,
+          "ai_interpretation": "",
+          "tooth": "#19",
+          "surface": "Distal",
+          "tooth_options": [
+            "#3",
+            "#14",
+            "#19",
+            "#29",
+            "#30"
+          ],
+          "surface_options": [
+            "Mesial",
+            "Distal",
+            "Occlusal",
+            "Buccal",
+            "Lingual",
+            "Apical"
+          ],
+          "needs_surface": true
+        },
+        {
+          "n": 4,
+          "kind": "ai",
+          "objective": "5,6",
+          "answer_type": "Single Select",
+          "prompt": "The AI identified early horizontal bone loss between teeth #19 and #20. Based on your interpretation, would you like to accept, revise, or keep your original interpretation?",
+          "options": [
+            "Accept AI interpretation",
+            "Revise my interpretation",
+            "Keep my original interpretation"
+          ],
+          "expected": "Student makes a clinical decision after reviewing the AI interpretation",
+          "feedback": "The AI interpretation should be considered together with the radiographic evidence before making a final decision.",
+          "points": 2,
+          "ai_interpretation": "",
+          "ai_correct": true,
+          "correct_options": [
+            "Accept AI interpretation",
+            "Keep my original interpretation"
+          ]
+        }
+      ],
+      "points": 6
+    },
+    {
+      "id": "M5-04",
+      "name": "Distal Caries vs Overlap",
+      "difficulty": 2,
+      "ground_truth": "Interproximal caries on #30D",
+      "notes": "Differentiate true caries from contact overlap",
+      "ai_correct": false,
+      "steps": [
+        {
+          "n": 1,
+          "kind": "area",
+          "objective": "2",
+          "answer_type": "Area Selection",
+          "prompt": "Review the radiograph below. Mark the area you would like to evaluate first by placing a marker or drawing a box.",
+          "options": [
+            "Marker or Box"
+          ],
+          "expected": "Area marked includes the distal interproximal surface of tooth #30.",
+          "feedback": "The selected area should include the suspicious radiolucency adjacent to the distal surface of tooth #30.",
+          "points": 2,
+          "ai_interpretation": ""
+        },
+        {
+          "n": 2,
+          "kind": "tooth",
+          "objective": "2",
+          "answer_type": "Interactive Odontogram",
+          "prompt": "Identify the tooth associated with the selected area and select the affected surface.",
+          "options": [
+            "Interactive Odontogram"
+          ],
+          "expected": "Tooth #30; Distal surface",
+          "feedback": "The selected area corresponds to the distal surface of tooth #30.",
+          "points": 2,
+          "ai_interpretation": "",
+          "tooth": "#30",
+          "surface": "Distal",
+          "tooth_options": [
+            "#3",
+            "#14",
+            "#19",
+            "#29",
+            "#30"
+          ],
+          "surface_options": [
+            "Mesial",
+            "Distal",
+            "Occlusal",
+            "Buccal",
+            "Lingual",
+            "Apical"
+          ],
+          "needs_surface": true
+        },
+        {
+          "n": 3,
+          "kind": "select",
+          "objective": "1",
+          "answer_type": "Single Select",
+          "prompt": "What is the primary radiographic finding?",
+          "options": [
+            "Interproximal caries",
+            "Recurrent caries",
+            "Horizontal bone loss",
+            "Periapical lesion",
+            "Normal anatomy",
+            "Radiographic artifact"
+          ],
+          "expected": "Interproximal caries",
+          "feedback": "The radiolucency is consistent with interproximal caries rather than simple contact overlap.",
+          "points": 2,
+          "ai_interpretation": ""
+        },
+        {
+          "n": 4,
+          "kind": "ai",
+          "objective": "5,6",
+          "answer_type": "Single Select",
+          "prompt": "The AI identified contact overlap rather than caries. Based on your interpretation, would you like to accept, revise, or keep your original interpretation?",
+          "options": [
+            "Accept AI interpretation",
+            "Revise my interpretation",
+            "Keep my original interpretation"
+          ],
+          "expected": "Student makes a clinical decision after reviewing the AI interpretation",
+          "feedback": "Compare the AI interpretation with the radiographic evidence before making your final decision.",
+          "points": 2,
+          "ai_interpretation": "",
+          "ai_correct": false,
+          "correct_options": [
+            "Keep my original interpretation"
+          ]
+        },
+        {
+          "n": 5,
+          "kind": "faculty",
+          "objective": "9",
+          "answer_type": "Faculty Review",
+          "prompt": "Review the annotated radiograph and faculty explanation.",
+          "options": [],
+          "expected": "Faculty review completed",
+          "feedback": "The faculty review demonstrates that the radiolucency extends beyond the normal appearance of contact overlap and is consistent with interproximal caries. Evaluate lesion shape, border definition, and extension beyond the enamel when distinguishing caries from overlap.",
+          "points": 0,
+          "ai_interpretation": "",
+          "expert": {
+            "correct": "",
+            "why": "",
+            "pitfall": "",
+            "teaching": "",
+            "pearls": ""
+          }
+        }
+      ],
+      "points": 8
+    },
+    {
+      "id": "M5-05",
+      "name": "Mental Foramen vs. Periapical Pathology",
+      "difficulty": 3,
+      "ground_truth": "Mental foramen (normal anatomy)",
+      "notes": "AI may incorrectly suggest periapical pathology",
+      "ai_correct": false,
+      "steps": [
+        {
+          "n": 1,
+          "kind": "area",
+          "objective": "2",
+          "answer_type": "Area Selection",
+          "prompt": "Review the radiograph below. Mark the area you would like to evaluate first by placing a marker or drawing a box.",
+          "options": [
+            "Marker or Box"
+          ],
+          "expected": "Area marked includes the radiolucency adjacent to the apex of tooth #29.",
+          "feedback": "The selected area should include the radiolucency in the premolar region near tooth #29.",
+          "points": 2,
+          "ai_interpretation": ""
+        },
+        {
+          "n": 2,
+          "kind": "tooth",
+          "objective": "2",
+          "answer_type": "Interactive Odontogram",
+          "prompt": "Identify the tooth associated with the selected area and select the affected surface.",
+          "options": [
+            "Interactive Odontogram"
+          ],
+          "expected": "Tooth #29; Apical region",
+          "feedback": "The selected area is associated with the apical region of tooth #29.",
+          "points": 2,
+          "ai_interpretation": "",
+          "tooth": "#29",
+          "surface": "Apical",
+          "tooth_options": [
+            "#3",
+            "#14",
+            "#19",
+            "#29",
+            "#30"
+          ],
+          "surface_options": [
+            "Mesial",
+            "Distal",
+            "Occlusal",
+            "Buccal",
+            "Lingual",
+            "Apical"
+          ],
+          "needs_surface": true
+        },
+        {
+          "n": 3,
+          "kind": "select",
+          "objective": "1",
+          "answer_type": "Single Select",
+          "prompt": "What is the primary radiographic finding?",
+          "options": [
+            "Interproximal caries",
+            "Recurrent caries",
+            "Horizontal bone loss",
+            "Vertical bone loss",
+            "Periapical lesion",
+            "Normal anatomy",
+            "Radiographic artifact"
+          ],
+          "expected": "Normal anatomy (Mental foramen)",
+          "feedback": "The radiolucency is consistent with the mental foramen, a normal anatomical structure, rather than a periapical lesion.",
+          "points": 2,
+          "ai_interpretation": ""
+        },
+        {
+          "n": 4,
+          "kind": "ai",
+          "objective": "5,6",
+          "answer_type": "Single Select",
+          "prompt": "Review the AI interpretation below. Based on your interpretation of the radiograph, how would you like to proceed?",
+          "options": [
+            "Keep my original interpretation",
+            "Revise my interpretation",
+            "I'm uncertain"
+          ],
+          "expected": "Student evaluates the AI interpretation and decides whether to keep or revise the original interpretation or request AI Coaching.",
+          "feedback": "Compare the AI interpretation with the radiographic evidence. Evaluate the position of the lamina dura, periodontal ligament space, and the location of the radiolucency before making your final decision.",
+          "points": 2,
+          "ai_interpretation": "I identified a periapical lesion associated with tooth #29.",
+          "ai_correct": false,
+          "correct_options": [
+            "Keep my original interpretation"
+          ]
+        },
+        {
+          "n": 5,
+          "kind": "faculty",
+          "objective": "9",
+          "answer_type": "Faculty Review",
+          "prompt": "Review the annotated radiograph and faculty explanation.",
+          "options": [],
+          "expected": "Faculty review completed",
+          "feedback": "The annotated image demonstrates the mental foramen, a normal anatomical landmark commonly mistaken for a periapical lesion. An intact lamina dura and normal periodontal ligament space help distinguish normal anatomy from pathology. Always correlate the radiographic appearance with the tooth's clinical status before diagnosing periapical disease.",
+          "points": 0,
+          "ai_interpretation": "",
+          "expert": {
+            "correct": "",
+            "why": "",
+            "pitfall": "",
+            "teaching": "",
+            "pearls": ""
+          }
+        }
+      ],
+      "points": 8
+    }
+  ],
+  "total_points": 38
+}
