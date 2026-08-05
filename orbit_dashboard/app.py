@@ -63,18 +63,27 @@ app = Flask(__name__)
 # ---------------------------------------------------------------------------
 # Anthropic key resolution (env first, then the project's Streamlit secrets)
 # ---------------------------------------------------------------------------
+def _key_from(path: Path) -> str:
+    try:
+        if path.exists():
+            m = re.search(r'ANTHROPIC_API_KEY\s*=\s*["\']?([^"\'\n]+)', path.read_text())
+            if m:
+                return m.group(1).strip()
+    except Exception:
+        pass
+    return ""
+
+
 def anthropic_key() -> str:
+    # env var wins (this is what Vercel injects); then local .env / secrets for dev.
     key = os.environ.get("ANTHROPIC_API_KEY", "").strip()
     if key:
         return key
-    secrets = HERE.parent / ".streamlit" / "secrets.toml"
-    if secrets.exists():
-        try:
-            m = re.search(r'ANTHROPIC_API_KEY\s*=\s*["\']?([^"\'\n]+)', secrets.read_text())
-            if m:
-                return m.group(1).strip()
-        except Exception:
-            pass
+    for p in (HERE / ".env", HERE.parent / ".env",
+              HERE.parent / ".streamlit" / "secrets.toml"):
+        k = _key_from(p)
+        if k:
+            return k
     return ""
 
 
