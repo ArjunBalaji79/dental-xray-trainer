@@ -404,3 +404,5 @@ svg.glyph{display:inline-block; vertical-align:middle}
 .ai-lab{font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--ai-text)}
 .ai-txt{font-size:13px; color:var(--ink); margin-top:3px; line-height:1.45}
 .p4-sub{font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.03em; color:var(--muted); margin-bottom:6px}
+
+.imgwrap.m5-clickable{cursor:crosshair}

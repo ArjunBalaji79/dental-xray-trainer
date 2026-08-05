@@ -176,7 +176,8 @@
           }
         }
       ],
-      "points": 8
+      "points": 8,
+      "image": "denpar/m5_M5-01.jpg"
     },
     {
       "id": "M5-02",
@@ -293,7 +294,8 @@
           }
         }
       ],
-      "points": 8
+      "points": 8,
+      "image": "denpar/m5_M5-02.jpg"
     },
     {
       "id": "M5-03",
@@ -371,7 +373,8 @@
           ]
         }
       ],
-      "points": 6
+      "points": 6,
+      "image": "denpar/m5_M5-03.jpg"
     },
     {
       "id": "M5-04",
@@ -486,7 +489,8 @@
           }
         }
       ],
-      "points": 8
+      "points": 8,
+      "image": "denpar/m5_M5-04.jpg"
     },
     {
       "id": "M5-05",
@@ -602,7 +606,8 @@
           }
         }
       ],
-      "points": 8
+      "points": 8,
+      "image": "denpar/m5_M5-05.jpg"
     }
   ],
   "total_points": 38

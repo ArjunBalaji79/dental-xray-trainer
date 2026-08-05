@@ -17,6 +17,7 @@
   var app = document.getElementById("p1-app");
   var progress = document.getElementById("p1-progress");
 
+  var IMGBASE = "/static/img/";
   var state, records;
   function reset() {
     state = { idx: 0, sub: 0 };
@@ -75,12 +76,14 @@
   }
 
   function filmHTML(c) {
-    return '<div class="p4-view">' +
-      '<div class="p1-film"><div class="p1-corner tl"></div><div class="p1-corner tr"></div><div class="p1-corner bl"></div><div class="p1-corner br"></div>' +
-        icon('<rect x="4" y="5" width="16" height="14" rx="2"/><path d="M9 5v14M13 5v14M17 5v14"/>', 1.1).replace('width="16" height="16"', 'width="42" height="42"') +
-        '<div class="p1-mod">' + esc(c.modality) + " · " + esc(c.id) + "</div></div>" +
-      '<div class="vcap"><div class="roinote">Representative film · illustrative (reference image pending)</div>' +
-      '<div class="finding">' + esc(c.finding) + "</div></div></div>";
+    var inner = c.image
+      ? '<div class="imgwrap"><img src="' + IMGBASE + esc(c.image) + '" alt="radiograph"></div>'
+      : '<div class="p1-film"><div class="p1-corner tl"></div><div class="p1-corner tr"></div><div class="p1-corner bl"></div><div class="p1-corner br"></div><div class="p1-mod">' + esc(c.modality) + ' · ' + esc(c.id) + '</div></div>';
+    var cap = c.image ? 'DenPAR intra-oral periapical · technique error simulated for training'
+                      : 'Representative film · illustrative (reference image pending)';
+    return '<div class="p4-view">' + inner +
+      '<div class="vcap"><div class="roinote">' + cap + '</div>' +
+      '<div class="finding">' + esc(c.finding) + '</div></div></div>';
   }
 
   function choicesHTML(options, expected, chosen, locked) {

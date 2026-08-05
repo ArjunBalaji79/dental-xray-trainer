@@ -127,7 +127,8 @@
           "points": 0
         }
       ],
-      "points": 7
+      "points": 7,
+      "image": "denpar/m1_M1-02.jpg"
     },
     {
       "id": "M1-03",
@@ -221,7 +222,8 @@
           "points": 0
         }
       ],
-      "points": 7
+      "points": 7,
+      "image": "denpar/m1_M1-03.jpg"
     },
     {
       "id": "M1-04",
@@ -315,7 +317,8 @@
           "points": 0
         }
       ],
-      "points": 7
+      "points": 7,
+      "image": "denpar/m1_M1-04.jpg"
     },
     {
       "id": "M1-05",
@@ -409,7 +412,8 @@
           "points": 0
         }
       ],
-      "points": 7
+      "points": 7,
+      "image": "denpar/m1_M1-05.jpg"
     },
     {
       "id": "M1-06",
@@ -503,7 +507,8 @@
           "points": 0
         }
       ],
-      "points": 7
+      "points": 7,
+      "image": "denpar/m1_M1-06.jpg"
     },
     {
       "id": "M1-07",
@@ -595,7 +600,8 @@
           "points": 0
         }
       ],
-      "points": 7
+      "points": 7,
+      "image": "denpar/m1_M1-07.jpg"
     },
     {
       "id": "M1-08",
@@ -689,7 +695,8 @@
           "points": 0
         }
       ],
-      "points": 7
+      "points": 7,
+      "image": "denpar/m1_M1-08.jpg"
     },
     {
       "id": "M1-09",
@@ -783,7 +790,8 @@
           "points": 0
         }
       ],
-      "points": 7
+      "points": 7,
+      "image": "denpar/m1_M1-09.jpg"
     },
     {
       "id": "M1-10",
@@ -877,7 +885,8 @@
           "points": 0
         }
       ],
-      "points": 7
+      "points": 7,
+      "image": "denpar/m1_M1-10.jpg"
     }
   ],
   "total_points": 63

@@ -11,6 +11,7 @@
 
   var app = document.getElementById("p3-app");
   var progress = document.getElementById("p3-progress");
+  var IMGBASE = "/static/img/";
   var state, records;
 
   function reset() { state = { idx: 0, sub: 0 };
@@ -46,11 +47,15 @@
   }
 
   function filmHTML(c) {
-    return '<div class="p4-view"><div class="p1-film">' +
-      '<div class="p1-corner tl"></div><div class="p1-corner tr"></div><div class="p1-corner bl"></div><div class="p1-corner br"></div>' +
-      icon(I_TOOTH, 1.1, 42) + '<div class="p1-mod">' + esc(c.id) + "</div></div>" +
-      '<div class="vcap"><div class="roinote">Representative film · illustrative (reference image pending)</div>' +
-      '<div class="finding">' + esc(c.finding) + "</div></div></div>";
+    var roi = c.roi ? '<div class="roi" style="left:' + c.roi.x + '%; top:' + c.roi.y + '%; width:' + (c.roi.r * 2) + '%; aspect-ratio:1"></div>' : '';
+    var inner = c.image
+      ? '<div class="imgwrap"><img src="' + IMGBASE + esc(c.image) + '" alt="periapical radiograph">' + roi + '</div>'
+      : '<div class="p1-film"><div class="p1-corner tl"></div><div class="p1-corner tr"></div><div class="p1-corner bl"></div><div class="p1-corner br"></div><div class="p1-mod">' + esc(c.id) + '</div></div>';
+    var cap = c.image ? 'DenPAR intra-oral periapical · highlighted region illustrative'
+                      : 'Representative film · illustrative (reference image pending)';
+    return '<div class="p4-view">' + inner +
+      '<div class="vcap"><div class="roinote">' + cap + '</div>' +
+      '<div class="finding">' + esc(c.finding) + '</div></div></div>';
   }
   function choicesHTML(options, expected, chosen, locked, two) {
     return '<div class="choices' + (two ? " choices--two" : "") + '">' + options.map(function (opt) {

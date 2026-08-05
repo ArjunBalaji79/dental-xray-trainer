@@ -12,6 +12,7 @@
 
   var app = document.getElementById("p5-app");
   var progress = document.getElementById("p5-progress");
+  var IMGBASE = "/static/img/";
   var state, records;
 
   function reset() {
@@ -64,12 +65,12 @@
 
   function viewer(c, clickable, marker) {
     var dot = marker ? '<div class="m5-marker" style="left:' + marker.x + '%; top:' + marker.y + '%"></div>' : "";
-    return '<div class="p4-view"><div class="p1-film' + (clickable ? " m5-clickable" : "") + '" id="film">' +
-      '<div class="p1-corner tl"></div><div class="p1-corner tr"></div><div class="p1-corner bl"></div><div class="p1-corner br"></div>' +
-      icon('<rect x="4" y="5" width="16" height="14" rx="2"/><path d="M9 5v14M13 5v14M17 5v14"/>', 1.1, 42) +
-      '<div class="p1-mod">' + esc(c.id) + "</div>" + dot +
-      (clickable ? '<div class="m5-hint">Click to place your marker</div>' : "") + "</div>" +
-      '<div class="vcap"><div class="roinote">Representative film · illustrative (reference image pending)</div>' +
+    var hint = clickable ? '<div class="m5-hint">Click the radiograph to place your marker</div>' : "";
+    var inner = c.image
+      ? '<div class="imgwrap' + (clickable ? " m5-clickable" : "") + '" id="film"><img src="' + IMGBASE + esc(c.image) + '" alt="periapical radiograph">' + dot + hint + '</div>'
+      : '<div class="p1-film' + (clickable ? " m5-clickable" : "") + '" id="film"><div class="p1-corner tl"></div><div class="p1-corner tr"></div><div class="p1-corner bl"></div><div class="p1-corner br"></div><div class="p1-mod">' + esc(c.id) + '</div>' + dot + hint + '</div>';
+    return '<div class="p4-view">' + inner +
+      '<div class="vcap"><div class="roinote">DenPAR intra-oral periapical · region illustrative</div>' +
       '<div class="finding">Evaluate the radiograph and work through the steps — the diagnosis is revealed as you go.</div></div></div>';
   }
 
