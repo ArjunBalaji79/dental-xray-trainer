@@ -1,0 +1,520 @@
+{
+  "module": {
+    "number": 3,
+    "title": "Tooth Identification and Localization",
+    "goal": "Establish fluency in identifying and localizing teeth across radiographic views using morphology, position",
+    "objectives": [
+      {
+        "n": 1,
+        "text": "Correctly identify teeth on bitewing and periapical radiographs using the Universal numbering system with ≥90% accuracy",
+        "target": "≥90%"
+      },
+      {
+        "n": 2,
+        "text": "Correctly determine whether a radiograph shows the right or left side of the mouth with ≥90% accuracy",
+        "target": "≥90%"
+      },
+      {
+        "n": 3,
+        "text": "Correctly determine whether a radiograph is maxillary or mandibular with ≥85% accuracy",
+        "target": "≥85%"
+      },
+      {
+        "n": 4,
+        "text": "Use tooth shape, root structure, and position within the arch to distinguish between similar teeth on radiographs with ≥80% accuracy",
+        "target": "≥80%"
+      },
+      {
+        "n": 5,
+        "text": "Correctly identify adjacent teeth and tooth relationships on radiographs with ≥90% accuracy",
+        "target": "≥90%"
+      },
+      {
+        "n": 6,
+        "text": "Identify missing, restored, impacted, or malpositioned teeth on radiographs with ≥90% accuracy",
+        "target": "≥90%"
+      }
+    ]
+  },
+  "cases": [
+    {
+      "id": "M3-01",
+      "name": "Mandibular Left First Molar",
+      "difficulty": 1,
+      "finding": "A single posterior tooth with two roots is highlighted on a periapical radiograph.",
+      "steps": [
+        {
+          "key": "arch",
+          "answer_type": "Binary",
+          "objective": 3,
+          "prompt": "Is the highlighted tooth in the maxillary or mandibular arch?",
+          "options": [
+            "Maxillary",
+            "Mandibular"
+          ],
+          "expected": "Mandibular",
+          "feedback": "Two roots (one mesial, one distal) and the dense inferior cortex place this in the mandible.",
+          "points": 1,
+          "n": 1
+        },
+        {
+          "key": "side",
+          "answer_type": "Binary",
+          "objective": 2,
+          "prompt": "Using standard mounting (the patient's right is on your left), which side of the mouth is this?",
+          "options": [
+            "Right",
+            "Left"
+          ],
+          "expected": "Left",
+          "feedback": "With the patient's right on your left, this molar sits on the patient's left side.",
+          "points": 1,
+          "n": 2
+        },
+        {
+          "key": "tooth",
+          "answer_type": "Single Select",
+          "objective": 1,
+          "prompt": "Identify the highlighted tooth (Universal numbering system).",
+          "options": [
+            "#18 — Mandibular left 2nd molar",
+            "#19 — Mandibular left 1st molar",
+            "#30 — Mandibular right 1st molar",
+            "#20 — Mandibular left 2nd premolar"
+          ],
+          "expected": "#19 — Mandibular left 1st molar",
+          "feedback": "The first molar is the largest posterior tooth with two well-separated roots — #19 in the lower left.",
+          "points": 2,
+          "n": 3
+        },
+        {
+          "key": "feature",
+          "answer_type": "Single Select",
+          "objective": 4,
+          "prompt": "Which feature best supports that identification?",
+          "options": [
+            "Two roots — one mesial, one distal",
+            "Three roots including a palatal root",
+            "A single conical root",
+            "Roots projecting into the maxillary sinus"
+          ],
+          "expected": "Two roots — one mesial, one distal",
+          "feedback": "Mandibular molars have two roots; maxillary molars have three (two buccal + one palatal).",
+          "points": 2,
+          "n": 4
+        },
+        {
+          "key": "adjacent",
+          "answer_type": "Single Select",
+          "objective": 5,
+          "prompt": "Which neighbouring tooth is indicated?",
+          "options": [
+            "#20 — 2nd premolar (mesial)",
+            "#18 — 2nd molar (mesial)",
+            "#3 — maxillary molar",
+            "#30 — first molar, other side"
+          ],
+          "expected": "#20 — 2nd premolar (mesial)",
+          "feedback": "Moving toward the midline from #19 is the second premolar #20; distally is the second molar #18.",
+          "points": 2,
+          "n": 5
+        }
+      ],
+      "points": 8
+    },
+    {
+      "id": "M3-02",
+      "name": "Maxillary Right First Molar",
+      "difficulty": 1,
+      "finding": "A large posterior tooth with multiple roots is highlighted near a large radiolucent space.",
+      "steps": [
+        {
+          "key": "arch",
+          "answer_type": "Binary",
+          "objective": 3,
+          "prompt": "Is the highlighted tooth in the maxillary or mandibular arch?",
+          "options": [
+            "Maxillary",
+            "Mandibular"
+          ],
+          "expected": "Maxillary",
+          "feedback": "Three roots (two buccal + one palatal) and superimposition of the maxillary sinus indicate the maxilla.",
+          "points": 1,
+          "n": 1
+        },
+        {
+          "key": "side",
+          "answer_type": "Binary",
+          "objective": 2,
+          "prompt": "Using standard mounting (the patient's right is on your left), which side of the mouth is this?",
+          "options": [
+            "Right",
+            "Left"
+          ],
+          "expected": "Right",
+          "feedback": "With standard mounting, this molar lies on the patient's right side.",
+          "points": 1,
+          "n": 2
+        },
+        {
+          "key": "tooth",
+          "answer_type": "Single Select",
+          "objective": 1,
+          "prompt": "Identify the highlighted tooth (Universal numbering system).",
+          "options": [
+            "#2 — Maxillary right 2nd molar",
+            "#3 — Maxillary right 1st molar",
+            "#14 — Maxillary left 1st molar",
+            "#4 — Maxillary right 1st premolar"
+          ],
+          "expected": "#3 — Maxillary right 1st molar",
+          "feedback": "The largest maxillary posterior tooth with three roots is the first molar — #3 on the upper right.",
+          "points": 2,
+          "n": 3
+        },
+        {
+          "key": "feature",
+          "answer_type": "Single Select",
+          "objective": 4,
+          "prompt": "Which feature best supports that identification?",
+          "options": [
+            "Three roots — two buccal and one palatal",
+            "Two roots — mesial and distal",
+            "A single long root",
+            "No discernible roots"
+          ],
+          "expected": "Three roots — two buccal and one palatal",
+          "feedback": "Three roots (with a palatal root) and sinus superimposition are hallmarks of a maxillary molar.",
+          "points": 2,
+          "n": 4
+        },
+        {
+          "key": "adjacent",
+          "answer_type": "Single Select",
+          "objective": 5,
+          "prompt": "Which neighbouring tooth is indicated?",
+          "options": [
+            "#2 — 2nd molar (distal)",
+            "#4 — 1st premolar (distal)",
+            "#5 — 2nd premolar",
+            "#14 — first molar, other side"
+          ],
+          "expected": "#2 — 2nd molar (distal)",
+          "feedback": "Distal to the first molar #3 (away from the midline) is the second molar #2; mesial is #4.",
+          "points": 2,
+          "n": 5
+        }
+      ],
+      "points": 8
+    },
+    {
+      "id": "M3-03",
+      "name": "Maxillary Right Canine",
+      "difficulty": 2,
+      "finding": "A single anterior tooth with a notably long root is highlighted.",
+      "steps": [
+        {
+          "key": "arch",
+          "answer_type": "Binary",
+          "objective": 3,
+          "prompt": "Is the highlighted tooth in the maxillary or mandibular arch?",
+          "options": [
+            "Maxillary",
+            "Mandibular"
+          ],
+          "expected": "Maxillary",
+          "feedback": "The long single root and its position in the anterior maxilla identify a maxillary canine.",
+          "points": 1,
+          "n": 1
+        },
+        {
+          "key": "side",
+          "answer_type": "Binary",
+          "objective": 2,
+          "prompt": "Using standard mounting (the patient's right is on your left), which side of the mouth is this?",
+          "options": [
+            "Right",
+            "Left"
+          ],
+          "expected": "Right",
+          "feedback": "In standard mounting this canine is on the patient's right.",
+          "points": 1,
+          "n": 2
+        },
+        {
+          "key": "tooth",
+          "answer_type": "Single Select",
+          "objective": 1,
+          "prompt": "Identify the highlighted tooth (Universal numbering system).",
+          "options": [
+            "#6 — Maxillary right canine",
+            "#11 — Maxillary left canine",
+            "#27 — Mandibular right canine",
+            "#7 — Maxillary right lateral incisor"
+          ],
+          "expected": "#6 — Maxillary right canine",
+          "feedback": "The canine has the longest root and a single pointed cusp — #6 in the upper right.",
+          "points": 2,
+          "n": 3
+        },
+        {
+          "key": "feature",
+          "answer_type": "Single Select",
+          "objective": 4,
+          "prompt": "Which feature best supports that identification?",
+          "options": [
+            "The longest single root and a pointed cusp",
+            "Two roots and a broad crown",
+            "A short root with three cusps",
+            "A flat incisal edge and no cusp"
+          ],
+          "expected": "The longest single root and a pointed cusp",
+          "feedback": "Canines have the longest root of any tooth and one prominent cusp tip.",
+          "points": 2,
+          "n": 4
+        },
+        {
+          "key": "adjacent",
+          "answer_type": "Single Select",
+          "objective": 5,
+          "prompt": "Which neighbouring tooth is indicated?",
+          "options": [
+            "#7 — lateral incisor (mesial) & #5 — 1st premolar (distal)",
+            "#7 & #8 — incisors",
+            "#3 & #4 — molar and premolar",
+            "#11 & #12 — opposite side"
+          ],
+          "expected": "#7 — lateral incisor (mesial) & #5 — 1st premolar (distal)",
+          "feedback": "The canine sits between the lateral incisor (#7, mesial) and the first premolar (#5, distal).",
+          "points": 2,
+          "n": 5
+        }
+      ],
+      "points": 8
+    },
+    {
+      "id": "M3-04",
+      "name": "Mandibular Right First Premolar",
+      "difficulty": 2,
+      "finding": "A single-rooted posterior tooth with two cusps is highlighted.",
+      "steps": [
+        {
+          "key": "arch",
+          "answer_type": "Binary",
+          "objective": 3,
+          "prompt": "Is the highlighted tooth in the maxillary or mandibular arch?",
+          "options": [
+            "Maxillary",
+            "Mandibular"
+          ],
+          "expected": "Mandibular",
+          "feedback": "The single root and lower-arch trabecular pattern place this in the mandible.",
+          "points": 1,
+          "n": 1
+        },
+        {
+          "key": "side",
+          "answer_type": "Binary",
+          "objective": 2,
+          "prompt": "Using standard mounting (the patient's right is on your left), which side of the mouth is this?",
+          "options": [
+            "Right",
+            "Left"
+          ],
+          "expected": "Right",
+          "feedback": "Standard mounting puts this premolar on the patient's right.",
+          "points": 1,
+          "n": 2
+        },
+        {
+          "key": "tooth",
+          "answer_type": "Single Select",
+          "objective": 1,
+          "prompt": "Identify the highlighted tooth (Universal numbering system).",
+          "options": [
+            "#28 — Mandibular right 1st premolar",
+            "#29 — Mandibular right 2nd premolar",
+            "#21 — Mandibular left 1st premolar",
+            "#12 — Maxillary left 1st premolar"
+          ],
+          "expected": "#28 — Mandibular right 1st premolar",
+          "feedback": "A single-rooted, two-cusped tooth just distal to the canine is the first premolar — #28.",
+          "points": 2,
+          "n": 3
+        },
+        {
+          "key": "feature",
+          "answer_type": "Single Select",
+          "objective": 4,
+          "prompt": "Which feature best supports that identification?",
+          "options": [
+            "A single root and typically two cusps",
+            "Three roots and five cusps",
+            "The longest root in the arch",
+            "A large crown with four or more cusps"
+          ],
+          "expected": "A single root and typically two cusps",
+          "feedback": "Premolars have one root and two cusps; molars are larger with multiple roots and cusps.",
+          "points": 2,
+          "n": 4
+        },
+        {
+          "key": "adjacent",
+          "answer_type": "Single Select",
+          "objective": 5,
+          "prompt": "Which neighbouring tooth is indicated?",
+          "options": [
+            "#29 — 2nd premolar (distal)",
+            "#27 — canine (distal)",
+            "#30 — 1st molar (mesial)",
+            "#21 — premolar, other side"
+          ],
+          "expected": "#29 — 2nd premolar (distal)",
+          "feedback": "Distal to #28 is the second premolar #29; mesial is the canine #27.",
+          "points": 2,
+          "n": 5
+        }
+      ],
+      "points": 8
+    },
+    {
+      "id": "M3-05",
+      "name": "Impacted Third Molar",
+      "difficulty": 2,
+      "finding": "A posterior tooth is tilted mesially and lodged beneath the adjacent molar, unable to erupt.",
+      "steps": [
+        {
+          "key": "arch",
+          "answer_type": "Binary",
+          "objective": 3,
+          "prompt": "Is the highlighted tooth in the maxillary or mandibular arch?",
+          "options": [
+            "Maxillary",
+            "Mandibular"
+          ],
+          "expected": "Mandibular",
+          "feedback": "The angle of impaction against the second molar and the mandibular canal nearby indicate the lower arch.",
+          "points": 1,
+          "n": 1
+        },
+        {
+          "key": "side",
+          "answer_type": "Binary",
+          "objective": 2,
+          "prompt": "Using standard mounting (the patient's right is on your left), which side of the mouth is this?",
+          "options": [
+            "Right",
+            "Left"
+          ],
+          "expected": "Left",
+          "feedback": "In standard mounting this third molar is on the patient's left.",
+          "points": 1,
+          "n": 2
+        },
+        {
+          "key": "tooth",
+          "answer_type": "Single Select",
+          "objective": 1,
+          "prompt": "Identify the highlighted tooth (Universal numbering system).",
+          "options": [
+            "#17 — Mandibular left 3rd molar",
+            "#16 — Maxillary left 3rd molar",
+            "#32 — Mandibular right 3rd molar",
+            "#18 — Mandibular left 2nd molar"
+          ],
+          "expected": "#17 — Mandibular left 3rd molar",
+          "feedback": "The most posterior mandibular tooth on the left is the third molar — #17.",
+          "points": 2,
+          "n": 3
+        },
+        {
+          "key": "anomaly",
+          "answer_type": "Single Select",
+          "objective": 6,
+          "prompt": "How would you classify the highlighted tooth?",
+          "options": [
+            "Impacted",
+            "Missing",
+            "Restored",
+            "Normally erupted"
+          ],
+          "expected": "Impacted",
+          "feedback": "A third molar tilted against the second molar and unable to erupt is impacted (here, mesioangular).",
+          "points": 2,
+          "n": 4
+        }
+      ],
+      "points": 6
+    },
+    {
+      "id": "M3-06",
+      "name": "Restored Maxillary Molar",
+      "difficulty": 2,
+      "finding": "A sharply-defined radiopaque material fills the crown of a maxillary posterior tooth.",
+      "steps": [
+        {
+          "key": "arch",
+          "answer_type": "Binary",
+          "objective": 3,
+          "prompt": "Is the highlighted tooth in the maxillary or mandibular arch?",
+          "options": [
+            "Maxillary",
+            "Mandibular"
+          ],
+          "expected": "Maxillary",
+          "feedback": "Three roots and sinus proximity identify a maxillary molar.",
+          "points": 1,
+          "n": 1
+        },
+        {
+          "key": "side",
+          "answer_type": "Binary",
+          "objective": 2,
+          "prompt": "Using standard mounting (the patient's right is on your left), which side of the mouth is this?",
+          "options": [
+            "Right",
+            "Left"
+          ],
+          "expected": "Left",
+          "feedback": "In standard mounting this molar is on the patient's left.",
+          "points": 1,
+          "n": 2
+        },
+        {
+          "key": "tooth",
+          "answer_type": "Single Select",
+          "objective": 1,
+          "prompt": "Identify the highlighted tooth (Universal numbering system).",
+          "options": [
+            "#14 — Maxillary left 1st molar",
+            "#3 — Maxillary right 1st molar",
+            "#19 — Mandibular left 1st molar",
+            "#15 — Maxillary left 2nd molar"
+          ],
+          "expected": "#14 — Maxillary left 1st molar",
+          "feedback": "A three-rooted maxillary molar in the upper left first-molar position is #14.",
+          "points": 2,
+          "n": 3
+        },
+        {
+          "key": "anomaly",
+          "answer_type": "Single Select",
+          "objective": 6,
+          "prompt": "How would you classify the highlighted tooth?",
+          "options": [
+            "Restored",
+            "Impacted",
+            "Missing",
+            "Carious (untreated)"
+          ],
+          "expected": "Restored",
+          "feedback": "A well-defined radiopaque mass conforming to a cavity outline is a restoration; untreated caries is radiolucent.",
+          "points": 2,
+          "n": 4
+        }
+      ],
+      "points": 6
+    }
+  ],
+  "total_points": 44
+}
