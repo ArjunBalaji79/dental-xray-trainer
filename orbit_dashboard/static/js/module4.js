@@ -1,6 +1,6 @@
 /* ORBIT — Module 4 interactive trainer.
    A learner works through 4 false-positive trap cases: classify -> identify ->
-   justify, with scored feedback and a Socratic AI tutor (objective 7). Pure
+   justify, with scored feedback and the AI Companion (objective 7). Pure
    vanilla JS; answer-checking is client-side (fine for a teaching demo). */
 (function () {
   "use strict";
@@ -9,6 +9,16 @@
   var CFG = window.M4CFG || { aiAvailable: false, tutorUrl: "", imgBase: "" };
   var CASES = DATA.cases;
   var OBJ = DATA.module.objectives;
+
+  // Warm the next case's radiograph so advancing doesn't flash an empty frame.
+  var preloaded = {};
+  function preloadNext(idx) {
+    var n = CASES[idx + 1];
+    if (!n || !n.image || preloaded[n.image]) return;
+    preloaded[n.image] = true;
+    (new Image()).src = CFG.imgBase + n.image;
+  }
+
   var PTS = { classify: 2, identify: 1, justify: 2 };
   var PER_CASE = PTS.classify + PTS.identify + PTS.justify; // 5
   var TOTAL_PTS = CASES.length * PER_CASE;
@@ -117,7 +127,7 @@
         }).join("") + "</div>" +
         '<div class="q-actions" style="margin-top:16px"><button class="btn-primary" id="p4-begin">' +
           icon('<path d="M6 4l14 8-14 8z" fill="currentColor" stroke="none"/>') + " Begin practice · " + CASES.length + " cases</button>" +
-          '<span class="pts">Classify → identify → justify, with an AI tutor. ' + TOTAL_PTS + " points.</span></div>" +
+          '<span class="pts">Classify → identify → justify, with the AI Companion. ' + TOTAL_PTS + " points.</span></div>" +
       "</div>";
     document.getElementById("p4-begin").addEventListener("click", function () {
       state = { idx: 0, sub: "classify", answered: false };
@@ -129,6 +139,7 @@
 
   // ---- CASE ----------------------------------------------------------------
   function renderCase() {
+    preloadNext(state.idx);
     var c = CASES[state.idx], r = records[state.idx];
     var sub = state.sub;
     var revealFeatures = (sub !== "classify") || r.classifyFinal != null;
@@ -260,13 +271,13 @@
     }
   }
 
-  // ---- AI tutor ------------------------------------------------------------
+  // ---- AI Companion --------------------------------------------------------
   function tutorHTML(c) {
     return '<div class="tutor" id="tutor">' +
-      '<div class="tutor-head">' + I_AI + '<span class="t">Socratic AI tutor</span>' +
+      '<div class="tutor-head">' + I_AI + '<span class="t">AI Companion</span>' +
       '<span class="st" id="tutor-status">' + (CFG.aiAvailable ? "connecting…" : "Coach mode") + "</span></div>" +
       '<div class="tutor-log" id="tutor-log"></div>' +
-      '<div class="tutor-in"><input id="tutor-input" placeholder="Ask the tutor or explain your reasoning…" autocomplete="off">' +
+      '<div class="tutor-in"><input id="tutor-input" placeholder="Ask the AI Companion or explain your reasoning…" autocomplete="off">' +
       '<button class="btn-primary" id="tutor-send">Send</button></div></div>';
   }
 
@@ -368,7 +379,7 @@
       "</div>" +
       '<div class="grid-2"><div class="card"><div class="card-head"><span class="keyline"></span><h3>Objective coverage</h3></div><div>' + objRows + "</div></div>" +
       '<div style="display:flex;flex-direction:column;gap:12px">' +
-        '<div class="callout">' + I_AI + '<div class="ct"><b>Objective 7 — improvement after AI dialogue.</b> Your first-attempt accuracy was ' + firstAcc + "%; after the AI tutor / annotation review it was " + acc + "%. Target is a ≥15% gain across a full case set.</div></div>" +
+        '<div class="callout">' + I_AI + '<div class="ct"><b>Objective 7 — improvement after AI dialogue.</b> Your first-attempt accuracy was ' + firstAcc + "%; after the AI Companion / annotation review it was " + acc + "%. Target is a ≥15% gain across a full case set.</div></div>" +
         (overdiag ? '<div class="feedback no" style="margin:0"><div class="lead">' + I_X + "Overdiagnosis</div><div>You classified " + overdiag + " normal/artifact finding(s) as pathology — the exact error Module 4 trains you to avoid.</div></div>"
                   : '<div class="feedback ok" style="margin:0"><div class="lead">' + I_CHECK + "No overdiagnosis</div><div>You never called a normal structure or artifact “pathology.” That is objective 6.</div></div>") +
         '<div class="card"><div class="card-body" style="display:flex;gap:8px;align-items:center"><button class="btn-primary" id="restart">' + icon('<path d="M3 2v6h6"/><path d="M3 8a9 9 0 1 0 3-6.7L3 8"/>') + ' Restart Module 4</button><a class="btn-ghost" href="/module/4">Back to Module 4</a></div></div>' +

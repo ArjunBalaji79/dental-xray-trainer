@@ -2,7 +2,7 @@
    A learner works each case through the real 5-step CaseBuildout flow:
    diagnostic quality -> identify error -> cause -> correction -> visual comparison.
    Scored, with per-step feedback and an objective-mapped results screen.
-   Reuses the Module-4 practice CSS classes; no AI tutor (Module 1 has no AI objective). */
+   Reuses the Module-4 practice CSS classes; no AI Companion (Module 1 has no AI objective). */
 (function () {
   "use strict";
 
@@ -18,6 +18,16 @@
   var progress = document.getElementById("p1-progress");
 
   var IMGBASE = "/static/img/";
+
+  // Warm the next case's radiograph so advancing doesn't flash an empty frame.
+  var preloaded = {};
+  function preloadNext(idx) {
+    var n = CASES[idx + 1];
+    if (!n || !n.image || preloaded[n.image]) return;
+    preloaded[n.image] = true;
+    (new Image()).src = IMGBASE + n.image;
+  }
+
   var state, records;
   function reset() {
     state = { idx: 0, sub: 0 };
@@ -125,6 +135,7 @@
 
   // ---- STEP ----------------------------------------------------------------
   function renderStep() {
+    preloadNext(state.idx);
     var c = CASES[state.idx], step = c.steps[state.sub], rec = records[state.idx][state.sub];
     var at = (step.answer_type || "").toLowerCase();
     var isVisual = at.indexOf("visual") !== -1;

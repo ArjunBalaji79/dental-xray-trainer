@@ -5,6 +5,8 @@ __pycache__/
 uploaded_dicoms/
 .DS_Store
 pages_archive/FMX18/
-datasets/dentex/validation_data.zip
+
+# Archives — source drops, dataset bundles, exported builds. Never commit.
+*.zip
 
 dataset/

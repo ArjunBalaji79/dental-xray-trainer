@@ -1,8 +1,8 @@
-/* ORBIT — Epic-styled curriculum console + Module 4 trainer.
+/* ORBIT — clinical-workspace curriculum console + Module 4 trainer.
    Design system ported from the winning "analytics-radar" tournament mockup.
    All colors/radii/type live as :root tokens so the theme is easy to retune. */
 :root{
-  --epic-navy:#00427A; --navy-deep:#00325C; --slate:#1F2A37; --slate-alt:#28333F;
+  --orbit-navy:#00427A; --navy-deep:#00325C; --slate:#1F2A37; --slate-alt:#28333F;
   --action:#0071C5; --action-hover:#005A9E;
   --canvas:#F3F5F7; --card:#FFFFFF; --border:#D7DCE1; --zebra:#F7F9FB;
   --row-hover:#E8F1FA; --header-gray:#EDF0F3;
@@ -29,7 +29,7 @@ a{color:var(--action)}
 
 /* ---------- COMMAND BAR ---------- */
 .app-bar{position:sticky; top:0; z-index:50; height:44px; display:flex; align-items:stretch;
-  background:var(--epic-navy); border-bottom:1px solid var(--navy-deep);
+  background:var(--orbit-navy); border-bottom:1px solid var(--navy-deep);
   box-shadow:inset 0 1px 0 rgba(255,255,255,.08);}
 .brand{display:flex; align-items:center; gap:8px; padding:0 14px 0 16px; flex:0 0 auto; text-decoration:none}
 .brand-mark{font-size:15px; font-weight:600; color:#fff; letter-spacing:.02em}

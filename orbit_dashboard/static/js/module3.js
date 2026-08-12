@@ -12,6 +12,16 @@
   var app = document.getElementById("p3-app");
   var progress = document.getElementById("p3-progress");
   var IMGBASE = "/static/img/";
+
+  // Warm the next case's radiograph so advancing doesn't flash an empty frame.
+  var preloaded = {};
+  function preloadNext(idx) {
+    var n = CASES[idx + 1];
+    if (!n || !n.image || preloaded[n.image]) return;
+    preloaded[n.image] = true;
+    (new Image()).src = IMGBASE + n.image;
+  }
+
   var state, records;
 
   function reset() { state = { idx: 0, sub: 0 };
@@ -86,6 +96,7 @@
   }
 
   function renderStep() {
+    preloadNext(state.idx);
     var c = CASES[state.idx], s = c.steps[state.sub], rec = records[state.idx][state.sub];
     var locked = rec != null, two = s.options.length === 2;
     var q = '<div class="p4-q"><div class="p4-qhead"><span class="keyline"></span>' +

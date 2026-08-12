@@ -13,6 +13,16 @@
   var app = document.getElementById("p5-app");
   var progress = document.getElementById("p5-progress");
   var IMGBASE = "/static/img/";
+
+  // Warm the next case's radiograph so advancing doesn't flash an empty frame.
+  var preloaded = {};
+  function preloadNext(idx) {
+    var n = CASES[idx + 1];
+    if (!n || !n.image || preloaded[n.image]) return;
+    preloaded[n.image] = true;
+    (new Image()).src = IMGBASE + n.image;
+  }
+
   var state, records;
 
   function reset() {
@@ -109,6 +119,7 @@
   }
 
   function render() {
+    preloadNext(state.idx);
     var c = CASES[state.idx], s = c.steps[state.sub], rec = records[state.idx][state.sub];
     var locked = rec != null && rec.ok !== undefined;   // tooth step may hold a partial pick
     var auto = (s.kind === "faculty");
