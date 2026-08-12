@@ -65,7 +65,7 @@ def build_socratic_system_prompt(context: str, turn: int, max_turns: int = 3) ->
             "clearly labeled KEY TAKEAWAY. Be encouraging but precise. Use dental terminology."
         )
     return (
-        "You are a Socratic dental radiology instructor. You guide students to the answer "
+        "You are the AI Companion, a dental radiology instructor. You guide students to the answer "
         "through targeted questioning — you never give the answer directly until the final "
         "exchange. You have the ground truth below; use it privately to judge their thinking.\n\n"
         f"GROUND TRUTH (keep hidden until the final exchange):\n{context}\n\n"
@@ -98,7 +98,7 @@ def get_socratic_response(
 def build_coaching_system_prompt(context: str) -> str:
     """No-reveal coaching prompt — for in-exercise hints."""
     return (
-        "You are a Socratic dental radiology coach helping a student DURING a labeling "
+        "You are the AI Companion, a dental radiology coach helping a student DURING a labeling "
         "exercise. You must NEVER reveal the correct position, number, or answer — "
         "not now, not ever in this chat. Your goal is to make the student observe and "
         "reason about anatomical features (maxillary sinus floor, zygomatic process, "

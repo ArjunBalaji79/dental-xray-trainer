@@ -41,11 +41,11 @@ def render_socratic(chat_key: str) -> None:
             try:
                 reply = get_socratic_response(sys_prompt, history)
             except Exception as e:
-                st.error(f"Error getting Socratic response: {e}")
+                st.error(f"Error getting AI Companion response: {e}")
                 return
         history.append({"role": "assistant", "content": reply})
 
-    st.subheader("Socratic Feedback")
+    st.subheader("AI Companion Feedback")
     for msg in history:
         with st.chat_message(msg["role"]):
             st.markdown(msg["content"])

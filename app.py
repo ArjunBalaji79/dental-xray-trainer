@@ -19,7 +19,7 @@ st.set_page_config(
 )
 
 st.title("🦷 Dental X-ray Training Platform")
-st.markdown("### AI-Powered Radiology Education — Socratic, Image-Grounded, Expert-Labeled")
+st.markdown("### AI-Powered Radiology Education — Guided, Image-Grounded, Expert-Labeled")
 
 st.divider()
 
@@ -56,7 +56,7 @@ with col1:
         - Anterior vs posterior regions
         - Individual tooth numbers
 
-        Sample cases with **Socratic AI feedback**.
+        Sample cases with **AI Companion feedback**.
 
         👈 Open **Tooth ID** in the sidebar.
         """
@@ -88,7 +88,7 @@ with col3:
 
         - Native HTML5 drag-and-drop
         - **AI Coach** during the exercise (no spoilers)
-        - Socratic reflection after submitting
+        - AI Companion reflection after submitting
 
         👈 Open **FMX Labeling** in the sidebar.
         """
@@ -102,7 +102,7 @@ st.markdown(
 
     1. **Practice** on real, expert-labeled radiographs
     2. **Submit** your answer (or arrangement)
-    3. **Reason** with a Socratic AI tutor — it asks questions before revealing answers
+    3. **Reason** with the AI Companion — it asks questions before revealing answers
     4. **Learn** from grounded, image-specific feedback
 
     ---

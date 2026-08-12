@@ -1,7 +1,7 @@
 """FMX Labeling Exercise: drag-and-drop arrangement of a full-mouth X-ray series.
 
 Students see shuffled radiographs extracted from an FMX sheet and drag each
-image into the correct row + position. After submitting, a Socratic chat
+image into the correct row + position. After submitting, the AI Companion
 reflects on mistakes. During the exercise, an AI Coach can give non-revealing
 hints.
 """
@@ -30,8 +30,8 @@ st.set_page_config(page_title="FMX Labeling Exercise", page_icon="🦷", layout=
 st.title("FMX Labeling — Drag & Drop")
 st.markdown(
     "Drag each shuffled radiograph into the correct **row and position** of the FMX layout. "
-    "Top row is **maxillary**, bottom row is **mandibular**. After you submit, a Socratic "
-    "tutor will help you reason about any mistakes."
+    "Top row is **maxillary**, bottom row is **mandibular**. After you submit, the "
+    "**AI Companion** will help you reason about any mistakes."
 )
 
 # Sidebar
@@ -335,7 +335,7 @@ if submitted_state:
                     st.image(img_data["image"], use_container_width=True,
                              caption=f"#{img_data['number']}")
 
-    # Socratic reflection on mistakes
+    # AI Companion reflection on mistakes
     label_chat_key = f"fmx_label_chat_{exercise_key}"
     if st.session_state.get("anthropic_api_key"):
         wrong = [r for r in results if not r["is_correct"]]
@@ -369,8 +369,8 @@ if submitted_state:
 if st.session_state.get("anthropic_api_key"):
     st.divider()
     with st.expander("🤖 AI Coach — ask for hints while you arrange", expanded=False):
-        st.caption("Pick an image, describe what you see, and the AI will ask Socratic "
-                   "questions without revealing the position.")
+        st.caption("Pick an image, describe what you see, and the AI Companion will ask "
+                   "guiding questions without revealing the position.")
         coach_col1, coach_col2 = st.columns([1, 3])
         with coach_col1:
             chosen_letter = st.selectbox(
@@ -414,4 +414,4 @@ if st.session_state.get("anthropic_api_key"):
             with show_col2:
                 render_coaching(coach_key, label=f"Coach for Image {chosen_letter}")
 else:
-    st.info("💡 Add an Anthropic API key in the sidebar to enable AI Coach + post-submit Socratic feedback.")
+    st.info("💡 Add an Anthropic API key in the sidebar to enable AI Coach + post-submit AI Companion feedback.")
