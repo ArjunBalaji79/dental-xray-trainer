@@ -236,6 +236,22 @@ def _vision(system, text, img_b64, history=None, max_tokens=700, effort="low", f
                    if getattr(b, "type", "") == "text").strip()
 
 
+# Model text occasionally carries CP1252-style C1 escapes (e.g. \u0097 for an
+# em dash) or literal "\uXXXX" sequences; normalise so they never reach the UI.
+_CP1252 = {0x80: "€", 0x82: "‚", 0x84: "„", 0x85: "…", 0x86: "†", 0x87: "‡", 0x89: "‰",
+           0x8A: "Š", 0x8B: "‹", 0x8C: "Œ", 0x91: "‘", 0x92: "’", 0x93: "“", 0x94: "”",
+           0x95: "•", 0x96: "–", 0x97: "—", 0x98: "˜", 0x99: "™", 0x9A: "š", 0x9B: "›",
+           0x9C: "œ", 0x9F: "Ÿ"}
+
+
+def _clean_text(t) -> str:
+    if not t:
+        return ""
+    t = re.sub(r"\\u([0-9a-fA-F]{4})", lambda m: chr(int(m.group(1), 16)), str(t))
+    t = "".join(_CP1252.get(ord(ch), ch) for ch in t)
+    return re.sub(r"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f-\x9f]", "", t).strip()
+
+
 def _parse_box(raw):
     try:
         b = {k: float(raw[k]) for k in ("x", "y", "w", "h")}
@@ -294,8 +310,8 @@ def m5_region():
         j = json.loads(out)
         v = j.get("verdict", "partial")
         pts = {"hit": full, "partial": max(1, full // 2), "miss": 0}.get(v, 1)
-        return jsonify({"verdict": v, "points": pts, "feedback": j.get("feedback", ""),
-                        "direction": j.get("direction", ""), "source": "ai"})
+        return jsonify({"verdict": v, "points": pts, "feedback": _clean_text(j.get("feedback", "")),
+                        "direction": _clean_text(j.get("direction", "")), "source": "ai"})
     except Exception as e:  # never break the demo
         fallback["error"] = str(e)[:200]
         return jsonify(fallback)
@@ -356,7 +372,7 @@ def m5_hint():
                 ("\nThe student has drawn a yellow box; refer to it if helpful." if box else
                  "\nThe student has not marked anything yet."))
         out = _vision(COMPANION_SYSTEM, text, _m5_image_b64(case, box), max_tokens=350)
-        return jsonify({"level": level, "label": label, "hint": out or scripted,
+        return jsonify({"level": level, "label": label, "hint": _clean_text(out) or scripted,
                         "source": "ai" if out else "scripted"})
     except Exception as e:
         fallback["error"] = str(e)[:200]
@@ -395,7 +411,7 @@ def m5_companion():
         text = (_m5_context(case) + f"\n\nStage rule: {STAGE_RULES[stage]}\n\nStudent: {message}")
         out = _vision(COMPANION_SYSTEM, text, _m5_image_b64(case, box), history=p.get("history") or [],
                       max_tokens=450)
-        return jsonify({"reply": out or fallback["reply"], "source": "ai" if out else "scripted"})
+        return jsonify({"reply": _clean_text(out) or fallback["reply"], "source": "ai" if out else "scripted"})
     except Exception as e:
         fallback["error"] = str(e)[:200]
         return jsonify(fallback)
