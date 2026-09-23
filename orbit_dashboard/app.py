@@ -13,6 +13,8 @@ Run:
 
 from __future__ import annotations
 
+import base64
+import io
 import json
 import os
 import re
@@ -53,6 +55,10 @@ MODULE3 = load_json(MODULE3_FILE)
 MODULES_BY_NUM = {m["number"]: m for m in MODULES}
 CASES_BY_ID = {c["id"]: c for c in CASES}
 M4_BY_ID = {c["id"]: c for c in MODULE4["cases"]}
+M5_BY_ID = {c["id"]: c for c in MODULE5["cases"]}
+
+# Vision model for the Module 5 AI Companion (override with ORBIT_AI_MODEL).
+AI_MODEL = os.environ.get("ORBIT_AI_MODEL", "claude-opus-5")
 
 # Modules that have a functioning interactive trainer -> its route endpoint.
 PRACTICE_ENDPOINTS = {1: "module1_practice", 3: "module3_practice", 4: "module4_practice", 5: "module5_practice"}
@@ -62,6 +68,18 @@ app = Flask(__name__)
 # Radiographs are content-addressed by filename and never mutate in place, so a
 # long browser cache is safe and keeps the image-heavy trainers snappy.
 app.config["SEND_FILE_MAX_AGE_DEFAULT"] = 60 * 60 * 24 * 7  # one week
+
+
+def _asset_version() -> str:
+    """Cache-buster for CSS/JS: changes whenever any static file changes (each deploy)."""
+    try:
+        latest = max(f.stat().st_mtime for f in (HERE / "static").rglob("*") if f.is_file())
+        return format(int(latest), "x")
+    except Exception:
+        return "1"
+
+
+ASSET_V = _asset_version()
 
 
 # ---------------------------------------------------------------------------
@@ -102,6 +120,7 @@ def inject_globals():
         "nav_modules": MODULES,
         "DIFFICULTY": DIFFICULTY,
         "active": request.path,
+        "asset_v": ASSET_V,
     }
 
 
@@ -154,6 +173,232 @@ def module3_practice():
 @app.route("/module/5/practice")
 def module5_practice():
     return render_template("module5_practice.html", page="modules", m5=MODULE5)
+
+
+# ---------------------------------------------------------------------------
+# Module 5 — AI Companion (vision): region grading, coaching ladder, chat
+# ---------------------------------------------------------------------------
+def _m5_step(case, kind):
+    return next((s for s in case["steps"] if s.get("kind") == kind), {})
+
+
+def _m5_context(case):
+    area, sel, tooth, fac = (_m5_step(case, k) for k in ("area", "select", "tooth", "faculty"))
+    ex = fac.get("expert") or {}
+    faculty = " ".join(v for v in (ex.get("correct"), ex.get("why"), ex.get("pitfall"),
+                                   ex.get("teaching"), ex.get("pearls")) if v)
+    return (f"CASE {case['id']} — {case['name']}\n"
+            f"Ground-truth diagnosis (confidential — never state it to the student before the finding step is locked): {case['ground_truth']}\n"
+            f"Tooth / surface: {tooth.get('tooth', '')} {tooth.get('surface') or ''}\n"
+            f"Expected marked region: {area.get('expected', '')}\n"
+            f"Region feedback: {area.get('feedback', '')}\n"
+            f"Finding feedback: {sel.get('feedback', '')}\n"
+            f"Faculty notes: {faculty}\n"
+            f"Case notes: {case.get('notes', '')}")
+
+
+def _m5_image_b64(case, box=None):
+    """Load the case radiograph; if a box (percent coords) is given, draw it in
+    yellow so the model sees exactly what the student marked."""
+    from PIL import Image, ImageDraw
+    im = Image.open(HERE / "static" / "img" / case["image"]).convert("RGB")
+    W, H = im.size
+    if box:
+        x1 = max(0.0, box["x"]) / 100 * W
+        y1 = max(0.0, box["y"]) / 100 * H
+        x2 = min(100.0, box["x"] + box["w"]) / 100 * W
+        y2 = min(100.0, box["y"] + box["h"]) / 100 * H
+        ImageDraw.Draw(im).rectangle([x1, y1, x2, y2], outline=(255, 210, 63), width=max(3, W // 250))
+    buf = io.BytesIO()
+    im.save(buf, "JPEG", quality=85)
+    return base64.standard_b64encode(buf.getvalue()).decode("utf-8")
+
+
+def _vision(system, text, img_b64, history=None, max_tokens=700, effort="low", fmt=None):
+    """One Claude vision call. Returns text, or None on refusal."""
+    from anthropic import Anthropic
+    client = Anthropic(api_key=anthropic_key())
+    messages = []
+    for h in (history or [])[-8:]:
+        messages.append({"role": "assistant" if h.get("role") == "assistant" else "user",
+                         "content": str(h.get("content", ""))})
+    messages.append({"role": "user", "content": [
+        {"type": "image", "source": {"type": "base64", "media_type": "image/jpeg", "data": img_b64}},
+        {"type": "text", "text": text}]})
+    output_config = {"effort": effort}
+    if fmt:
+        output_config["format"] = fmt
+    resp = client.messages.create(model=AI_MODEL, max_tokens=max_tokens, system=system,
+                                  output_config=output_config, messages=messages)
+    if resp.stop_reason == "refusal":
+        return None
+    return "".join(getattr(b, "text", "") for b in resp.content
+                   if getattr(b, "type", "") == "text").strip()
+
+
+def _parse_box(raw):
+    try:
+        b = {k: float(raw[k]) for k in ("x", "y", "w", "h")}
+        if b["w"] <= 0 or b["h"] <= 0:
+            return None
+        return b
+    except Exception:
+        return None
+
+
+COMPANION_SYSTEM = (
+    "You are the ORBIT AI Companion — a Socratic dental-radiology coach working with a dental student "
+    "on an intra-oral periapical radiograph. You can see the radiograph; if a yellow rectangle is drawn on it, "
+    "that is the region the student marked. Guide with evidence (radiodensity, border definition, shape, "
+    "location relative to the CEJ, crestal bone and apex). Be warm, specific and concise (2-4 sentences). "
+    "Never fabricate features you cannot see."
+)
+
+
+@app.route("/api/module5/region", methods=["POST"])
+def m5_region():
+    p = request.get_json(force=True, silent=True) or {}
+    case = M5_BY_ID.get(p.get("case_id"))
+    if case is None:
+        return jsonify({"error": "unknown case"}), 404
+    box = _parse_box(p.get("box") or {})
+    if box is None:
+        return jsonify({"error": "bad box"}), 400
+    area = _m5_step(case, "area")
+    full = int(area.get("points", 2) or 2)
+    fallback = {"verdict": "placed", "points": full, "source": "scripted", "direction": "",
+                "feedback": ("Your region is recorded. The AI Companion can't grade it against the radiograph right now, "
+                             "so full credit is given — compare your box with the faculty review at the end of the case.")}
+    if not anthropic_key() or not case.get("image"):
+        return jsonify(fallback)
+    try:
+        system = (
+            "You are a dental radiology instructor grading WHERE a student marked on an intra-oral periapical "
+            "radiograph. A yellow rectangle shows the student's marked region. Judge only whether that rectangle "
+            "captures the region of the expected finding. Never name the diagnosis; refer to location in "
+            "anatomical terms (tooth, surface, crestal bone, apex). Be precise and encouraging.")
+        text = (_m5_context(case) +
+                "\n\nDoes the yellow rectangle capture the expected finding region?\n"
+                "verdict: 'hit' if it clearly contains the finding; 'partial' if it overlaps, is adjacent, or is far "
+                "oversized; 'miss' if it is somewhere else.\n"
+                "feedback: 2-3 sentences to the student, Socratic, no diagnosis name.\n"
+                "direction: if not a hit, one short phrase saying where to look; otherwise an empty string.")
+        fmt = {"type": "json_schema", "schema": {
+            "type": "object",
+            "properties": {"verdict": {"type": "string", "enum": ["hit", "partial", "miss"]},
+                           "feedback": {"type": "string"}, "direction": {"type": "string"}},
+            "required": ["verdict", "feedback", "direction"], "additionalProperties": False}}
+        out = _vision(system, text, _m5_image_b64(case, box), max_tokens=400, fmt=fmt)
+        if not out:
+            return jsonify(fallback)
+        j = json.loads(out)
+        v = j.get("verdict", "partial")
+        pts = {"hit": full, "partial": max(1, full // 2), "miss": 0}.get(v, 1)
+        return jsonify({"verdict": v, "points": pts, "feedback": j.get("feedback", ""),
+                        "direction": j.get("direction", ""), "source": "ai"})
+    except Exception as e:  # never break the demo
+        fallback["error"] = str(e)[:200]
+        return jsonify(fallback)
+
+
+def _concept_for(case):
+    gt = (case.get("ground_truth") or "").lower()
+    if "recurrent" in gt:
+        return ("Recurrent (secondary) caries typically appears as a radiolucency immediately beneath or beside an existing "
+                "restoration or crown margin, where the lesion follows the margin rather than the enamel contour.")
+    if "caries" in gt:
+        return ("Interproximal caries classically appears as a triangular radiolucency just below the contact point, its "
+                "base at the enamel surface and its apex pointing toward the dentino-enamel junction — unlike contact "
+                "overlap, which is a sharp, uniform band that does not enter the dentin.")
+    if "bone" in gt:
+        return ("Early periodontal bone loss shows as loss of the sharp crestal lamina dura and an alveolar crest that sits "
+                "more than about 1.5–2 mm below the cemento-enamel junctions of the neighbouring teeth.")
+    if "foramen" in gt or "normal" in gt:
+        return ("Normal radiolucent landmarks such as foramina have a corticated (well-defined) border and sit at a predictable "
+                "location; a true periapical lesion instead shows loss of the lamina dura around a root apex.")
+    return ("Decide by evidence: a true lesion changes the density and border of the tooth or bone it sits in, while "
+            "anatomy and artifacts keep intact outlines and predictable locations.")
+
+
+HINT_LEVELS = {
+    1: ("Direct attention",
+        "Point the student's attention to WHERE on the radiograph to look — which tooth, surface or region — "
+        "in 1-2 sentences. Do not say what the finding is."),
+    2: ("Guide reasoning",
+        "In 2-3 sentences, guide the student to compare the radiodensity, border definition and shape of that "
+        "area against the neighbouring structures. End with one question. Do not name the diagnosis."),
+    3: ("Reinforce concept",
+        "In 2-3 sentences, teach the general radiographic concept that explains this kind of appearance — how "
+        "such findings typically look and where — so the student can decide. Do not state the answer for this case."),
+}
+
+
+@app.route("/api/module5/hint", methods=["POST"])
+def m5_hint():
+    p = request.get_json(force=True, silent=True) or {}
+    case = M5_BY_ID.get(p.get("case_id"))
+    if case is None:
+        return jsonify({"error": "unknown case"}), 404
+    level = max(1, min(3, int(p.get("level") or 1)))
+    label, instr = HINT_LEVELS[level]
+    area, sel = _m5_step(case, "area"), _m5_step(case, "select")
+    scripted = {1: "Scan systematically: the contact points between the teeth, the crestal bone between them, "
+                   "any restoration margins, and the root apices. Which of those areas looks darker than it should?",
+                2: "Take the area you are considering and compare its radiodensity with the enamel and dentin beside it. "
+                   "Is its border sharp or fading, and does the darker zone stay within enamel or cross toward the dentin?",
+                3: _concept_for(case)}[level]
+    fallback = {"level": level, "label": label, "hint": scripted, "source": "scripted"}
+    if not anthropic_key() or not case.get("image"):
+        return jsonify(fallback)
+    try:
+        box = _parse_box(p.get("box") or {})
+        text = (_m5_context(case) + f"\n\nCoaching level {level} — {label}: {instr}" +
+                ("\nThe student has drawn a yellow box; refer to it if helpful." if box else
+                 "\nThe student has not marked anything yet."))
+        out = _vision(COMPANION_SYSTEM, text, _m5_image_b64(case, box), max_tokens=350)
+        return jsonify({"level": level, "label": label, "hint": out or scripted,
+                        "source": "ai" if out else "scripted"})
+    except Exception as e:
+        fallback["error"] = str(e)[:200]
+        return jsonify(fallback)
+
+
+STAGE_RULES = {
+    "reasoning": "The student is still working out the tooth, surface and finding. Do NOT reveal the diagnosis or "
+                 "the tooth number; ask one guiding question that points them to a discriminating feature.",
+    "decision": "The student is deciding whether to accept, revise or keep their read against a separate AI "
+                "interpretation. Do not simply say who is right; help them weigh the radiographic evidence for and "
+                "against the AI's claim and ask what feature would settle it.",
+    "review": "The finding is now locked. You may confirm the interpretation and explain the evidence directly.",
+}
+
+
+@app.route("/api/module5/companion", methods=["POST"])
+def m5_companion():
+    p = request.get_json(force=True, silent=True) or {}
+    case = M5_BY_ID.get(p.get("case_id"))
+    if case is None:
+        return jsonify({"error": "unknown case"}), 404
+    message = (p.get("message") or "").strip()
+    if not message:
+        return jsonify({"error": "empty message"}), 400
+    stage = p.get("stage") if p.get("stage") in STAGE_RULES else "reasoning"
+    area = _m5_step(case, "area")
+    fallback = {"reply": ("Start with the evidence in the region you marked: compare its radiodensity with the enamel and "
+                          "dentin beside it. Is its border sharp or fading — and does the darker zone stay within enamel, "
+                          "cross toward the dentin, or sit in the bone? That answer usually settles it."),
+                "source": "scripted"}
+    if not anthropic_key() or not case.get("image"):
+        return jsonify(fallback)
+    try:
+        box = _parse_box(p.get("box") or {})
+        text = (_m5_context(case) + f"\n\nStage rule: {STAGE_RULES[stage]}\n\nStudent: {message}")
+        out = _vision(COMPANION_SYSTEM, text, _m5_image_b64(case, box), history=p.get("history") or [],
+                      max_tokens=450)
+        return jsonify({"reply": out or fallback["reply"], "source": "ai" if out else "scripted"})
+    except Exception as e:
+        fallback["error"] = str(e)[:200]
+        return jsonify(fallback)
 
 
 @app.route("/module/4/practice")

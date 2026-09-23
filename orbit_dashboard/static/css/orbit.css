@@ -406,3 +406,29 @@ svg.glyph{display:inline-block; vertical-align:middle}
 .p4-sub{font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.03em; color:var(--muted); margin-bottom:6px}
 
 .imgwrap.m5-clickable{cursor:crosshair}
+
+/* Module 5 — AI Companion: region selection, coaching ladder, chat */
+.p4-view .imgwrap{overflow:hidden}
+.p4-view .imgwrap img{user-select:none; -webkit-user-drag:none}
+.sel-layer{position:absolute; inset:0; cursor:crosshair; touch-action:none; z-index:3}
+.sel{position:absolute; border:2px solid #ffd23f; border-radius:2px; box-shadow:0 0 0 1px rgba(0,0,0,.5); pointer-events:none; z-index:2}
+.sel-mask{position:absolute; background:rgba(0,22,58,.6); pointer-events:none; z-index:1}
+.sel.drag{border-style:dashed; background:rgba(255,210,63,.14)}
+.m5-hint{pointer-events:none; z-index:4}
+.sel-tools{display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-top:12px}
+.sel-status{font-size:12px; color:var(--muted); margin-top:10px; display:flex; align-items:center; gap:6px}
+.feedback.mid{background:#FFF6E5; border-color:#D9962B; color:#7A4E00}
+.verdict-pts{margin-left:auto; font-size:11px; font-weight:700; opacity:.85}
+.coach{margin-top:12px; border:1px solid var(--ai-border); border-radius:var(--r-card); background:#fff; overflow:hidden}
+.coach-head{display:flex; align-items:center; gap:8px; padding:8px 12px; background:var(--ai-fill); border-bottom:1px solid var(--ai-border)}
+.coach-head .glyph{color:var(--action)}
+.coach-head .t{font-size:12px; font-weight:700; color:var(--ai-text)}
+.coach-head .st{margin-left:auto; font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:.04em}
+.coach-body{padding:12px; display:flex; flex-direction:column; gap:10px}
+.hint{padding:10px 12px; border:1px solid #cfe4f6; border-radius:var(--r-card); background:var(--ai-fill)}
+.hint-lvl{font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--ai-text); margin-bottom:4px}
+.hint-txt{font-size:13px; color:var(--ink); line-height:1.5}
+.spin{display:inline-block; width:12px; height:12px; border:2px solid #cfe4f6; border-top-color:var(--action); border-radius:50%; animation:orbit-spin .8s linear infinite; flex:0 0 12px}
+@keyframes orbit-spin{to{transform:rotate(360deg)}}
+.btn-ghost:disabled,.btn-primary:disabled{opacity:.45; cursor:default}
+.tutor-head .glyph{color:var(--action)}

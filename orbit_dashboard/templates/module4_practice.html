@@ -55,5 +55,5 @@
     imgBase: "{{ url_for('static', filename='img/') }}"
   };
 </script>
-<script src="{{ url_for('static', filename='js/module4.js') }}"></script>
+<script src="{{ url_for('static', filename='js/module4.js') }}?v={{ asset_v }}"></script>
 {% endblock %}
